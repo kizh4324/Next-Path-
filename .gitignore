@@ -25,4 +25,6 @@ Thumbs.db
 
 # Graphify temporary cache & dotfiles
 graphify-out/.*
+graphify-out/cache/
+
 
