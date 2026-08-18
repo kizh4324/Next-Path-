@@ -22,3 +22,7 @@ Thumbs.db
 
 # BMad user-specific configurations
 *.user.toml
+
+# Graphify temporary cache & dotfiles
+graphify-out/.*
+
