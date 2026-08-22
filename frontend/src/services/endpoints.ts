@@ -1,0 +1,138 @@
+/** Strongly typed endpoint functions. One place where a URL string appears. */
+
+import { api } from '@/services/api_client';
+import type {
+  CareerCompareResponse,
+  CareerDetail,
+  CareerSummary,
+  ChatMessageResponse,
+  ConsentResponse,
+  ErasureReceipt,
+  Escalation,
+  EscalationQueueResponse,
+  EscalationStatus,
+  EscalationTrigger,
+  EvidenceType,
+  GuardianContextResponse,
+  Milestone,
+  ParentSummaryResponse,
+  PathwaySelectResponse,
+  ProfileStatusResponse,
+  ReassessResponse,
+  RecommendationBatch,
+  RoadmapResponse,
+  ScholarshipListResponse,
+  SkillGapResponse,
+  StudentProfileResponse,
+  TokenResponse,
+  UserResponse,
+} from '@/types/models';
+import type {
+  GuardianContextInput,
+  LoginInput,
+  MinorConsentInput,
+  OnboardingInput,
+  RegisterInput,
+} from '@/types/forms';
+
+export const authApi = {
+  register: (body: RegisterInput) => api.post<TokenResponse>('/auth/register', body),
+  login: (body: LoginInput) => api.post<TokenResponse>('/auth/login', body),
+  me: () => api.get<UserResponse>('/auth/me'),
+  recordMinorConsent: (body: MinorConsentInput) =>
+    api.post<ConsentResponse>('/auth/minor-consent', body),
+};
+
+export const profileApi = {
+  create: (body: OnboardingInput) => api.post<StudentProfileResponse>('/profile', body),
+  get: () => api.get<StudentProfileResponse>('/profile'),
+  patch: (body: Partial<OnboardingInput>) => api.patch<StudentProfileResponse>('/profile', body),
+  status: () => api.get<ProfileStatusResponse>('/profile/status'),
+  upsertGuardian: (body: GuardianContextInput) =>
+    api.post<GuardianContextResponse>('/profile/guardian', body),
+};
+
+export const careerApi = {
+  list: (params?: { stage?: string; cluster?: string }) =>
+    api.get<CareerSummary[]>('/careers', params),
+  detail: (careerId: string) => api.get<CareerDetail>(`/careers/${careerId}`),
+  compare: (careerIds: string[]) =>
+    api.post<CareerCompareResponse>('/careers/compare', { career_ids: careerIds }),
+  skillGaps: (careerId: string) => api.get<SkillGapResponse>(`/careers/${careerId}/skill-gaps`),
+};
+
+export const recommendationApi = {
+  evaluate: () => api.post<RecommendationBatch>('/recommendations/evaluate'),
+  current: () => api.get<RecommendationBatch>('/recommendations/current'),
+  history: () => api.get<RecommendationBatch[]>('/recommendations/history'),
+  selectPathways: (primaryCareerId: string, backupCareerId?: string | null) =>
+    api.post<PathwaySelectResponse>('/recommendations/select-pathways', {
+      primary_career_id: primaryCareerId,
+      backup_career_id: backupCareerId ?? null,
+    }),
+  reassess: (reason?: string) =>
+    api.post<ReassessResponse>('/recommendations/reassess', { reason: reason ?? null }),
+};
+
+export const roadmapApi = {
+  current: () => api.get<RoadmapResponse>('/roadmap'),
+  completeMilestone: (
+    milestoneId: string,
+    evidenceType: EvidenceType,
+    note?: string | null,
+  ) =>
+    api.patch<Milestone>(`/roadmap/milestones/${milestoneId}/complete`, {
+      completion_evidence_type: evidenceType,
+      completion_evidence_note_or_url: note ?? null,
+    }),
+};
+
+export const scholarshipApi = {
+  search: (params: {
+    state?: string;
+    target_category?: string;
+    min_qualification?: string;
+    max_income_inr?: number;
+    limit?: number;
+    offset?: number;
+  }) => api.get<ScholarshipListResponse>('/scholarships', params),
+};
+
+export const chatApi = {
+  send: (question: string, careerId?: string | null) =>
+    api.post<ChatMessageResponse>('/chat/message', {
+      question,
+      career_id: careerId ?? null,
+    }),
+};
+
+export const guardianApi = {
+  summary: (regenerate = false) =>
+    api.get<ParentSummaryResponse>('/guardian/summary', { regenerate }),
+};
+
+export const counselorApi = {
+  queue: (status?: EscalationStatus) =>
+    api.get<EscalationQueueResponse>('/counselor/queue', { status }),
+  review: (
+    escalationId: string,
+    body: {
+      status: EscalationStatus;
+      counselor_notes?: string | null;
+      counselor_override_decision?: string | null;
+      counselor_override_rationale?: string | null;
+    },
+  ) => api.post<Escalation>(`/counselor/review/${escalationId}`, body),
+};
+
+export const escalationApi = {
+  trigger: (triggerReason: EscalationTrigger, studentNote?: string) =>
+    api.post<Escalation>('/escalations/trigger', {
+      trigger_reason: triggerReason,
+      student_note: studentNote ?? null,
+    }),
+};
+
+export const accountApi = {
+  erase: () => api.delete<ErasureReceipt>('/account', { confirm_understanding: true }),
+};
