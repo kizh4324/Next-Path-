@@ -1,0 +1,224 @@
+{
+  "_meta": {
+    "purpose": "Maps every O*NET skill and knowledge element used by the catalogue to a plain-language description and a FREE learning route (FR-11, FR-12, PRD Section 13.3).",
+    "url_policy": "Links point at stable portal or catalogue roots — never deep links into individual course pages, which rot silently and would leave a student staring at a 404. The student searches within a portal we can vouch for, rather than following a link we cannot keep verified.",
+    "commercial_policy": "Next_Path has no commercial relationship with any listed provider and receives no commission. Paid alternatives are listed only where a genuinely distinct paid option exists; a null paid entry means the free route is sufficient, not that we failed to find a sponsor.",
+    "coverage": "All 42 distinct elements appearing across the 27 catalogue careers. A skill with no mapping is not seeded, because a skill we cannot point at a free route for fails FR-12.",
+    "last_reviewed_date": "2026-08-20"
+  },
+  "default_commercial_disclosure": "Independent curated resource. No commercial commission or affiliation.",
+  "skills": {
+    "Reading Comprehension": {
+      "description": "Understanding written documents, manuals, and instructions accurately enough to act on them without misreading intent.",
+      "free_resource_name": "NCERT English textbooks and reading material (Classes 6-12)",
+      "free_resource_url": "https://ncert.nic.in/textbook.php"
+    },
+    "Active Listening": {
+      "description": "Giving full attention to what people say, asking clarifying questions, and not interrupting before you have understood the point.",
+      "free_resource_name": "SWAYAM communication skills courses",
+      "free_resource_url": "https://swayam.gov.in/explorer?category=Communication"
+    },
+    "Writing": {
+      "description": "Communicating clearly in writing for the reader you are actually writing for, from emails to formal reports.",
+      "free_resource_name": "NPTEL Technical and Business Writing courses",
+      "free_resource_url": "https://nptel.ac.in/courses"
+    },
+    "Speaking": {
+      "description": "Explaining ideas out loud so other people follow them — in meetings, presentations, and everyday conversation at work.",
+      "free_resource_name": "SWAYAM soft skills and public speaking courses",
+      "free_resource_url": "https://swayam.gov.in/explorer?category=Communication"
+    },
+    "Mathematics": {
+      "description": "Using arithmetic, algebra, statistics, and quantitative reasoning to solve real problems rather than only exam questions.",
+      "free_resource_name": "Khan Academy Mathematics (aligned to Indian curriculum)",
+      "free_resource_url": "https://www.khanacademy.org/math",
+      "paid_resource_name": null,
+      "paid_resource_url": null
+    },
+    "Science": {
+      "description": "Applying scientific method and reasoning — forming a hypothesis, testing it, and revising when the evidence disagrees.",
+      "free_resource_name": "NCERT Science textbooks and SWAYAM science courses",
+      "free_resource_url": "https://swayam.gov.in/explorer?category=Science"
+    },
+    "Critical Thinking": {
+      "description": "Weighing options and evidence to judge which approach is actually better, instead of accepting the first plausible answer.",
+      "free_resource_name": "NPTEL Critical Thinking and Reasoning courses",
+      "free_resource_url": "https://nptel.ac.in/courses"
+    },
+    "Active Learning": {
+      "description": "Working out what new information means for decisions you already make — the skill that keeps a career from going stale.",
+      "free_resource_name": "SWAYAM self-directed learning courses",
+      "free_resource_url": "https://swayam.gov.in/explorer"
+    },
+    "Learning Strategies": {
+      "description": "Choosing study and practice methods that suit the material and the way you actually learn.",
+      "free_resource_name": "SWAYAM learning and pedagogy courses",
+      "free_resource_url": "https://swayam.gov.in/explorer?category=Education"
+    },
+    "Monitoring": {
+      "description": "Tracking your own and others' performance to notice when something is drifting off course, early enough to correct it.",
+      "free_resource_name": "NPTEL Management and Quality Control courses",
+      "free_resource_url": "https://nptel.ac.in/courses"
+    },
+    "Mechanical": {
+      "description": "Understanding machines and tools — how they work, why they fail, and how they are maintained and repaired.",
+      "free_resource_name": "Skill India Digital mechanical and ITI trade courses",
+      "free_resource_url": "https://www.skillindiadigital.gov.in/courses"
+    },
+    "Computers and Electronics": {
+      "description": "Working with computer hardware, software, and electronic systems, including how they are configured and troubleshot.",
+      "free_resource_name": "Spoken Tutorial (IIT Bombay) free software training",
+      "free_resource_url": "https://spoken-tutorial.org/tutorial-search/"
+    },
+    "Engineering and Technology": {
+      "description": "Applying engineering principles and design methods to build things that work under real-world constraints.",
+      "free_resource_name": "NPTEL Engineering courses (IIT and IISc faculty)",
+      "free_resource_url": "https://nptel.ac.in/course.html"
+    },
+    "Design": {
+      "description": "Producing plans, drawings, and specifications precise enough that someone else can build from them.",
+      "free_resource_name": "NPTEL Design and Product Development courses",
+      "free_resource_url": "https://nptel.ac.in/courses"
+    },
+    "Building and Construction": {
+      "description": "Knowing materials, methods, and building codes used to construct and maintain structures safely.",
+      "free_resource_name": "NPTEL Civil Engineering and Construction courses",
+      "free_resource_url": "https://nptel.ac.in/course.html"
+    },
+    "Production and Processing": {
+      "description": "Understanding how raw materials become finished goods — process flow, quality control, and cost.",
+      "free_resource_name": "NPTEL Manufacturing and Industrial Engineering courses",
+      "free_resource_url": "https://nptel.ac.in/course.html"
+    },
+    "Physics": {
+      "description": "Applying physical laws — mechanics, electricity, thermodynamics — to explain and predict how systems behave.",
+      "free_resource_name": "NCERT Physics textbooks and Khan Academy Physics",
+      "free_resource_url": "https://www.khanacademy.org/science/physics"
+    },
+    "Chemistry": {
+      "description": "Understanding substances, reactions, and their safe handling in laboratory and industrial settings.",
+      "free_resource_name": "NCERT Chemistry textbooks and Khan Academy Chemistry",
+      "free_resource_url": "https://www.khanacademy.org/science/chemistry"
+    },
+    "Biology": {
+      "description": "Understanding living organisms, their systems, and how they interact — the foundation of every health career.",
+      "free_resource_name": "NCERT Biology textbooks and Khan Academy Biology",
+      "free_resource_url": "https://www.khanacademy.org/science/biology"
+    },
+    "Medicine and Dentistry": {
+      "description": "Diagnosing and treating illness and injury, including the pharmacology and procedures involved.",
+      "free_resource_name": "SWAYAM and NPTEL health sciences courses",
+      "free_resource_url": "https://swayam.gov.in/explorer?category=Health%20Care"
+    },
+    "Therapy and Counseling": {
+      "description": "Assessing and treating physical or mental difficulties, and providing structured guidance and support.",
+      "free_resource_name": "SWAYAM psychology and counselling courses",
+      "free_resource_url": "https://swayam.gov.in/explorer?category=Health%20Care"
+    },
+    "Psychology": {
+      "description": "Understanding how people think, feel, differ from each other, and respond to their circumstances.",
+      "free_resource_name": "e-PG Pathshala Psychology modules (UGC)",
+      "free_resource_url": "https://epgp.inflibnet.ac.in/"
+    },
+    "Sociology and Anthropology": {
+      "description": "Understanding group behaviour, social structures, culture, and how they shape individual outcomes.",
+      "free_resource_name": "e-PG Pathshala Sociology modules (UGC)",
+      "free_resource_url": "https://epgp.inflibnet.ac.in/"
+    },
+    "Education and Training": {
+      "description": "Designing instruction and measuring whether people actually learned what you intended to teach.",
+      "free_resource_name": "SWAYAM teacher education and NCERT pedagogy courses",
+      "free_resource_url": "https://swayam.gov.in/explorer?category=Education"
+    },
+    "English Language": {
+      "description": "Command of English structure, vocabulary, and usage — still the working language of most Indian professional workplaces.",
+      "free_resource_name": "NCERT English textbooks and SWAYAM English courses",
+      "free_resource_url": "https://swayam.gov.in/explorer?category=Language"
+    },
+    "Foreign Language": {
+      "description": "Reading, writing, or speaking a language other than your own well enough to work in it.",
+      "free_resource_name": "SWAYAM foreign language courses",
+      "free_resource_url": "https://swayam.gov.in/explorer?category=Language"
+    },
+    "Economics and Accounting": {
+      "description": "Understanding money — accounting practice, financial statements, markets, and how economic forces move them.",
+      "free_resource_name": "NPTEL Economics and Financial Accounting courses",
+      "free_resource_url": "https://nptel.ac.in/courses"
+    },
+    "Sales and Marketing": {
+      "description": "Showing, promoting, and selling products or services, and measuring whether the effort actually worked.",
+      "free_resource_name": "SWAYAM marketing management courses",
+      "free_resource_url": "https://swayam.gov.in/explorer?category=Management"
+    },
+    "Customer and Personal Service": {
+      "description": "Assessing what a customer needs, meeting quality standards, and handling dissatisfaction without escalating it.",
+      "free_resource_name": "Skill India Digital customer service courses",
+      "free_resource_url": "https://www.skillindiadigital.gov.in/courses"
+    },
+    "Administration and Management": {
+      "description": "Planning, allocating resources, and coordinating people so that work actually gets finished.",
+      "free_resource_name": "NPTEL and SWAYAM management courses (IIM and IIT faculty)",
+      "free_resource_url": "https://swayam.gov.in/explorer?category=Management"
+    },
+    "Administrative": {
+      "description": "Handling records, filing systems, documentation, and office procedure accurately and on time.",
+      "free_resource_name": "Skill India Digital office administration courses",
+      "free_resource_url": "https://www.skillindiadigital.gov.in/courses"
+    },
+    "Personnel and Human Resources": {
+      "description": "Recruitment, selection, training, compensation, and the labour law that governs all of it.",
+      "free_resource_name": "SWAYAM human resource management courses",
+      "free_resource_url": "https://swayam.gov.in/explorer?category=Management"
+    },
+    "Law and Government": {
+      "description": "Knowing statutes, court procedure, regulations, and how government processes actually operate.",
+      "free_resource_name": "National Digital Library of India — Law collection",
+      "free_resource_url": "https://ndl.iitkgp.ac.in/"
+    },
+    "Public Safety and Security": {
+      "description": "Understanding the procedures and equipment used to protect people, property, and data.",
+      "free_resource_name": "SWAYAM public safety and security courses",
+      "free_resource_url": "https://swayam.gov.in/explorer"
+    },
+    "Communications and Media": {
+      "description": "Producing and distributing information through print, broadcast, and digital media.",
+      "free_resource_name": "SWAYAM journalism and mass communication courses",
+      "free_resource_url": "https://swayam.gov.in/explorer?category=Communication"
+    },
+    "Fine Arts": {
+      "description": "Composition, visual theory, and the craft of producing work that communicates something deliberately.",
+      "free_resource_name": "National Digital Library of India — Arts collection",
+      "free_resource_url": "https://ndl.iitkgp.ac.in/"
+    },
+    "Geography": {
+      "description": "Understanding landmasses, climate, populations, and how location shapes what is possible in a place.",
+      "free_resource_name": "NCERT Geography textbooks",
+      "free_resource_url": "https://ncert.nic.in/textbook.php"
+    },
+    "History and Archeology": {
+      "description": "Understanding past events and civilisations, and how they explain present institutions.",
+      "free_resource_name": "NCERT History textbooks",
+      "free_resource_url": "https://ncert.nic.in/textbook.php"
+    },
+    "Philosophy and Theology": {
+      "description": "Understanding differing systems of value and belief, and the reasoning behind them.",
+      "free_resource_name": "e-PG Pathshala Philosophy modules (UGC)",
+      "free_resource_url": "https://epgp.inflibnet.ac.in/"
+    },
+    "Food Production": {
+      "description": "Growing, storing, and processing food — agronomy, soil, crop science, and post-harvest handling.",
+      "free_resource_name": "ICAR and SWAYAM agricultural science courses",
+      "free_resource_url": "https://swayam.gov.in/explorer?category=Agriculture"
+    },
+    "Telecommunications": {
+      "description": "Transmission and operation of telecommunications systems and networks.",
+      "free_resource_name": "NPTEL Communication Systems courses",
+      "free_resource_url": "https://nptel.ac.in/course.html"
+    },
+    "Transportation": {
+      "description": "Moving people or goods — routes, costs, regulations, and the trade-offs between modes.",
+      "free_resource_name": "NPTEL Transportation Engineering courses",
+      "free_resource_url": "https://nptel.ac.in/course.html"
+    }
+  }
+}

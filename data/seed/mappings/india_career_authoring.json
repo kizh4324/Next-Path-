@@ -1,0 +1,1498 @@
+{
+  "_meta": {
+    "purpose": "India-specific career content authored by Next_Path. Merged with machine-derived O*NET 30.3 fields (RIASEC vector, Job Zone, description, skill importance) by backend/data/build_career_seed.py to produce data/seed/seed_career_clusters.json.",
+    "why_this_file_exists": "O*NET is a US occupational taxonomy. It carries no Indian entry routes, entrance examinations, INR cost bands, or regional demand caveats. Everything in this file is authored and reviewable; everything derived from O*NET is pulled at build time and never hand-edited.",
+    "cost_basis": "estimated_cost_inr_min/max are TOTAL programme costs (tuition plus mandatory fees) across the full duration, not annual. Ranges are deliberately wide and conservative: fees vary by state, institution category, and admission quota. The official institution or regulator is authoritative over these figures.",
+    "availability_scope": "The narrowest geography in which this route is realistically reachable. Consumed by the scoring engine's Relocation_Fit term.",
+    "content_owner": "Next_Path Content Team",
+    "review_cycle_months": 12,
+    "last_reviewed_date": "2026-08-20",
+    "onet_skills_fallback_soc": "O*NET 30.3 publishes no skill or knowledge importance ratings for some newer or aggregate SOC codes. Where the primary code has no ratings, this field names an explicitly chosen sibling occupation used ONLY to derive the skill list (and the RIASEC vector if the primary lacks one). The primary onet_soc_code remains the career's true anchor. The substitution is recorded per career and disclosed in the built catalogue, never applied silently."
+  },
+  "careers": [
+    {
+      "id": "software-developer",
+      "onet_soc_code": "15-1252.00",
+      "title": "Software Developer",
+      "cluster": "Engineering & Technology",
+      "work_reality_summary": "Most days are spent reading and modifying code that already exists rather than writing new programs from scratch. Work is desk-based and largely solitary in stretches, punctuated by team reviews. Deadlines cluster around release cycles, and on-call rotations are common at product companies. The skills go stale quickly, so learning continues after work hours for most of a career.",
+      "applicable_stages": [
+        "class_11_12",
+        "early_college"
+      ],
+      "prerequisites": [
+        "Mathematics in 10+2 for most degree routes"
+      ],
+      "india_entry_routes": [
+        {
+          "route_name": "B.Tech / B.E. in Computer Science or IT",
+          "duration_years": 4,
+          "entrance_exams": [
+            "JEE Main",
+            "State CET (e.g. MHT-CET, KCET, TNEA)"
+          ],
+          "cost_tier": "moderate_up_to_2_lakhs",
+          "estimated_cost_inr_min": 200000,
+          "estimated_cost_inr_max": 1600000,
+          "degree_or_cert_awarded": "B.Tech / B.E. in Computer Science or Information Technology",
+          "availability_scope": "within_state",
+          "low_cost_alternative_route": "Government polytechnic diploma (3 years, roughly ₹30,000-₹1,00,000 total) followed by lateral entry into the second year of a B.Tech"
+        },
+        {
+          "route_name": "BCA followed by MCA",
+          "duration_years": 5,
+          "entrance_exams": [
+            "CUET-UG",
+            "University-level entrance"
+          ],
+          "cost_tier": "moderate_up_to_2_lakhs",
+          "estimated_cost_inr_min": 150000,
+          "estimated_cost_inr_max": 800000,
+          "degree_or_cert_awarded": "BCA + MCA",
+          "availability_scope": "within_state",
+          "low_cost_alternative_route": "B.Sc Computer Science at a state university, then self-taught portfolio work"
+        },
+        {
+          "route_name": "Self-taught portfolio route",
+          "duration_years": 2,
+          "entrance_exams": [],
+          "cost_tier": "low_cost_only",
+          "estimated_cost_inr_min": 0,
+          "estimated_cost_inr_max": 25000,
+          "degree_or_cert_awarded": "No formal degree; a public portfolio of working projects",
+          "availability_scope": "home_district_only",
+          "low_cost_alternative_route": "NPTEL and SWAYAM programming courses are free to audit; certification is optional and low-cost"
+        }
+      ],
+      "risks_and_tradeoffs": [
+        "Entry-level hiring is highly competitive and fluctuates sharply with the global technology cycle.",
+        "A degree alone rarely secures a job; employers screen on demonstrable projects and coding tests.",
+        "Skills need continuous refreshing, which is unpaid time for most of a career."
+      ],
+      "regional_caveats": "Hiring is heavily concentrated in Bengaluru, Hyderabad, Pune, Chennai, NCR, and Mumbai. Outside these hubs, roles exist but are fewer and pay materially less. The self-taught route in particular depends on reliable internet access.",
+      "source_links": [
+        "https://www.aicte-india.org/",
+        "https://jeemain.nta.nic.in/",
+        "https://nptel.ac.in/"
+      ]
+    },
+    {
+      "id": "civil-engineer",
+      "onet_soc_code": "17-2051.00",
+      "title": "Civil Engineer",
+      "cluster": "Engineering & Technology",
+      "work_reality_summary": "Work splits between site visits and office design work, with the balance shifting toward site early in a career. Site postings often mean living away from home, in smaller towns, and outdoors in difficult weather. Government roles are stable and slower-paced; private contractor roles pay more and demand longer hours against project deadlines.",
+      "applicable_stages": [
+        "class_11_12",
+        "early_college"
+      ],
+      "prerequisites": [
+        "Physics, Chemistry and Mathematics in 10+2"
+      ],
+      "india_entry_routes": [
+        {
+          "route_name": "B.Tech / B.E. in Civil Engineering",
+          "duration_years": 4,
+          "entrance_exams": [
+            "JEE Main",
+            "State CET"
+          ],
+          "cost_tier": "moderate_up_to_2_lakhs",
+          "estimated_cost_inr_min": 150000,
+          "estimated_cost_inr_max": 1000000,
+          "degree_or_cert_awarded": "B.Tech / B.E. in Civil Engineering",
+          "availability_scope": "within_state",
+          "low_cost_alternative_route": "Government polytechnic diploma in Civil Engineering, then lateral entry to B.Tech, or a junior engineer post directly"
+        },
+        {
+          "route_name": "Diploma in Civil Engineering (Polytechnic)",
+          "duration_years": 3,
+          "entrance_exams": [
+            "State polytechnic admission (Class 10 marks based)"
+          ],
+          "cost_tier": "low_cost_only",
+          "estimated_cost_inr_min": 30000,
+          "estimated_cost_inr_max": 150000,
+          "degree_or_cert_awarded": "Diploma in Civil Engineering",
+          "availability_scope": "home_district_only",
+          "low_cost_alternative_route": "Government polytechnics charge substantially less than private ones and are present in most districts"
+        }
+      ],
+      "risks_and_tradeoffs": [
+        "Site postings frequently require relocation to remote project locations, especially in the first years.",
+        "Private-sector pay at entry level is lower than in software or finance for comparable qualifications.",
+        "Construction hiring is cyclical and tracks government infrastructure spending."
+      ],
+      "regional_caveats": "Public infrastructure work is distributed across states, so this is one of the few engineering paths with genuine opportunity outside metros. Government recruitment (state PWD, PSUs) runs on published exam cycles.",
+      "source_links": [
+        "https://www.aicte-india.org/",
+        "https://www.nbccindia.com/",
+        "https://nptel.ac.in/"
+      ]
+    },
+    {
+      "id": "mechanical-engineer",
+      "onet_soc_code": "17-2141.00",
+      "title": "Mechanical Engineer",
+      "cluster": "Engineering & Technology",
+      "work_reality_summary": "Depending on the employer, days range from CAD design at a desk to shop-floor troubleshooting in a manufacturing plant. Plant roles often run on shifts and are located in industrial belts rather than city centres. Work is methodical and standards-driven, with real physical consequences when something is specified wrong.",
+      "applicable_stages": [
+        "class_11_12",
+        "early_college"
+      ],
+      "prerequisites": [
+        "Physics, Chemistry and Mathematics in 10+2"
+      ],
+      "india_entry_routes": [
+        {
+          "route_name": "B.Tech / B.E. in Mechanical Engineering",
+          "duration_years": 4,
+          "entrance_exams": [
+            "JEE Main",
+            "State CET"
+          ],
+          "cost_tier": "moderate_up_to_2_lakhs",
+          "estimated_cost_inr_min": 150000,
+          "estimated_cost_inr_max": 1000000,
+          "degree_or_cert_awarded": "B.Tech / B.E. in Mechanical Engineering",
+          "availability_scope": "within_state",
+          "low_cost_alternative_route": "Government polytechnic diploma followed by lateral entry into the second year of a B.Tech"
+        },
+        {
+          "route_name": "ITI trade certificate then apprenticeship",
+          "duration_years": 2,
+          "entrance_exams": [
+            "ITI admission (Class 10 marks based)"
+          ],
+          "cost_tier": "low_cost_only",
+          "estimated_cost_inr_min": 5000,
+          "estimated_cost_inr_max": 40000,
+          "degree_or_cert_awarded": "ITI National Trade Certificate plus apprenticeship record",
+          "availability_scope": "home_district_only",
+          "low_cost_alternative_route": "Government ITIs charge nominal fees and stipends are paid during apprenticeship"
+        }
+      ],
+      "risks_and_tradeoffs": [
+        "Core mechanical hiring has grown slower than software, and many graduates end up in unrelated IT roles.",
+        "Plant and shift work is physically demanding and often located away from major cities.",
+        "Automation is reducing the number of routine roles on the shop floor."
+      ],
+      "regional_caveats": "Concentrated in industrial corridors — Pune-Chakan, Chennai-Sriperumbudur, Gujarat, NCR-Manesar, and Jamshedpur. Opportunities are thin outside these belts.",
+      "source_links": [
+        "https://www.aicte-india.org/",
+        "https://dgt.gov.in/",
+        "https://nptel.ac.in/"
+      ]
+    },
+    {
+      "id": "information-security-analyst",
+      "onet_soc_code": "15-1212.00",
+      "title": "Information Security Analyst",
+      "cluster": "Engineering & Technology",
+      "work_reality_summary": "Much of the work is monitoring, investigating alerts, and writing up findings rather than dramatic intrusion defence. Security operations centres often run 24x7, so shift work is common early on. The role rewards patience and careful documentation as much as technical skill, and mistakes are consequential.",
+      "applicable_stages": [
+        "class_11_12",
+        "early_college"
+      ],
+      "prerequisites": [
+        "Mathematics in 10+2 for most degree routes"
+      ],
+      "india_entry_routes": [
+        {
+          "route_name": "B.Tech in Computer Science with security electives",
+          "duration_years": 4,
+          "entrance_exams": [
+            "JEE Main",
+            "State CET"
+          ],
+          "cost_tier": "moderate_up_to_2_lakhs",
+          "estimated_cost_inr_min": 200000,
+          "estimated_cost_inr_max": 1600000,
+          "degree_or_cert_awarded": "B.Tech in Computer Science / Cyber Security",
+          "availability_scope": "within_state",
+          "low_cost_alternative_route": "B.Sc Computer Science at a state university plus free NPTEL cyber security courses and hands-on lab practice"
+        },
+        {
+          "route_name": "BCA or B.Sc plus security certification",
+          "duration_years": 3,
+          "entrance_exams": [
+            "CUET-UG",
+            "University-level entrance"
+          ],
+          "cost_tier": "low_cost_only",
+          "estimated_cost_inr_min": 60000,
+          "estimated_cost_inr_max": 400000,
+          "degree_or_cert_awarded": "BCA / B.Sc plus an industry security certification",
+          "availability_scope": "within_state",
+          "low_cost_alternative_route": "Free CERT-In and NPTEL material covers the foundations; paid certification can wait until a first job funds it"
+        }
+      ],
+      "risks_and_tradeoffs": [
+        "Entry-level roles are often night-shift monitoring positions rather than the analysis work the title suggests.",
+        "Industry certifications are expensive and expire, creating a recurring cost.",
+        "The field is smaller than general software development, so fewer openings exist."
+      ],
+      "regional_caveats": "Security operations centres are concentrated in Bengaluru, Hyderabad, Pune, and NCR. Remote work is more common here than in most engineering fields.",
+      "source_links": [
+        "https://www.cert-in.org.in/",
+        "https://www.aicte-india.org/",
+        "https://nptel.ac.in/"
+      ]
+    },
+    {
+      "id": "data-scientist",
+      "onet_soc_code": "15-2051.00",
+      "title": "Data Scientist",
+      "cluster": "Data & AI",
+      "work_reality_summary": "A large share of the job is cleaning messy data and explaining results to people who will not read the maths — not building models. Work is desk-based and analytical, with long stretches of debugging data quality problems. The gap between what the role sounds like and what it is day to day is one of the widest in this catalogue.",
+      "applicable_stages": [
+        "class_11_12",
+        "early_college"
+      ],
+      "prerequisites": [
+        "Mathematics in 10+2",
+        "Comfort with statistics"
+      ],
+      "india_entry_routes": [
+        {
+          "route_name": "B.Tech / B.Sc followed by a specialisation in data science",
+          "duration_years": 4,
+          "entrance_exams": [
+            "JEE Main",
+            "CUET-UG",
+            "State CET"
+          ],
+          "cost_tier": "moderate_up_to_2_lakhs",
+          "estimated_cost_inr_min": 200000,
+          "estimated_cost_inr_max": 1600000,
+          "degree_or_cert_awarded": "B.Tech / B.Sc in Computer Science, Statistics or Mathematics",
+          "availability_scope": "within_state",
+          "low_cost_alternative_route": "B.Sc Statistics at a state university plus free NPTEL data science courses and public portfolio projects"
+        },
+        {
+          "route_name": "B.Sc Statistics or Mathematics then M.Sc",
+          "duration_years": 5,
+          "entrance_exams": [
+            "CUET-UG",
+            "CUET-PG",
+            "University-level entrance"
+          ],
+          "cost_tier": "low_cost_only",
+          "estimated_cost_inr_min": 50000,
+          "estimated_cost_inr_max": 400000,
+          "degree_or_cert_awarded": "B.Sc + M.Sc in Statistics / Mathematics / Data Science",
+          "availability_scope": "within_state",
+          "low_cost_alternative_route": "Central and state university statistics departments charge very low fees relative to private data science programmes"
+        }
+      ],
+      "risks_and_tradeoffs": [
+        "The title is applied to very different jobs; many advertised roles are reporting and dashboard work.",
+        "Expensive private bootcamps market heavily to this field and frequently overstate placement outcomes.",
+        "Most postings ask for prior experience, making the true entry point an analyst role rather than a scientist one."
+      ],
+      "regional_caveats": "Hiring is concentrated in Bengaluru, Hyderabad, Mumbai, Pune, and NCR. This is one of the few careers in this catalogue with dated job-market evidence attached, drawn from a Naukri postings sample.",
+      "source_links": [
+        "https://www.onetcenter.org/",
+        "https://nptel.ac.in/",
+        "https://www.ugc.gov.in/"
+      ],
+      "onet_skills_fallback_soc": "15-2051.01",
+      "onet_skills_fallback_note": "O*NET 30.3 has no skill ratings for 15-2051.00. Skills are derived from the closest rated occupation, 15-2051.01 (Business Intelligence Analysts)."
+    },
+    {
+      "id": "data-analyst",
+      "onet_soc_code": "15-2041.00",
+      "title": "Data Analyst",
+      "cluster": "Data & AI",
+      "work_reality_summary": "Days revolve around pulling data, building reports, and answering business questions with numbers. The work is structured and deadline-driven, closer to accounting in rhythm than to research. It is the most realistic entry point into data work and a common stepping stone toward data science.",
+      "applicable_stages": [
+        "class_11_12",
+        "early_college"
+      ],
+      "prerequisites": [
+        "Mathematics in 10+2 preferred but not universally required"
+      ],
+      "india_entry_routes": [
+        {
+          "route_name": "B.Com, BBA, B.Sc or B.Tech plus analytics skills",
+          "duration_years": 3,
+          "entrance_exams": [
+            "CUET-UG",
+            "University-level entrance"
+          ],
+          "cost_tier": "low_cost_only",
+          "estimated_cost_inr_min": 30000,
+          "estimated_cost_inr_max": 400000,
+          "degree_or_cert_awarded": "Bachelor's degree in any quantitative or commerce discipline",
+          "availability_scope": "within_state",
+          "low_cost_alternative_route": "A state university B.Com or B.Sc plus free SQL and spreadsheet courses is a fully viable route; the degree subject matters less than demonstrable analysis work"
+        },
+        {
+          "route_name": "B.Sc Statistics or Economics",
+          "duration_years": 3,
+          "entrance_exams": [
+            "CUET-UG"
+          ],
+          "cost_tier": "low_cost_only",
+          "estimated_cost_inr_min": 30000,
+          "estimated_cost_inr_max": 300000,
+          "degree_or_cert_awarded": "B.Sc Statistics / B.A. Economics",
+          "availability_scope": "within_state",
+          "low_cost_alternative_route": "Free NPTEL and SWAYAM statistics courses supplement a low-cost degree well"
+        }
+      ],
+      "risks_and_tradeoffs": [
+        "Routine reporting work is increasingly automated by self-service tools.",
+        "Pay progression flattens unless the role deepens into engineering or domain specialisation.",
+        "Job titles vary widely; some 'analyst' roles are data entry with a better name."
+      ],
+      "regional_caveats": "Present in more cities than data science because every large company produces reports, though the best-paid roles remain in metros. Dated Naukri job-market evidence is attached to this career.",
+      "source_links": [
+        "https://www.onetcenter.org/",
+        "https://nptel.ac.in/",
+        "https://swayam.gov.in/"
+      ]
+    },
+    {
+      "id": "physician-mbbs",
+      "onet_soc_code": "29-1215.00",
+      "title": "Doctor (MBBS Physician)",
+      "cluster": "Healthcare & Life Sciences",
+      "work_reality_summary": "The training is long and the early years are punishing — internship and residency involve sustained sleep deprivation and emotional strain. Patient contact is constant, decisions carry real consequences, and rural service obligations apply in many states. Independence and stable income arrive roughly a decade after Class 12.",
+      "applicable_stages": [
+        "class_11_12",
+        "early_college"
+      ],
+      "prerequisites": [
+        "Physics, Chemistry and Biology in 10+2"
+      ],
+      "india_entry_routes": [
+        {
+          "route_name": "MBBS at a government medical college",
+          "duration_years": 6,
+          "entrance_exams": [
+            "NEET-UG"
+          ],
+          "cost_tier": "moderate_up_to_2_lakhs",
+          "estimated_cost_inr_min": 100000,
+          "estimated_cost_inr_max": 800000,
+          "degree_or_cert_awarded": "MBBS (including a one-year compulsory rotating internship)",
+          "availability_scope": "within_state",
+          "low_cost_alternative_route": "State-quota government seats are dramatically cheaper than private ones; state merit scholarships further reduce the cost"
+        },
+        {
+          "route_name": "MBBS at a private medical college",
+          "duration_years": 6,
+          "entrance_exams": [
+            "NEET-UG"
+          ],
+          "cost_tier": "flexible_above_2_lakhs",
+          "estimated_cost_inr_min": 5000000,
+          "estimated_cost_inr_max": 12000000,
+          "degree_or_cert_awarded": "MBBS",
+          "availability_scope": "anywhere_in_india",
+          "low_cost_alternative_route": "Consider BDS, BAMS, BHMS, B.Sc Nursing, or allied health sciences, which use the same NEET score at a fraction of the cost"
+        }
+      ],
+      "risks_and_tradeoffs": [
+        "NEET-UG is among India's most competitive examinations; most candidates do not secure a government seat.",
+        "Private college fees can exceed one crore rupees and frequently require large family debt.",
+        "The path to financial independence is roughly ten years, longer than almost any other option here.",
+        "Repeated attempts at NEET are common and carry a real cost in lost years."
+      ],
+      "regional_caveats": "State domicile quotas materially change admission odds, so the same rank produces different outcomes in different states. Rural service bonds apply in several states after graduation.",
+      "source_links": [
+        "https://neet.nta.nic.in/",
+        "https://www.nmc.org.in/",
+        "https://www.mciindia.org/"
+      ]
+    },
+    {
+      "id": "registered-nurse",
+      "onet_soc_code": "29-1141.00",
+      "title": "Nurse (B.Sc Nursing)",
+      "cluster": "Healthcare & Life Sciences",
+      "work_reality_summary": "Shift work including nights, weekends, and festivals is the norm, and the job is physically demanding — long hours on your feet, lifting patients, and sustained emotional load. It is also one of the fastest routes from Class 12 to a stable, portable qualification, with genuine international demand.",
+      "applicable_stages": [
+        "class_11_12",
+        "early_college"
+      ],
+      "prerequisites": [
+        "Physics, Chemistry and Biology in 10+2"
+      ],
+      "india_entry_routes": [
+        {
+          "route_name": "B.Sc Nursing at a government college",
+          "duration_years": 4,
+          "entrance_exams": [
+            "NEET-UG",
+            "State nursing entrance"
+          ],
+          "cost_tier": "low_cost_only",
+          "estimated_cost_inr_min": 40000,
+          "estimated_cost_inr_max": 400000,
+          "degree_or_cert_awarded": "B.Sc Nursing with state nursing council registration",
+          "availability_scope": "within_state",
+          "low_cost_alternative_route": "Government nursing colleges and state scholarships keep this route genuinely low cost"
+        },
+        {
+          "route_name": "GNM Diploma (General Nursing and Midwifery)",
+          "duration_years": 3,
+          "entrance_exams": [
+            "State nursing entrance"
+          ],
+          "cost_tier": "low_cost_only",
+          "estimated_cost_inr_min": 30000,
+          "estimated_cost_inr_max": 250000,
+          "degree_or_cert_awarded": "GNM Diploma with nursing council registration",
+          "availability_scope": "home_district_only",
+          "low_cost_alternative_route": "GNM is available in most districts and can later be upgraded to B.Sc Nursing through post-basic study"
+        }
+      ],
+      "risks_and_tradeoffs": [
+        "Starting pay in Indian private hospitals is low relative to the responsibility carried.",
+        "Night shifts and physical strain lead to significant burnout and attrition.",
+        "Overseas opportunities require additional licensing examinations and upfront cost."
+      ],
+      "regional_caveats": "Kerala, Karnataka, and Tamil Nadu have the deepest nursing education infrastructure. Government hospital recruitment follows published state cycles.",
+      "source_links": [
+        "https://www.indiannursingcouncil.org/",
+        "https://neet.nta.nic.in/",
+        "https://swayam.gov.in/"
+      ]
+    },
+    {
+      "id": "physiotherapist",
+      "onet_soc_code": "29-1123.00",
+      "title": "Physiotherapist",
+      "cluster": "Healthcare & Life Sciences",
+      "work_reality_summary": "Hands-on work with patients over long treatment arcs, often in outpatient clinics or hospital rehabilitation units. Progress is gradual and requires patience from both sides. Many physiotherapists eventually run their own practice, which brings independence along with the ordinary difficulties of running a small business.",
+      "applicable_stages": [
+        "class_11_12",
+        "early_college"
+      ],
+      "prerequisites": [
+        "Physics, Chemistry and Biology in 10+2"
+      ],
+      "india_entry_routes": [
+        {
+          "route_name": "BPT (Bachelor of Physiotherapy)",
+          "duration_years": 5,
+          "entrance_exams": [
+            "NEET-UG or state entrance, varies by state"
+          ],
+          "cost_tier": "moderate_up_to_2_lakhs",
+          "estimated_cost_inr_min": 150000,
+          "estimated_cost_inr_max": 900000,
+          "degree_or_cert_awarded": "BPT including a compulsory six-month internship",
+          "availability_scope": "within_state",
+          "low_cost_alternative_route": "Government and government-aided physiotherapy colleges charge a fraction of private fees"
+        }
+      ],
+      "risks_and_tradeoffs": [
+        "Entry-level salaries in India are low and improve mainly through private practice.",
+        "Regulation and title protection vary by state, which affects professional standing.",
+        "Building a private practice takes years and requires capital."
+      ],
+      "regional_caveats": "Demand is strongest in urban centres with sports medicine and elder-care facilities. Rural demand exists but is far less able to pay.",
+      "source_links": [
+        "https://www.nchp.gov.in/",
+        "https://neet.nta.nic.in/",
+        "https://swayam.gov.in/"
+      ]
+    },
+    {
+      "id": "pharmacist",
+      "onet_soc_code": "29-1051.00",
+      "title": "Pharmacist",
+      "cluster": "Healthcare & Life Sciences",
+      "work_reality_summary": "Roles split between community pharmacy (retail counter work, long standing hours), hospital pharmacy, and industry (quality control, regulatory affairs). Precision matters enormously — a dispensing error has direct patient consequences. Industry roles pay better than retail and are concentrated in pharmaceutical manufacturing hubs.",
+      "applicable_stages": [
+        "class_11_12",
+        "early_college"
+      ],
+      "prerequisites": [
+        "Physics, Chemistry and Biology or Mathematics in 10+2"
+      ],
+      "india_entry_routes": [
+        {
+          "route_name": "B.Pharm (Bachelor of Pharmacy)",
+          "duration_years": 4,
+          "entrance_exams": [
+            "State CET",
+            "NEET-UG in some states",
+            "University entrance"
+          ],
+          "cost_tier": "moderate_up_to_2_lakhs",
+          "estimated_cost_inr_min": 120000,
+          "estimated_cost_inr_max": 800000,
+          "degree_or_cert_awarded": "B.Pharm with State Pharmacy Council registration",
+          "availability_scope": "within_state",
+          "low_cost_alternative_route": "D.Pharm (2 years, roughly ₹40,000-₹1,50,000) permits registration as a pharmacist and can be upgraded to B.Pharm later"
+        },
+        {
+          "route_name": "D.Pharm (Diploma in Pharmacy)",
+          "duration_years": 2,
+          "entrance_exams": [
+            "State diploma admission"
+          ],
+          "cost_tier": "low_cost_only",
+          "estimated_cost_inr_min": 40000,
+          "estimated_cost_inr_max": 200000,
+          "degree_or_cert_awarded": "D.Pharm with State Pharmacy Council registration",
+          "availability_scope": "home_district_only",
+          "low_cost_alternative_route": "Government polytechnics and pharmacy institutes offer D.Pharm at low cost in most districts"
+        }
+      ],
+      "risks_and_tradeoffs": [
+        "Retail pharmacy pay is modest relative to the four-year degree investment.",
+        "A large number of B.Pharm colleges produce more graduates than industry roles absorb.",
+        "Industry roles usually expect M.Pharm for meaningful progression."
+      ],
+      "regional_caveats": "Pharmaceutical manufacturing is concentrated in Gujarat, Hyderabad, Himachal Pradesh, and Sikkim. Retail pharmacy exists everywhere but pays substantially less.",
+      "source_links": [
+        "https://www.pci.nic.in/",
+        "https://www.aicte-india.org/",
+        "https://swayam.gov.in/"
+      ]
+    },
+    {
+      "id": "chartered-accountant",
+      "onet_soc_code": "13-2011.00",
+      "title": "Chartered Accountant",
+      "cluster": "Commerce & Finance",
+      "work_reality_summary": "Deadline-driven work concentrated around statutory filing and audit seasons, when weeks of long hours are standard. The articleship period means roughly three years of low-paid apprenticeship. Once qualified, the credential is portable and respected, and independent practice is a realistic option.",
+      "applicable_stages": [
+        "class_11_12",
+        "early_college"
+      ],
+      "prerequisites": [
+        "Any stream in 10+2; Accountancy and Mathematics help but are not mandatory"
+      ],
+      "india_entry_routes": [
+        {
+          "route_name": "CA Foundation route directly after Class 12",
+          "duration_years": 5,
+          "entrance_exams": [
+            "ICAI CA Foundation",
+            "CA Intermediate",
+            "CA Final"
+          ],
+          "cost_tier": "low_cost_only",
+          "estimated_cost_inr_min": 80000,
+          "estimated_cost_inr_max": 300000,
+          "degree_or_cert_awarded": "Chartered Accountant (ICAI membership)",
+          "availability_scope": "home_district_only",
+          "low_cost_alternative_route": "ICAI's own study material is included in the registration fee; expensive private coaching is optional, not required"
+        },
+        {
+          "route_name": "B.Com followed by the CA Direct Entry route",
+          "duration_years": 5,
+          "entrance_exams": [
+            "CA Intermediate (direct entry)",
+            "CA Final"
+          ],
+          "cost_tier": "low_cost_only",
+          "estimated_cost_inr_min": 90000,
+          "estimated_cost_inr_max": 400000,
+          "degree_or_cert_awarded": "B.Com plus Chartered Accountant",
+          "availability_scope": "within_state",
+          "low_cost_alternative_route": "A state university B.Com combined with ICAI material keeps the total cost low, and the degree is a fallback if CA is not completed"
+        }
+      ],
+      "risks_and_tradeoffs": [
+        "Pass rates at each ICAI level are low, and many candidates take several attempts or do not finish.",
+        "Articleship pays a small stipend for roughly three years while peers are already earning.",
+        "The coaching industry around CA is expensive and aggressively marketed; it is not mandatory.",
+        "Without a parallel degree, an incomplete CA leaves little formal qualification to fall back on."
+      ],
+      "regional_caveats": "ICAI examinations are national and identical everywhere, making this one of the most geographically fair routes in this catalogue. Articleship opportunities are better in cities with more firms.",
+      "source_links": [
+        "https://www.icai.org/",
+        "https://www.icai.org/post/students-registration",
+        "https://swayam.gov.in/"
+      ]
+    },
+    {
+      "id": "financial-analyst",
+      "onet_soc_code": "13-2051.00",
+      "title": "Financial Analyst",
+      "cluster": "Commerce & Finance",
+      "work_reality_summary": "Spreadsheet-heavy analytical work supporting investment or corporate finance decisions. Hours are long in investment banking and research, more moderate in corporate roles. The work rewards precision and the ability to defend a number under scrutiny.",
+      "applicable_stages": [
+        "class_11_12",
+        "early_college"
+      ],
+      "prerequisites": [
+        "Mathematics in 10+2 strongly preferred"
+      ],
+      "india_entry_routes": [
+        {
+          "route_name": "B.Com or BBA followed by an MBA in Finance",
+          "duration_years": 5,
+          "entrance_exams": [
+            "CUET-UG",
+            "CAT",
+            "XAT",
+            "State MBA CET"
+          ],
+          "cost_tier": "flexible_above_2_lakhs",
+          "estimated_cost_inr_min": 400000,
+          "estimated_cost_inr_max": 3000000,
+          "degree_or_cert_awarded": "B.Com / BBA plus MBA (Finance)",
+          "availability_scope": "anywhere_in_india",
+          "low_cost_alternative_route": "A state university B.Com plus the CFA Level I examination costs far less than a private MBA and is well recognised in research roles"
+        },
+        {
+          "route_name": "B.Com or B.A. Economics plus CFA",
+          "duration_years": 4,
+          "entrance_exams": [
+            "CUET-UG",
+            "CFA Level I-III"
+          ],
+          "cost_tier": "moderate_up_to_2_lakhs",
+          "estimated_cost_inr_min": 200000,
+          "estimated_cost_inr_max": 700000,
+          "degree_or_cert_awarded": "Bachelor's degree plus CFA charter progress",
+          "availability_scope": "within_state",
+          "low_cost_alternative_route": "CFA registration is significantly cheaper than an MBA, though examination fees are charged in US dollars"
+        }
+      ],
+      "risks_and_tradeoffs": [
+        "Entry is heavily gated by institution brand; hiring concentrates on a small set of colleges.",
+        "MBA fees at private institutions frequently require substantial education loans.",
+        "Investment banking and research hours are genuinely punishing in the early years."
+      ],
+      "regional_caveats": "Hiring is overwhelmingly concentrated in Mumbai, with secondary clusters in Bengaluru, Gurugram, and Hyderabad. Opportunities elsewhere are limited.",
+      "source_links": [
+        "https://www.sebi.gov.in/",
+        "https://www.ugc.gov.in/",
+        "https://swayam.gov.in/"
+      ],
+      "onet_skills_fallback_soc": "13-2052.00",
+      "onet_skills_fallback_note": "O*NET 30.3 has no skill ratings for 13-2051.00. Skills are derived from the closest rated occupation, 13-2052.00 (Personal Financial Advisors)."
+    },
+    {
+      "id": "banking-financial-manager",
+      "onet_soc_code": "11-3031.00",
+      "title": "Banking Officer / Financial Manager",
+      "cluster": "Commerce & Finance",
+      "work_reality_summary": "Public sector banking offers stability, transfers across locations, and structured promotion tied to examinations. Private banking pays more and carries sales targets. Both involve heavy compliance documentation and direct customer contact.",
+      "applicable_stages": [
+        "class_11_12",
+        "early_college"
+      ],
+      "prerequisites": [
+        "Any stream in 10+2; a bachelor's degree is required for officer-level recruitment"
+      ],
+      "india_entry_routes": [
+        {
+          "route_name": "Any bachelor's degree then IBPS / SBI officer examinations",
+          "duration_years": 3,
+          "entrance_exams": [
+            "IBPS PO",
+            "SBI PO",
+            "RBI Grade B"
+          ],
+          "cost_tier": "low_cost_only",
+          "estimated_cost_inr_min": 30000,
+          "estimated_cost_inr_max": 300000,
+          "degree_or_cert_awarded": "Bachelor's degree plus public sector bank officer appointment",
+          "availability_scope": "within_state",
+          "low_cost_alternative_route": "Any low-cost state university degree qualifies; recruitment is by examination, so the institution matters far less than in private finance"
+        },
+        {
+          "route_name": "B.Com or BBA into private banking",
+          "duration_years": 3,
+          "entrance_exams": [
+            "CUET-UG",
+            "Employer selection process"
+          ],
+          "cost_tier": "low_cost_only",
+          "estimated_cost_inr_min": 30000,
+          "estimated_cost_inr_max": 400000,
+          "degree_or_cert_awarded": "B.Com / BBA",
+          "availability_scope": "within_state",
+          "low_cost_alternative_route": "State university commerce degrees are inexpensive and adequate for private bank entry roles"
+        }
+      ],
+      "risks_and_tradeoffs": [
+        "Public bank recruitment is highly competitive and examination cycles can be irregular.",
+        "Public sector postings involve transfers to locations you do not choose.",
+        "Private banking entry roles are frequently sales-target driven with high attrition."
+      ],
+      "regional_caveats": "One of the most geographically distributed careers here — public sector banks operate in every district. This makes it a realistic option for students who cannot relocate.",
+      "source_links": [
+        "https://www.ibps.in/",
+        "https://www.rbi.org.in/",
+        "https://sbi.co.in/web/careers"
+      ]
+    },
+    {
+      "id": "lawyer",
+      "onet_soc_code": "23-1011.00",
+      "title": "Lawyer / Advocate",
+      "cluster": "Law & Public Service",
+      "work_reality_summary": "Litigation involves years of low earnings while building a practice, with court timings and heavy reading. Corporate law pays far better from the start but means long hours on transactional documents. Both demand sustained reading and precise writing rather than the courtroom oratory the profession is imagined around.",
+      "applicable_stages": [
+        "class_11_12",
+        "early_college"
+      ],
+      "prerequisites": [
+        "Any stream in 10+2"
+      ],
+      "india_entry_routes": [
+        {
+          "route_name": "5-year integrated BA LL.B at a National Law University",
+          "duration_years": 5,
+          "entrance_exams": [
+            "CLAT",
+            "AILET"
+          ],
+          "cost_tier": "flexible_above_2_lakhs",
+          "estimated_cost_inr_min": 1000000,
+          "estimated_cost_inr_max": 2000000,
+          "degree_or_cert_awarded": "BA LL.B (Hons.) with Bar Council enrolment",
+          "availability_scope": "anywhere_in_india",
+          "low_cost_alternative_route": "State government law colleges offer the same 5-year integrated degree for roughly ₹50,000-₹3,00,000 total"
+        },
+        {
+          "route_name": "3-year LL.B after any bachelor's degree",
+          "duration_years": 3,
+          "entrance_exams": [
+            "State law entrance",
+            "University entrance"
+          ],
+          "cost_tier": "low_cost_only",
+          "estimated_cost_inr_min": 40000,
+          "estimated_cost_inr_max": 300000,
+          "degree_or_cert_awarded": "LL.B with Bar Council enrolment",
+          "availability_scope": "within_state",
+          "low_cost_alternative_route": "Government law colleges in most state capitals charge nominal fees for the 3-year LL.B"
+        }
+      ],
+      "risks_and_tradeoffs": [
+        "Independent litigation practice often yields very low income for the first five to seven years.",
+        "Corporate law hiring is concentrated at National Law Universities, making entry brand-dependent.",
+        "The profession has a large oversupply of graduates relative to sustainable practice opportunities."
+      ],
+      "regional_caveats": "Corporate law is concentrated in Delhi, Mumbai, and Bengaluru. Litigation practice is viable in any district court, and knowing the local language is a genuine professional advantage there.",
+      "source_links": [
+        "https://www.barcouncilofindia.org/",
+        "https://consortiumofnlus.ac.in/",
+        "https://www.ugc.gov.in/"
+      ]
+    },
+    {
+      "id": "civil-services-officer",
+      "onet_soc_code": "11-1031.00",
+      "title": "Civil Services Officer (IAS / IPS / State Services)",
+      "cluster": "Law & Public Service",
+      "work_reality_summary": "Preparation dominates several years of life before any appointment, with a very low success rate. Once appointed, the work is administrative, politically constrained, and involves transfers you do not choose. The responsibility and public impact are real, and so is the frustration of working inside slow systems.",
+      "applicable_stages": [
+        "early_college"
+      ],
+      "prerequisites": [
+        "Any bachelor's degree in any discipline"
+      ],
+      "india_entry_routes": [
+        {
+          "route_name": "UPSC Civil Services Examination after graduation",
+          "duration_years": 2,
+          "entrance_exams": [
+            "UPSC CSE Prelims",
+            "UPSC CSE Mains",
+            "Interview"
+          ],
+          "cost_tier": "low_cost_only",
+          "estimated_cost_inr_min": 20000,
+          "estimated_cost_inr_max": 400000,
+          "degree_or_cert_awarded": "Appointment to an All India or Central Service",
+          "availability_scope": "home_district_only",
+          "low_cost_alternative_route": "NCERT textbooks, free state library resources, and government-run free coaching schemes for reserved categories make self-study genuinely viable"
+        },
+        {
+          "route_name": "State Public Service Commission examinations",
+          "duration_years": 2,
+          "entrance_exams": [
+            "State PSC Prelims",
+            "State PSC Mains",
+            "Interview"
+          ],
+          "cost_tier": "low_cost_only",
+          "estimated_cost_inr_min": 15000,
+          "estimated_cost_inr_max": 250000,
+          "degree_or_cert_awarded": "State civil service appointment",
+          "availability_scope": "within_state",
+          "low_cost_alternative_route": "State PSC examinations have better selection ratios than UPSC and are conducted in regional languages in many states"
+        }
+      ],
+      "risks_and_tradeoffs": [
+        "Selection rates are well under one percent; the overwhelming majority of serious candidates are not selected.",
+        "Multiple attempts commonly consume three to five years with no qualification to show for them.",
+        "A parallel qualification or job is strongly advisable so that an unsuccessful attempt is not career-ending.",
+        "The private coaching industry around this examination is expensive and its advertised success claims are frequently unverifiable."
+      ],
+      "regional_caveats": "State PSC examinations are often conducted in the regional language, which advantages local candidates. This career has no dated market evidence attached because it is a recruitment process rather than a labour market.",
+      "source_links": [
+        "https://www.upsc.gov.in/",
+        "https://ncert.nic.in/",
+        "https://swayam.gov.in/"
+      ],
+      "onet_mapping_note": "O*NET has no direct equivalent of the Indian civil services. This entry is anchored to the nearest available SOC code for interest-profile purposes only; the duties described are authored, not derived from O*NET.",
+      "onet_skills_fallback_soc": "13-1041.00",
+      "onet_skills_fallback_note": "O*NET 30.3 has no skill ratings for 11-1031.00. Skills are derived from the closest rated occupation, 13-1041.00 (Compliance Officers)."
+    },
+    {
+      "id": "graphic-designer",
+      "onet_soc_code": "27-1024.00",
+      "title": "Graphic Designer",
+      "cluster": "Design & Creative",
+      "work_reality_summary": "Client revisions consume more time than original creation, and much of the craft is working within someone else's brief and brand rules. Freelance work is common, which means irregular income and chasing payments. A portfolio matters far more than a degree in every hiring conversation.",
+      "applicable_stages": [
+        "class_11_12",
+        "early_college"
+      ],
+      "prerequisites": [
+        "Any stream in 10+2"
+      ],
+      "india_entry_routes": [
+        {
+          "route_name": "B.Des at NID, NIFT or a design institute",
+          "duration_years": 4,
+          "entrance_exams": [
+            "NID DAT",
+            "NIFT Entrance",
+            "UCEED"
+          ],
+          "cost_tier": "flexible_above_2_lakhs",
+          "estimated_cost_inr_min": 600000,
+          "estimated_cost_inr_max": 2000000,
+          "degree_or_cert_awarded": "B.Des in Communication Design",
+          "availability_scope": "anywhere_in_india",
+          "low_cost_alternative_route": "BFA (Applied Art) at a state university costs roughly ₹30,000-₹2,00,000 total and is well regarded in the industry"
+        },
+        {
+          "route_name": "BFA in Applied Art or a self-built portfolio",
+          "duration_years": 3,
+          "entrance_exams": [
+            "State BFA entrance",
+            "University entrance"
+          ],
+          "cost_tier": "low_cost_only",
+          "estimated_cost_inr_min": 30000,
+          "estimated_cost_inr_max": 300000,
+          "degree_or_cert_awarded": "BFA, or no formal credential with a demonstrable portfolio",
+          "availability_scope": "within_state",
+          "low_cost_alternative_route": "Free design tools and open courseware make a self-taught portfolio route genuinely viable in this field, unlike most others here"
+        }
+      ],
+      "risks_and_tradeoffs": [
+        "Freelance income is irregular and late payment is a routine problem.",
+        "Generative AI tools are reshaping demand for routine production design work.",
+        "Design institute fees are high relative to typical starting salaries."
+      ],
+      "regional_caveats": "Studio and agency work concentrates in Mumbai, Delhi, and Bengaluru, but remote freelance work is more accessible in this field than in most, provided internet access is reliable.",
+      "source_links": [
+        "https://www.nid.edu/",
+        "https://www.nift.ac.in/",
+        "https://swayam.gov.in/"
+      ]
+    },
+    {
+      "id": "ux-designer",
+      "onet_soc_code": "15-1255.00",
+      "title": "UX / Product Designer",
+      "cluster": "Design & Creative",
+      "work_reality_summary": "The work is research, structure, and iteration far more than visual polish. Much of it is meetings, negotiating with engineers about what is buildable, and justifying decisions with evidence. It is a strong destination for people switching from either design or engineering backgrounds.",
+      "applicable_stages": [
+        "early_college"
+      ],
+      "prerequisites": [
+        "Any stream in 10+2"
+      ],
+      "india_entry_routes": [
+        {
+          "route_name": "B.Des in Interaction Design",
+          "duration_years": 4,
+          "entrance_exams": [
+            "UCEED",
+            "NID DAT",
+            "NIFT Entrance"
+          ],
+          "cost_tier": "flexible_above_2_lakhs",
+          "estimated_cost_inr_min": 600000,
+          "estimated_cost_inr_max": 2000000,
+          "degree_or_cert_awarded": "B.Des in Interaction / Product Design",
+          "availability_scope": "anywhere_in_india",
+          "low_cost_alternative_route": "A portfolio of redesign case studies built from free tools is widely accepted in place of a design degree in this field"
+        },
+        {
+          "route_name": "Switching in from engineering, psychology or design",
+          "duration_years": 2,
+          "entrance_exams": [],
+          "cost_tier": "low_cost_only",
+          "estimated_cost_inr_min": 0,
+          "estimated_cost_inr_max": 60000,
+          "degree_or_cert_awarded": "No formal credential; a portfolio of case studies",
+          "availability_scope": "home_district_only",
+          "low_cost_alternative_route": "Free courseware plus self-directed case studies is the most common actual entry route into this field in India"
+        }
+      ],
+      "risks_and_tradeoffs": [
+        "Genuine entry-level roles are scarce; most postings expect prior product experience.",
+        "Expensive private UX bootcamps advertise heavily and their placement claims are often unverifiable.",
+        "The role's boundaries vary enormously between companies, so titles are a poor guide to actual work."
+      ],
+      "regional_caveats": "Almost entirely concentrated in Bengaluru, Hyderabad, Pune, Gurugram, and Mumbai, though remote work is comparatively common.",
+      "source_links": [
+        "https://www.uceed.iitb.ac.in/",
+        "https://www.nid.edu/",
+        "https://swayam.gov.in/"
+      ],
+      "onet_skills_fallback_soc": "15-1254.00",
+      "onet_skills_fallback_note": "O*NET 30.3 has no skill ratings for 15-1255.00. Skills are derived from the closest rated occupation, 15-1254.00 (Web Developers)."
+    },
+    {
+      "id": "architect",
+      "onet_soc_code": "17-1011.00",
+      "title": "Architect",
+      "cluster": "Design & Creative",
+      "work_reality_summary": "A long qualification followed by years of relatively low pay in a practice before independence becomes realistic. The work combines creative design with heavy regulatory compliance — building codes, approvals, and client constraints shape far more of the outcome than aesthetics do.",
+      "applicable_stages": [
+        "class_11_12",
+        "early_college"
+      ],
+      "prerequisites": [
+        "Mathematics in 10+2"
+      ],
+      "india_entry_routes": [
+        {
+          "route_name": "B.Arch (Bachelor of Architecture)",
+          "duration_years": 5,
+          "entrance_exams": [
+            "NATA",
+            "JEE Main Paper 2"
+          ],
+          "cost_tier": "moderate_up_to_2_lakhs",
+          "estimated_cost_inr_min": 250000,
+          "estimated_cost_inr_max": 1500000,
+          "degree_or_cert_awarded": "B.Arch with Council of Architecture registration",
+          "availability_scope": "within_state",
+          "low_cost_alternative_route": "Government and government-aided architecture colleges charge substantially less; a 3-year diploma in architectural assistantship is a lower-cost entry to the field"
+        }
+      ],
+      "risks_and_tradeoffs": [
+        "Starting salaries are low relative to a five-year degree and the mandatory registration.",
+        "The profession is closely tied to the construction cycle and contracts sharply in downturns.",
+        "Registration with the Council of Architecture is mandatory to use the title."
+      ],
+      "regional_caveats": "Practice opportunities follow urban construction activity, concentrating in tier-1 and larger tier-2 cities.",
+      "source_links": [
+        "https://www.coa.gov.in/",
+        "https://www.nata.in/",
+        "https://www.aicte-india.org/"
+      ]
+    },
+    {
+      "id": "school-teacher",
+      "onet_soc_code": "25-2031.00",
+      "title": "School Teacher",
+      "cluster": "Education & Social Impact",
+      "work_reality_summary": "Classroom hours are only part of the job; preparation, correction, and administrative duties fill the rest. Government school posts offer strong job security and pension benefits but are allocated by examination and can involve rural postings. Private school pay varies enormously and is often low outside established institutions.",
+      "applicable_stages": [
+        "class_11_12",
+        "early_college"
+      ],
+      "prerequisites": [
+        "Any stream in 10+2; the subject you teach follows your degree"
+      ],
+      "india_entry_routes": [
+        {
+          "route_name": "Bachelor's degree followed by B.Ed and TET",
+          "duration_years": 5,
+          "entrance_exams": [
+            "CUET-UG",
+            "State B.Ed entrance",
+            "CTET or State TET"
+          ],
+          "cost_tier": "low_cost_only",
+          "estimated_cost_inr_min": 60000,
+          "estimated_cost_inr_max": 400000,
+          "degree_or_cert_awarded": "B.A./B.Sc/B.Com plus B.Ed, with TET qualification",
+          "availability_scope": "within_state",
+          "low_cost_alternative_route": "Government B.Ed colleges and IGNOU's distance B.Ed are considerably cheaper than private teacher training colleges"
+        },
+        {
+          "route_name": "4-year integrated B.A. B.Ed or B.Sc B.Ed",
+          "duration_years": 4,
+          "entrance_exams": [
+            "NCET",
+            "University entrance"
+          ],
+          "cost_tier": "low_cost_only",
+          "estimated_cost_inr_min": 50000,
+          "estimated_cost_inr_max": 350000,
+          "degree_or_cert_awarded": "Integrated B.A. B.Ed / B.Sc B.Ed (ITEP)",
+          "availability_scope": "within_state",
+          "low_cost_alternative_route": "The integrated route saves a full year compared with doing the degree and B.Ed separately"
+        }
+      ],
+      "risks_and_tradeoffs": [
+        "Government teaching posts are filled through competitive examinations with irregular recruitment cycles.",
+        "Private school salaries are frequently low and vary widely between institutions.",
+        "Rural postings in government service may be far from home for several years."
+      ],
+      "regional_caveats": "One of the most geographically distributed careers available — every district needs teachers. Teaching in the regional medium is often an advantage in state recruitment.",
+      "source_links": [
+        "https://ncte.gov.in/",
+        "https://ctet.nic.in/",
+        "https://www.education.gov.in/"
+      ]
+    },
+    {
+      "id": "clinical-psychologist",
+      "onet_soc_code": "19-3033.00",
+      "title": "Clinical Psychologist",
+      "cluster": "Education & Social Impact",
+      "work_reality_summary": "Sustained one-to-one work with people in distress, which carries a real emotional load and requires supervision and self-care to sustain. The qualification path in India is long and the licensed M.Phil route has very few seats. Progress with clients is slow and often non-linear.",
+      "applicable_stages": [
+        "early_college"
+      ],
+      "prerequisites": [
+        "Psychology at graduate level; any stream in 10+2"
+      ],
+      "india_entry_routes": [
+        {
+          "route_name": "B.A./B.Sc Psychology then M.A./M.Sc then RCI-recognised M.Phil",
+          "duration_years": 7,
+          "entrance_exams": [
+            "CUET-UG",
+            "CUET-PG",
+            "M.Phil institute entrance"
+          ],
+          "cost_tier": "moderate_up_to_2_lakhs",
+          "estimated_cost_inr_min": 150000,
+          "estimated_cost_inr_max": 900000,
+          "degree_or_cert_awarded": "M.Phil Clinical Psychology with RCI licence",
+          "availability_scope": "anywhere_in_india",
+          "low_cost_alternative_route": "Central university psychology departments charge low fees; NIMHANS and government institutes are the least expensive M.Phil route"
+        },
+        {
+          "route_name": "Counselling psychology (non-clinical) route",
+          "duration_years": 5,
+          "entrance_exams": [
+            "CUET-UG",
+            "CUET-PG"
+          ],
+          "cost_tier": "low_cost_only",
+          "estimated_cost_inr_min": 80000,
+          "estimated_cost_inr_max": 500000,
+          "degree_or_cert_awarded": "M.A./M.Sc Psychology with counselling specialisation",
+          "availability_scope": "within_state",
+          "low_cost_alternative_route": "State university psychology programmes plus supervised practice hours; note this route does not confer the protected clinical title"
+        }
+      ],
+      "risks_and_tradeoffs": [
+        "RCI-recognised M.Phil seats are extremely limited relative to the number of psychology graduates.",
+        "Only the RCI-licensed route permits the protected title of Clinical Psychologist.",
+        "The emotional demands are significant and burnout is common without proper supervision.",
+        "Building a private practice takes years to reach a stable income."
+      ],
+      "regional_caveats": "Licensed training centres are concentrated in a handful of cities, notably Bengaluru (NIMHANS), Delhi, and Kolkata. Practice opportunities are strongest in urban areas.",
+      "source_links": [
+        "https://www.rehabcouncil.nic.in/",
+        "https://nimhans.ac.in/",
+        "https://www.ugc.gov.in/"
+      ]
+    },
+    {
+      "id": "social-worker",
+      "onet_soc_code": "21-1029.00",
+      "title": "Social Worker / Development Professional",
+      "cluster": "Education & Social Impact",
+      "work_reality_summary": "Fieldwork in communities, often in difficult conditions and with limited resources. Progress is slow and structural problems rarely resolve within one project cycle. Pay is modest across most of the sector, and funding-dependent roles carry job insecurity. The work suits people motivated by the problem rather than the compensation.",
+      "applicable_stages": [
+        "class_11_12",
+        "early_college"
+      ],
+      "prerequisites": [
+        "Any stream in 10+2"
+      ],
+      "india_entry_routes": [
+        {
+          "route_name": "BSW followed by MSW",
+          "duration_years": 5,
+          "entrance_exams": [
+            "CUET-UG",
+            "TISS entrance",
+            "University entrance"
+          ],
+          "cost_tier": "low_cost_only",
+          "estimated_cost_inr_min": 50000,
+          "estimated_cost_inr_max": 500000,
+          "degree_or_cert_awarded": "BSW + MSW",
+          "availability_scope": "within_state",
+          "low_cost_alternative_route": "State university social work departments and IGNOU distance MSW are low cost; fieldwork placements provide the experience employers weigh most"
+        },
+        {
+          "route_name": "Any bachelor's degree then MSW",
+          "duration_years": 5,
+          "entrance_exams": [
+            "CUET-PG",
+            "TISS entrance"
+          ],
+          "cost_tier": "low_cost_only",
+          "estimated_cost_inr_min": 60000,
+          "estimated_cost_inr_max": 600000,
+          "degree_or_cert_awarded": "MSW",
+          "availability_scope": "within_state",
+          "low_cost_alternative_route": "MSW accepts graduates from any discipline, making this an accessible pathway for stream-switchers"
+        }
+      ],
+      "risks_and_tradeoffs": [
+        "Sector pay is low relative to the qualification required.",
+        "Many roles are project-funded and end when the grant cycle ends.",
+        "Emotional demands are high and organisational support is often thin."
+      ],
+      "regional_caveats": "Development sector employment exists across rural and urban India, with organisational headquarters concentrated in Delhi, Mumbai, and Bengaluru. Regional language fluency is a substantial professional asset.",
+      "source_links": [
+        "https://www.tiss.ac.in/",
+        "https://www.ignou.ac.in/",
+        "https://www.ugc.gov.in/"
+      ],
+      "onet_skills_fallback_soc": "21-1021.00",
+      "onet_skills_fallback_note": "O*NET 30.3 has no skill ratings for 21-1029.00. Skills are derived from the closest rated occupation, 21-1021.00 (Child, Family, and School Social Workers)."
+    },
+    {
+      "id": "agricultural-scientist",
+      "onet_soc_code": "19-1013.00",
+      "title": "Agricultural Scientist / Agronomist",
+      "cluster": "Agriculture & Environment",
+      "work_reality_summary": "Splits between field trials, laboratory work, and advisory contact with farmers. Government and ICAR institute roles are stable and follow published recruitment cycles. Field seasons dictate the calendar, and postings are frequently rural, which is a genuine advantage for students who want to stay near agricultural home districts.",
+      "applicable_stages": [
+        "class_11_12",
+        "early_college"
+      ],
+      "prerequisites": [
+        "Physics, Chemistry, Biology or Mathematics in 10+2"
+      ],
+      "india_entry_routes": [
+        {
+          "route_name": "B.Sc Agriculture at a State Agricultural University",
+          "duration_years": 4,
+          "entrance_exams": [
+            "ICAR AIEEA",
+            "State agriculture entrance"
+          ],
+          "cost_tier": "low_cost_only",
+          "estimated_cost_inr_min": 60000,
+          "estimated_cost_inr_max": 400000,
+          "degree_or_cert_awarded": "B.Sc (Hons.) Agriculture",
+          "availability_scope": "within_state",
+          "low_cost_alternative_route": "State Agricultural Universities charge low fees and exist in nearly every state, often with hostel subsidies"
+        },
+        {
+          "route_name": "B.Sc Agriculture then M.Sc and ICAR research service",
+          "duration_years": 6,
+          "entrance_exams": [
+            "ICAR AIEEA",
+            "ICAR NET",
+            "ARS examination"
+          ],
+          "cost_tier": "low_cost_only",
+          "estimated_cost_inr_min": 90000,
+          "estimated_cost_inr_max": 500000,
+          "degree_or_cert_awarded": "M.Sc Agriculture, with ARS eligibility for research service",
+          "availability_scope": "anywhere_in_india",
+          "low_cost_alternative_route": "ICAR fellowships pay a stipend during postgraduate study, making this route effectively funded for selected candidates"
+        }
+      ],
+      "risks_and_tradeoffs": [
+        "Private sector agribusiness roles are fewer than the number of graduates produced.",
+        "Government recruitment cycles are irregular and highly competitive.",
+        "Field postings are rural, which suits some students and not others."
+      ],
+      "regional_caveats": "State Agricultural Universities have strong regional ties and their graduates are favoured in state agriculture department recruitment. This is one of the strongest options for students who cannot or do not want to leave an agricultural region.",
+      "source_links": [
+        "https://icar.org.in/",
+        "https://www.aicte-india.org/",
+        "https://swayam.gov.in/"
+      ]
+    },
+    {
+      "id": "environmental-scientist",
+      "onet_soc_code": "19-2041.00",
+      "title": "Environmental Scientist",
+      "cluster": "Agriculture & Environment",
+      "work_reality_summary": "Mixes field sampling, laboratory analysis, and a large amount of compliance report writing for regulators and industry. Consultancy roles are deadline-driven; government and research roles are slower and more stable. Much of the actual work is documentation rather than the field ecology the title suggests.",
+      "applicable_stages": [
+        "class_11_12",
+        "early_college"
+      ],
+      "prerequisites": [
+        "Physics, Chemistry, Biology or Mathematics in 10+2"
+      ],
+      "india_entry_routes": [
+        {
+          "route_name": "B.Sc Environmental Science then M.Sc",
+          "duration_years": 5,
+          "entrance_exams": [
+            "CUET-UG",
+            "CUET-PG"
+          ],
+          "cost_tier": "low_cost_only",
+          "estimated_cost_inr_min": 60000,
+          "estimated_cost_inr_max": 400000,
+          "degree_or_cert_awarded": "B.Sc + M.Sc Environmental Science",
+          "availability_scope": "within_state",
+          "low_cost_alternative_route": "Central and state university environmental science departments charge low fees; UGC-NET qualification opens funded research routes"
+        },
+        {
+          "route_name": "B.Tech Environmental or Civil Engineering",
+          "duration_years": 4,
+          "entrance_exams": [
+            "JEE Main",
+            "State CET"
+          ],
+          "cost_tier": "moderate_up_to_2_lakhs",
+          "estimated_cost_inr_min": 150000,
+          "estimated_cost_inr_max": 1000000,
+          "degree_or_cert_awarded": "B.Tech in Environmental / Civil Engineering",
+          "availability_scope": "within_state",
+          "low_cost_alternative_route": "Government engineering colleges offer this at a fraction of private fees"
+        }
+      ],
+      "risks_and_tradeoffs": [
+        "The employment market is smaller than the number of environmental science graduates.",
+        "Consultancy work is dominated by routine compliance reporting rather than research.",
+        "Research careers usually require a doctorate for meaningful progression."
+      ],
+      "regional_caveats": "Consultancy demand follows industrial activity and pollution control board jurisdictions. Research posts concentrate in national institutes.",
+      "source_links": [
+        "https://cpcb.nic.in/",
+        "https://moef.gov.in/",
+        "https://www.ugc.gov.in/"
+      ]
+    },
+    {
+      "id": "marketing-manager",
+      "onet_soc_code": "11-2021.00",
+      "title": "Marketing Manager",
+      "cluster": "Business & Management",
+      "work_reality_summary": "Deadline-driven work judged on measurable outcomes, with substantial meeting and coordination load. Digital marketing roles are quantitative and analytics-heavy; brand roles are more creative. Entry usually comes through an executive role rather than directly into management.",
+      "applicable_stages": [
+        "class_11_12",
+        "early_college"
+      ],
+      "prerequisites": [
+        "Any stream in 10+2"
+      ],
+      "india_entry_routes": [
+        {
+          "route_name": "BBA or B.Com followed by an MBA in Marketing",
+          "duration_years": 5,
+          "entrance_exams": [
+            "CUET-UG",
+            "CAT",
+            "XAT",
+            "State MBA CET"
+          ],
+          "cost_tier": "flexible_above_2_lakhs",
+          "estimated_cost_inr_min": 400000,
+          "estimated_cost_inr_max": 3000000,
+          "degree_or_cert_awarded": "BBA / B.Com plus MBA (Marketing)",
+          "availability_scope": "anywhere_in_india",
+          "low_cost_alternative_route": "State university MBA programmes through the state CET cost a fraction of private institutes; digital marketing skills can be built from free courseware"
+        },
+        {
+          "route_name": "Any degree plus digital marketing skills",
+          "duration_years": 3,
+          "entrance_exams": [
+            "CUET-UG"
+          ],
+          "cost_tier": "low_cost_only",
+          "estimated_cost_inr_min": 30000,
+          "estimated_cost_inr_max": 300000,
+          "degree_or_cert_awarded": "Bachelor's degree plus a portfolio of campaign work",
+          "availability_scope": "within_state",
+          "low_cost_alternative_route": "Digital marketing is one of the few management-adjacent fields where demonstrable results can substitute for an MBA"
+        }
+      ],
+      "risks_and_tradeoffs": [
+        "MBA returns depend heavily on institution tier; mid-tier private MBAs often do not repay their cost.",
+        "Performance is measured against targets that are not always within your control.",
+        "The 'manager' title typically comes after several years in executive roles."
+      ],
+      "regional_caveats": "Concentrated in Mumbai, Delhi NCR, and Bengaluru, though digital marketing roles are increasingly remote-friendly.",
+      "source_links": [
+        "https://www.aicte-india.org/",
+        "https://iimcat.ac.in/",
+        "https://swayam.gov.in/"
+      ]
+    },
+    {
+      "id": "hr-specialist",
+      "onet_soc_code": "13-1071.00",
+      "title": "Human Resources Specialist",
+      "cluster": "Business & Management",
+      "work_reality_summary": "Recruitment, employee relations, payroll coordination, and compliance documentation. The work is people-facing but also heavily procedural. It carries the difficult parts of organisational life — disputes, terminations, grievances — which is the aspect least visible from outside.",
+      "applicable_stages": [
+        "class_11_12",
+        "early_college"
+      ],
+      "prerequisites": [
+        "Any stream in 10+2"
+      ],
+      "india_entry_routes": [
+        {
+          "route_name": "BBA or any degree followed by an MBA in HR",
+          "duration_years": 5,
+          "entrance_exams": [
+            "CUET-UG",
+            "CAT",
+            "State MBA CET"
+          ],
+          "cost_tier": "flexible_above_2_lakhs",
+          "estimated_cost_inr_min": 350000,
+          "estimated_cost_inr_max": 2500000,
+          "degree_or_cert_awarded": "Bachelor's degree plus MBA (Human Resources)",
+          "availability_scope": "anywhere_in_india",
+          "low_cost_alternative_route": "MA in Human Resource Management or an MSW with an HR specialisation at a state university costs far less and is well accepted"
+        },
+        {
+          "route_name": "MSW or MA HRM route",
+          "duration_years": 5,
+          "entrance_exams": [
+            "CUET-PG",
+            "University entrance"
+          ],
+          "cost_tier": "low_cost_only",
+          "estimated_cost_inr_min": 60000,
+          "estimated_cost_inr_max": 500000,
+          "degree_or_cert_awarded": "MSW (HR) / MA Human Resource Management",
+          "availability_scope": "within_state",
+          "low_cost_alternative_route": "This is a genuinely low-cost route into corporate HR that is often overlooked in favour of expensive MBAs"
+        }
+      ],
+      "risks_and_tradeoffs": [
+        "Recruitment-heavy entry roles can be target-driven with high attrition.",
+        "The function is often first to contract during organisational cost cutting.",
+        "Handling terminations and disputes is emotionally taxing and rarely discussed upfront."
+      ],
+      "regional_caveats": "Present wherever large employers operate, so less metro-dependent than most management careers.",
+      "source_links": [
+        "https://www.aicte-india.org/",
+        "https://labour.gov.in/",
+        "https://swayam.gov.in/"
+      ]
+    },
+    {
+      "id": "electrician",
+      "onet_soc_code": "47-2111.00",
+      "title": "Electrician",
+      "cluster": "Skilled Trades & Vocational",
+      "work_reality_summary": "Physical, hands-on work with genuine safety risk that demands disciplined procedure. Training is short and inexpensive, and earning starts early compared with degree routes. Self-employment is realistic and common. Demand exists in every district rather than clustering in metros.",
+      "applicable_stages": [
+        "class_8_10",
+        "class_11_12"
+      ],
+      "prerequisites": [
+        "Class 10 pass"
+      ],
+      "india_entry_routes": [
+        {
+          "route_name": "ITI Electrician trade plus apprenticeship",
+          "duration_years": 2,
+          "entrance_exams": [
+            "ITI admission (Class 10 marks based)"
+          ],
+          "cost_tier": "low_cost_only",
+          "estimated_cost_inr_min": 5000,
+          "estimated_cost_inr_max": 40000,
+          "degree_or_cert_awarded": "ITI National Trade Certificate plus apprenticeship completion",
+          "availability_scope": "home_district_only",
+          "low_cost_alternative_route": "Government ITIs charge nominal fees and apprenticeships pay a stipend, so this route can be net positive on cash from the start"
+        },
+        {
+          "route_name": "Diploma in Electrical Engineering",
+          "duration_years": 3,
+          "entrance_exams": [
+            "State polytechnic admission"
+          ],
+          "cost_tier": "low_cost_only",
+          "estimated_cost_inr_min": 30000,
+          "estimated_cost_inr_max": 150000,
+          "degree_or_cert_awarded": "Diploma in Electrical Engineering",
+          "availability_scope": "home_district_only",
+          "low_cost_alternative_route": "A polytechnic diploma also permits lateral entry into the second year of a B.Tech later, keeping the degree option open"
+        }
+      ],
+      "risks_and_tradeoffs": [
+        "The work carries real physical and electrical safety risk throughout a career.",
+        "Income depends on local demand and reputation, particularly in self-employment.",
+        "Social perception of trade work in India undervalues it relative to its actual earning potential.",
+        "Physical demands increase with age and can limit late-career options."
+      ],
+      "regional_caveats": "One of the very few careers in this catalogue with genuine demand in every district, including rural areas. Government ITIs are widely distributed.",
+      "source_links": [
+        "https://dgt.gov.in/",
+        "https://www.apprenticeshipindia.gov.in/",
+        "https://skillindiadigital.gov.in/"
+      ]
+    },
+    {
+      "id": "automotive-technician",
+      "onet_soc_code": "49-3023.00",
+      "title": "Automotive Service Technician",
+      "cluster": "Skilled Trades & Vocational",
+      "work_reality_summary": "Diagnostic and repair work in workshops, increasingly involving electronic systems rather than purely mechanical ones. Training is short and low cost, and workshop ownership is a realistic long-term path. The electric vehicle transition is actively reshaping the skills required.",
+      "applicable_stages": [
+        "class_8_10",
+        "class_11_12"
+      ],
+      "prerequisites": [
+        "Class 10 pass"
+      ],
+      "india_entry_routes": [
+        {
+          "route_name": "ITI Motor Mechanic trade plus apprenticeship",
+          "duration_years": 2,
+          "entrance_exams": [
+            "ITI admission (Class 10 marks based)"
+          ],
+          "cost_tier": "low_cost_only",
+          "estimated_cost_inr_min": 5000,
+          "estimated_cost_inr_max": 40000,
+          "degree_or_cert_awarded": "ITI National Trade Certificate plus apprenticeship completion",
+          "availability_scope": "home_district_only",
+          "low_cost_alternative_route": "Manufacturer-run training schemes (Maruti, Tata Motors, Hero) are free and include a placement pathway"
+        },
+        {
+          "route_name": "Diploma in Automobile Engineering",
+          "duration_years": 3,
+          "entrance_exams": [
+            "State polytechnic admission"
+          ],
+          "cost_tier": "low_cost_only",
+          "estimated_cost_inr_min": 30000,
+          "estimated_cost_inr_max": 150000,
+          "degree_or_cert_awarded": "Diploma in Automobile Engineering",
+          "availability_scope": "home_district_only",
+          "low_cost_alternative_route": "Government polytechnics, with lateral entry to B.Tech available later"
+        }
+      ],
+      "risks_and_tradeoffs": [
+        "The shift to electric vehicles is changing required skills and will make some purely mechanical expertise obsolete.",
+        "Workshop work is physically demanding and conditions vary widely by employer.",
+        "Independent workshop income is irregular until a customer base is established."
+      ],
+      "regional_caveats": "Demand exists wherever vehicles do, making this widely distributed. Electric vehicle servicing skills are currently concentrated in larger cities but are spreading.",
+      "source_links": [
+        "https://dgt.gov.in/",
+        "https://www.apprenticeshipindia.gov.in/",
+        "https://asdc.org.in/"
+      ]
+    }
+  ]
+}

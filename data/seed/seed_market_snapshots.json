@@ -1,0 +1,299 @@
+{
+  "_meta": {
+    "generated_by": "backend/data/build_market_seed.py",
+    "source": "Naukri India Job Postings Sample — see NOTICE.md",
+    "total_rows_read": 86904,
+    "excluded_malformed_rows": 13708,
+    "valid_rows": 73196,
+    "mapped_rows": 37492,
+    "unmapped_rows": 35704,
+    "unmapped_distinct_titles": 13874,
+    "coverage_pct": 51.2,
+    "careers_with_evidence": [
+      "data-analyst",
+      "data-scientist"
+    ],
+    "scope_limitation": "This dataset samples Data Science and Data Analytics roles only. Every other career in the catalogue has no market snapshot, and the API returns an explicit missing-evidence state for them.",
+    "last_updated_date": "2026-08-20"
+  },
+  "snapshots": [
+    {
+      "career_id": "data-analyst",
+      "geography": "India (major metropolitan hiring centres)",
+      "timeframe_period": "Sample of 8,765 Naukri job postings mapped to this role",
+      "data_source": "Naukri India Job Postings Sample",
+      "demand_indicator": "Moderate",
+      "salary_range_entry_inr": "₹3.0-10.0 LPA",
+      "salary_range_mid_inr": "₹18.0-22.5 LPA",
+      "top_demanded_skills": [
+        {
+          "skill": "Analytical",
+          "postings": 1510,
+          "share_pct": 17.2
+        },
+        {
+          "skill": "Business Analyst",
+          "postings": 1470,
+          "share_pct": 16.8
+        },
+        {
+          "skill": "Data analysis",
+          "postings": 1377,
+          "share_pct": 15.7
+        },
+        {
+          "skill": "Machine learning",
+          "postings": 977,
+          "share_pct": 11.1
+        },
+        {
+          "skill": "Business analysis",
+          "postings": 799,
+          "share_pct": 9.1
+        },
+        {
+          "skill": "Analytics",
+          "postings": 774,
+          "share_pct": 8.8
+        },
+        {
+          "skill": "Agile",
+          "postings": 636,
+          "share_pct": 7.3
+        },
+        {
+          "skill": "Management",
+          "postings": 592,
+          "share_pct": 6.8
+        },
+        {
+          "skill": "SQL",
+          "postings": 571,
+          "share_pct": 6.5
+        },
+        {
+          "skill": "Project management",
+          "postings": 564,
+          "share_pct": 6.4
+        },
+        {
+          "skill": "Data",
+          "postings": 550,
+          "share_pct": 6.3
+        },
+        {
+          "skill": "Python",
+          "postings": 479,
+          "share_pct": 5.5
+        }
+      ],
+      "top_hiring_locations": [
+        {
+          "location": "Bangalore/Bengaluru",
+          "postings": 1974,
+          "share_pct": 22.5
+        },
+        {
+          "location": "Pune",
+          "postings": 1170,
+          "share_pct": 13.3
+        },
+        {
+          "location": "Hyderabad/Secunderabad",
+          "postings": 1138,
+          "share_pct": 13.0
+        },
+        {
+          "location": "Mumbai",
+          "postings": 989,
+          "share_pct": 11.3
+        },
+        {
+          "location": "Gurgaon/Gurugram",
+          "postings": 939,
+          "share_pct": 10.7
+        },
+        {
+          "location": "Chennai",
+          "postings": 820,
+          "share_pct": 9.4
+        },
+        {
+          "location": "New Delhi",
+          "postings": 488,
+          "share_pct": 5.6
+        },
+        {
+          "location": "Remote",
+          "postings": 437,
+          "share_pct": 5.0
+        },
+        {
+          "location": "Noida",
+          "postings": 355,
+          "share_pct": 4.1
+        },
+        {
+          "location": "Kolkata",
+          "postings": 331,
+          "share_pct": 3.8
+        }
+      ],
+      "experience_distribution": {
+        "0-1 years (entry)": 1786,
+        "10+ years": 146,
+        "2-3 years": 3264,
+        "4-6 years": 2544,
+        "7-10 years": 944
+      },
+      "competition_caveat": "8,765 postings in this sample does not mean 8,765 openings for you. Postings are duplicated across consultancies, many are filled internally, and most ask for prior experience — entry-level competition is significantly tougher than the total suggests. Hiring is concentrated in Bangalore/Bengaluru, which accounts for about 23% of postings in this sample — opportunities elsewhere in India are considerably fewer.",
+      "uncertainty_statement": "Salary figures come from the 693 postings (8% of 8,765) that actually stated a package — the other 92% said 'Not disclosed'. Employers who publish pay are not a random sample of employers, so treat these as indicative of that subset only, not of the market. These are recorded offers from one job board over one collection period. They are not a forecast of what you will earn.",
+      "last_updated_date": "2026-08-20",
+      "_build_stats": {
+        "postings_mapped": 8765,
+        "postings_with_disclosed_salary": 693,
+        "salary_disclosure_pct": 7.9,
+        "unpaid_internship_postings": 95
+      }
+    },
+    {
+      "career_id": "data-scientist",
+      "geography": "India (major metropolitan hiring centres)",
+      "timeframe_period": "Sample of 28,727 Naukri job postings mapped to this role",
+      "data_source": "Naukri India Job Postings Sample",
+      "demand_indicator": "High",
+      "salary_range_entry_inr": "₹6.0-18.0 LPA",
+      "salary_range_mid_inr": "₹22.5 LPA (a single posting template dominates the disclosed sample)",
+      "top_demanded_skills": [
+        {
+          "skill": "Machine learning",
+          "postings": 11573,
+          "share_pct": 40.3
+        },
+        {
+          "skill": "SQL",
+          "postings": 6298,
+          "share_pct": 21.9
+        },
+        {
+          "skill": "Analytical",
+          "postings": 5780,
+          "share_pct": 20.1
+        },
+        {
+          "skill": "Data analysis",
+          "postings": 5624,
+          "share_pct": 19.6
+        },
+        {
+          "skill": "Python",
+          "postings": 5114,
+          "share_pct": 17.8
+        },
+        {
+          "skill": "Data mining",
+          "postings": 5060,
+          "share_pct": 17.6
+        },
+        {
+          "skill": "Artificial Intelligence",
+          "postings": 4703,
+          "share_pct": 16.4
+        },
+        {
+          "skill": "Financial services",
+          "postings": 3734,
+          "share_pct": 13.0
+        },
+        {
+          "skill": "Analytics",
+          "postings": 2924,
+          "share_pct": 10.2
+        },
+        {
+          "skill": "Data",
+          "postings": 2724,
+          "share_pct": 9.5
+        },
+        {
+          "skill": "Machine Learning",
+          "postings": 2554,
+          "share_pct": 8.9
+        },
+        {
+          "skill": "Data Science",
+          "postings": 2542,
+          "share_pct": 8.8
+        }
+      ],
+      "top_hiring_locations": [
+        {
+          "location": "Bangalore/Bengaluru",
+          "postings": 11528,
+          "share_pct": 40.1
+        },
+        {
+          "location": "Hyderabad/Secunderabad",
+          "postings": 6573,
+          "share_pct": 22.9
+        },
+        {
+          "location": "Gurgaon/Gurugram",
+          "postings": 6037,
+          "share_pct": 21.0
+        },
+        {
+          "location": "Pune",
+          "postings": 5050,
+          "share_pct": 17.6
+        },
+        {
+          "location": "Mumbai",
+          "postings": 4088,
+          "share_pct": 14.2
+        },
+        {
+          "location": "Chennai",
+          "postings": 3908,
+          "share_pct": 13.6
+        },
+        {
+          "location": "Remote",
+          "postings": 2297,
+          "share_pct": 8.0
+        },
+        {
+          "location": "Noida",
+          "postings": 1482,
+          "share_pct": 5.2
+        },
+        {
+          "location": "New Delhi",
+          "postings": 1343,
+          "share_pct": 4.7
+        },
+        {
+          "location": "Kolkata",
+          "postings": 1327,
+          "share_pct": 4.6
+        }
+      ],
+      "experience_distribution": {
+        "0-1 years (entry)": 3479,
+        "10+ years": 1347,
+        "2-3 years": 6495,
+        "4-6 years": 10805,
+        "7-10 years": 5432
+      },
+      "competition_caveat": "28,727 postings in this sample does not mean 28,727 openings for you. Postings are duplicated across consultancies, many are filled internally, and most ask for prior experience — entry-level competition is significantly tougher than the total suggests. Hiring is concentrated in Bangalore/Bengaluru, which accounts for about 40% of postings in this sample — opportunities elsewhere in India are considerably fewer.",
+      "uncertainty_statement": "Salary figures come from the 1,839 postings (6% of 28,727) that actually stated a package — the other 94% said 'Not disclosed'. Employers who publish pay are not a random sample of employers, so treat these as indicative of that subset only, not of the market. These are recorded offers from one job board over one collection period. They are not a forecast of what you will earn.",
+      "last_updated_date": "2026-08-20",
+      "_build_stats": {
+        "postings_mapped": 28727,
+        "postings_with_disclosed_salary": 1839,
+        "salary_disclosure_pct": 6.4,
+        "unpaid_internship_postings": 1387
+      }
+    }
+  ]
+}
