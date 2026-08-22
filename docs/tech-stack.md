@@ -3,8 +3,8 @@
 ## AI-Based Career Decision & Pathway Companion
 
 **Document type:** Architecture shard — `docs/architecture/tech-stack.md`
-**Status:** Definitive technology selection. This document is the single source of truth for all technology choices on this project — dev agents load this file directly (per `core-config.yaml` → `devLoadAlwaysFiles`) and must not introduce a library, framework, or service that isn't listed here without updating this document first.
-**Source of truth for requirements:** `docs/prd.md` (Refined PRD v2.0) — every row below is traceable to a specific FR or MVP-scope line, not a default preference.
+**Status:** Definitive technology selection. This document is the single source of truth for all technology choices on this project — dev agents load this file directly (per `_bmad/config.toml`) and must not introduce a library, framework, or service that isn't listed here without updating this document first.
+**Source of truth for requirements:** `docs/Refined_PRD_AI_Career_Guidance.md` (Refined PRD v2.0) — every row below is traceable to a specific FR or MVP-scope line, not a default preference.
 **Companion shards:** `docs/architecture/coding-standards.md`, `docs/architecture/source-tree.md`
 
 ---
