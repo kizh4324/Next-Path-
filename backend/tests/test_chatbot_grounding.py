@@ -89,7 +89,12 @@ def test_crisis_response_leads_with_helplines_and_carries_no_career_advice() -> 
     for term in ("entrance exam", "b.tech", "neet", "fees", "₹", "roadmap", "scholarship"):
         assert term not in lowered
 
-    assert "counselor" in lowered
+    # This deployment has nobody staffing the counselor queue, so the message must not
+    # imply that a human here will make contact. A student who waits for a call that
+    # never comes is worse off than one who was told plainly to ring the helpline.
+    for promise in ("has been notified", "reach out to you", "will contact you", "call you back"):
+        assert promise not in lowered.replace("nobody here can call you back", "")
+    assert "cannot contact anyone on your behalf" in lowered
 
 
 async def test_crisis_message_halts_advice_and_raises_a_ticket(

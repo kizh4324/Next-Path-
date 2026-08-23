@@ -7,6 +7,8 @@ and career advancement/lateral progression vectors for all 27 occupational track
 from __future__ import annotations
 
 import logging
+from typing import Any
+
 from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -21,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 # --- Career Data Definitions ---
 
-SYLLABUS_DATA: dict[str, list[dict]] = {
+SYLLABUS_DATA: dict[str, list[dict[str, Any]]] = {
     "software-developer": [
         {
             "phase_number": 1,
@@ -265,7 +267,7 @@ SYLLABUS_DATA: dict[str, list[dict]] = {
 }
 
 # Generic fallback builder for any career without a custom specialized syllabus
-def generate_generic_syllabus(career_title: str, cluster: str) -> list[dict]:
+def generate_generic_syllabus(career_title: str, cluster: str) -> list[dict[str, Any]]:
     return [
         {
             "phase_number": 1,
@@ -297,7 +299,7 @@ def generate_generic_syllabus(career_title: str, cluster: str) -> list[dict]:
             "topics": [
                 {
                     "topic_title": f"Practical Execution & Case Analysis in {cluster}",
-                    "description": f"Executing standard workflows, identifying common failures, and analyzing real-world cases.",
+                    "description": "Executing standard workflows, identifying common failures, and analyzing real-world cases.",
                     "key_concepts": ["Case study analysis", "Quality assurance", "Risk mitigation"],
                     "free_resource_name": "Open Educational Resources (OER) India",
                     "free_resource_url": "https://www.sakshat.ac.in/",
@@ -333,7 +335,7 @@ def generate_generic_syllabus(career_title: str, cluster: str) -> list[dict]:
     ]
 
 
-PROJECT_DATA: dict[str, list[dict]] = {
+PROJECT_DATA: dict[str, list[dict[str, Any]]] = {
     "software-developer": [
         {
             "id": "sw-task-tracker-cli",
@@ -480,7 +482,7 @@ PROJECT_DATA: dict[str, list[dict]] = {
     ],
 }
 
-def generate_generic_projects(career_id: str, career_title: str, cluster: str) -> list[dict]:
+def generate_generic_projects(career_id: str, career_title: str, cluster: str) -> list[dict[str, Any]]:
     return [
         {
             "id": f"{career_id}-starter-case",
@@ -517,7 +519,7 @@ def generate_generic_projects(career_id: str, career_title: str, cluster: str) -
             "difficulty": "advanced",
             "title": f"{career_title} Comprehensive Capstone & Portfolio Presentation",
             "tag": "Portfolio Capstone",
-            "summary": f"An end-to-end real-world capstone project demonstrating production readiness, ethical considerations, and cross-functional leadership.",
+            "summary": "An end-to-end real-world capstone project demonstrating production readiness, ethical considerations, and cross-functional leadership.",
             "requirements": [
                 "Complete full lifecycle execution from initial requirement gathering to final delivery",
                 "Incorporate quality audit, safety standards, and stakeholder presentation",
@@ -530,7 +532,7 @@ def generate_generic_projects(career_id: str, career_title: str, cluster: str) -
     ]
 
 
-TRAJECTORY_DATA: dict[str, list[dict]] = {
+TRAJECTORY_DATA: dict[str, list[dict[str, Any]]] = {
     "software-developer": [
         {
             "target_career_title": "Senior Software Engineer / Tech Lead",
@@ -611,7 +613,7 @@ TRAJECTORY_DATA: dict[str, list[dict]] = {
     ],
 }
 
-def generate_generic_trajectories(career_id: str, career_title: str, cluster: str) -> list[dict]:
+def generate_generic_trajectories(career_id: str, career_title: str, cluster: str) -> list[dict[str, Any]]:
     return [
         {
             "target_career_title": f"Senior {career_title} / Specialist Lead",
@@ -629,7 +631,7 @@ def generate_generic_trajectories(career_id: str, career_title: str, cluster: st
             "expected_salary_delta_inr": "+₹5,00,000 - ₹12,00,000 / annum",
             "required_delta_skills": ["Budget & P&L Oversight", "Strategic Planning", "Client Relationship Management"],
             "transferable_skills_pct": 70,
-            "overview": f"Transitions domain expertise into strategic management, independent consulting, or operational department oversight.",
+            "overview": "Transitions domain expertise into strategic management, independent consulting, or operational department oversight.",
         },
     ]
 

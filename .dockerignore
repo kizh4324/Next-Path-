@@ -1,0 +1,52 @@
+# The backend image builds from the REPO ROOT (it needs data/seed/), so without this
+# file Docker ships the entire tree — including the 205 MB Dataset/ directory — to the
+# daemon on every build. On Render that is a slow build at best and a failed one at worst.
+
+# Raw vendor datasets. Only the build_*_seed.py authoring scripts read these, and they
+# run locally, never in the image. The built catalogue in data/seed/ is what ships.
+Dataset/
+
+# Dependencies and build output
+**/node_modules/
+**/.venv/
+venv/
+frontend/dist/
+frontend/dev-dist/
+**/__pycache__/
+*.py[cod]
+
+# Caches
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+**/.vite/
+*.tsbuildinfo
+htmlcov/
+.coverage
+
+# Local databases — these hold demo credentials
+*.db
+*.db-journal
+*.sqlite3
+
+# Secrets
+.env
+.env.local
+.env.*.local
+
+# VCS, docs, and tooling that the runtime does not need
+.git/
+.github/
+.gitignore
+docs/
+graphify-out/
+_bmad/
+_bmad-output/
+.agent/
+.agents/
+README.md
+NOTICE.md
+**/*.md
+
+# Frontend source: the API image has no use for it
+frontend/

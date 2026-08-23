@@ -95,8 +95,15 @@ def build_crisis_response() -> str:
             "older sibling, anyone you trust.",
             "",
             "No exam result and no career decision is worth your life. Those choices can "
-            "all be remade later. A counselor from our team has been notified and can "
-            "reach out to you.",
+            "all be remade later.",
+            "",
+            # This deployment has nobody staffing the counselor queue, so the message must
+            # not imply that someone here will make contact. Promising outreach that will
+            # not arrive is worse than promising nothing: a student may wait for it
+            # instead of calling a line that answers immediately. The incident is still
+            # recorded for audit — the numbers above are the only route we can stand behind.
+            "Please use one of the numbers above. This app cannot contact anyone on your "
+            "behalf and nobody here can call you back.",
         ]
     )
     return "\n".join(lines)

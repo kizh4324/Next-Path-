@@ -27,11 +27,16 @@ from sqlalchemy import delete, func, select
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.config import settings
 from app.core.database import AsyncSessionLocal
 from app.models.catalog import CareerLibrary, CareerSkill, MarketSnapshot, Scholarship
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-SEED_DIR = REPO_ROOT / "data" / "seed"
+
+# Resolved from settings (SEED_ROOT), not hardcoded to the repo layout. On a platform
+# deploy there is no bind mount and no repo checkout — the seed files are baked into
+# the image, and this is what lets the runner find them there.
+SEED_DIR = settings.seed_path
 CAREER_FILE = SEED_DIR / "seed_career_clusters.json"
 MARKET_FILE = SEED_DIR / "seed_market_snapshots.json"
 SCHOLARSHIP_FILE = SEED_DIR / "seed_scholarships.json"
@@ -44,7 +49,9 @@ class SeedError(RuntimeError):
 def _load(path: Path) -> dict[str, Any]:
     if not path.exists():
         raise SeedError(
-            f"Seed file missing: {path.relative_to(REPO_ROOT)}\n"
+            # Absolute, not repo-relative: inside a container there is no repo root to
+            # be relative to, and the old form raised ValueError on top of this one.
+            f"Seed file missing: {path}\n"
             "Build it first:\n"
             "  python -m data.build_career_seed\n"
             "  python -m data.build_market_seed\n"

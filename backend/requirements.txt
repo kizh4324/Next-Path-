@@ -24,7 +24,12 @@ bcrypt==4.0.1
 python-multipart==0.0.20
 
 # --- LLM (FR-16, FR-17) ---
+# Two providers are supported. GEMINI_API_KEY takes priority when set (free tier),
+# ANTHROPIC_API_KEY is the fallback. Both SDKs are imported lazily, so a deployment
+# that configures only one still starts cleanly — but both must be installed, or the
+# unconfigured provider fails at first call instead of at boot.
 anthropic==1.0.0
+google-genai==1.56.0
 
 # --- Background scheduling (FR-27, P1) ---
 apscheduler==3.10.4

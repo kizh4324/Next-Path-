@@ -19,8 +19,9 @@ services:
 
   backend:
     build:
-      context: ./backend
-      dockerfile: Dockerfile
+      # Repo root, so data/seed/ can be baked into the image.
+      context: .
+      dockerfile: backend/Dockerfile
     container_name: nextpath-backend
     restart: unless-stopped
     depends_on:
@@ -29,15 +30,20 @@ services:
     environment:
       DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-nextpath}:${POSTGRES_PASSWORD:-nextpath}@db:5432/${POSTGRES_DB:-nextpath}
       JWT_SECRET_KEY: ${JWT_SECRET_KEY:-dev-only-insecure-secret-change-me}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-3.6-flash}
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
       ANTHROPIC_MODEL: ${ANTHROPIC_MODEL:-claude-opus-5}
       CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:5173}
       ENVIRONMENT: ${ENVIRONMENT:-development}
+      SEED_ROOT: /app/data/seed
     ports:
       - "8000:8000"
     volumes:
       - ./backend:/app
-      - ./data:/data:ro
+      # Overlays the copy baked into the image so edits are picked up without a rebuild.
+      - ./data/seed:/app/data/seed:ro
+      # Raw vendor sources, needed only by the build_*_seed.py authoring scripts.
       - ./Dataset:/Dataset:ro
     command: >
       sh -c "alembic upgrade head &&

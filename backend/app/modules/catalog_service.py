@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 from fastapi import HTTPException, status
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -11,11 +13,19 @@ from app.models.catalog import CareerLibrary, MarketSnapshot, Scholarship
 from app.schemas.catalog import (
     CareerCompareResponse,
     CareerDetailDTO,
+    CareerProjectsResponse,
     CareerSummaryDTO,
+    CareerSyllabusResponse,
+    CareerTrajectoryDTO,
+    CareerTrajectoryResponse,
     ComparisonRow,
     MarketSnapshotDTO,
+    ProjectSubmissionDTO,
     ScholarshipDTO,
     ScholarshipListResponse,
+    SkillProjectIdeaDTO,
+    SyllabusPhaseDTO,
+    TopicItemDTO,
 )
 from app.schemas.common import EvidenceUnavailable
 
@@ -264,11 +274,6 @@ async def get_career_syllabus(db: AsyncSession, career_id: str) -> CareerSyllabu
     career = await get_career_or_404(db, career_id)
 
     from app.models.catalog import CareerTopicSyllabus
-    from app.schemas.catalog import (
-        CareerSyllabusResponse,
-        SyllabusPhaseDTO,
-        TopicItemDTO,
-    )
 
     rows = (
         (
@@ -282,7 +287,7 @@ async def get_career_syllabus(db: AsyncSession, career_id: str) -> CareerSyllabu
         .all()
     )
 
-    phases_dict: dict[int, dict] = {}
+    phases_dict: dict[int, dict[str, Any]] = {}
     total_hours = 0
 
     for row in rows:
@@ -330,7 +335,6 @@ async def get_career_projects(
     career = await get_career_or_404(db, career_id)
 
     from app.models.catalog import SkillProjectIdea
-    from app.schemas.catalog import CareerProjectsResponse, SkillProjectIdeaDTO
 
     statement = select(SkillProjectIdea).where(SkillProjectIdea.career_id == career_id)
     if difficulty:
@@ -349,7 +353,6 @@ async def submit_project(
     db: AsyncSession, profile: Any, project_id: str, payload: Any
 ) -> ProjectSubmissionDTO:
     from app.models.catalog import ProjectSubmission, SkillProjectIdea
-    from app.schemas.catalog import ProjectSubmissionDTO
 
     project = await db.get(SkillProjectIdea, project_id)
     if project is None:
@@ -376,7 +379,6 @@ async def get_student_project_submissions(
     db: AsyncSession, profile: Any
 ) -> list[ProjectSubmissionDTO]:
     from app.models.catalog import ProjectSubmission
-    from app.schemas.catalog import ProjectSubmissionDTO
 
     rows = (
         (
@@ -399,7 +401,6 @@ async def get_career_trajectories(
     career = await get_career_or_404(db, career_id)
 
     from app.models.catalog import CareerTrajectory
-    from app.schemas.catalog import CareerTrajectoryDTO, CareerTrajectoryResponse
 
     rows = (
         (

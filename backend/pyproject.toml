@@ -38,7 +38,8 @@ plugins = ["pydantic.mypy"]
 exclude = ["app/alembic/versions/.*"]
 
 [[tool.mypy.overrides]]
-module = ["jose.*", "passlib.*", "apscheduler.*"]
+# Third-party packages that ship no type stubs.
+module = ["jose.*", "passlib.*", "apscheduler.*", "google.*", "google.genai.*"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]

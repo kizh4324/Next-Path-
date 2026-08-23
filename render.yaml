@@ -1,0 +1,66 @@
+# Render blueprint for the Next_Path API.
+#
+#   render.com -> New -> Blueprint -> point at this repo
+#
+# The database is NOT declared here. The tech stack calls for Supabase Postgres, which
+# lives outside Render — create it there and paste its pooled connection string into
+# DATABASE_URL below. If you would rather Render managed the database too, uncomment the
+# `databases:` block at the bottom and set DATABASE_URL to come fromDatabase instead.
+
+services:
+  - type: web
+    name: nextpath-api
+    runtime: docker
+    plan: free
+    region: singapore # closest Render region to Indian users
+    # Repo root, because the image needs data/seed/ which lives outside backend/.
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+
+    # Migrations run on every deploy; seeding is idempotent so re-running is safe and
+    # converges rather than duplicating. Both must finish before traffic is accepted.
+    preDeployCommand: "alembic upgrade head && python -m data.seed_runner"
+
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+
+      # Paste the Supabase POOLED connection string (port 6543), not the direct one.
+      # Render's free tier has a low connection limit and the direct port exhausts it.
+      # Must start with postgresql+asyncpg:// — the app rewrites a bare postgresql://
+      # but being explicit avoids surprises.
+      - key: DATABASE_URL
+        sync: false
+
+      # Generated once by Render and then held. Never commit a real value: the app
+      # refuses to boot in production if this is still the development default.
+      - key: JWT_SECRET_KEY
+        generateValue: true
+
+      # Set after the frontend is deployed. Must be the exact Vercel origin with no
+      # trailing slash, or every browser request fails CORS preflight.
+      - key: CORS_ORIGINS
+        sync: false
+
+      # Optional. With neither key set the app still serves every route: the parent
+      # summary uses the deterministic template and the chatbot reports itself
+      # unavailable rather than inventing an answer.
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
+
+      - key: SEED_ROOT
+        value: /app/data/seed
+
+# Uncomment to let Render host the database instead of Supabase, and replace the
+# DATABASE_URL entry above with:
+#   - key: DATABASE_URL
+#     fromDatabase: { name: nextpath-db, property: connectionString }
+#
+# databases:
+#   - name: nextpath-db
+#     plan: free
+#     region: singapore
+#     postgresMajorVersion: "16"

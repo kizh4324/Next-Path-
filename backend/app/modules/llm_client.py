@@ -16,6 +16,7 @@ from __future__ import annotations
 import asyncio
 import logging
 from dataclasses import dataclass
+from typing import Any
 
 from app.core.config import settings
 
@@ -45,14 +46,18 @@ class LLMResult:
 
 
 class GeminiClient:
-    """Google Gemini client using the google-genai SDK."""
+    """Google Gemini client using the google-genai SDK.
+
+    The SDK is imported lazily and typed as Any: it is an optional dependency, and
+    a deployment that only configures Anthropic must not fail at import time.
+    """
 
     def __init__(self) -> None:
-        self._client: object | None = None
+        self._client: Any = None
 
-    def _get_client(self) -> object:
+    def _get_client(self) -> Any:
         if self._client is None:
-            from google import genai  # type: ignore[import-untyped]
+            from google import genai
 
             self._client = genai.Client(api_key=settings.gemini_api_key)
         return self._client
@@ -65,7 +70,7 @@ class GeminiClient:
     ) -> LLMResult:
         """One stateless Gemini request. Never raises — failures come back as ok=False."""
         try:
-            from google.genai import types  # type: ignore[import-untyped]
+            from google.genai import types
 
             client = self._get_client()
 
@@ -115,9 +120,9 @@ class AnthropicClient:
     """Anthropic Claude client — the original provider."""
 
     def __init__(self) -> None:
-        self._client: object | None = None
+        self._client: Any = None
 
-    def _get_client(self) -> object:
+    def _get_client(self) -> Any:
         if self._client is None:
             from anthropic import AsyncAnthropic
 
@@ -126,7 +131,7 @@ class AnthropicClient:
                 timeout=settings.anthropic_timeout_seconds,
                 max_retries=2,
             )
-        return self._client  # type: ignore[return-value]
+        return self._client
 
     async def generate_message(
         self,
@@ -140,7 +145,7 @@ class AnthropicClient:
 
         try:
             client = self._get_client()
-            response = await client.messages.create(  # type: ignore[union-attr]
+            response = await client.messages.create(
                 model=settings.anthropic_model,
                 max_tokens=max_tokens or settings.anthropic_max_tokens,
                 system=system_prompt,
@@ -194,7 +199,7 @@ class AnthropicClient:
 
     async def aclose(self) -> None:
         if self._client is not None:
-            await self._client.close()  # type: ignore[union-attr]
+            await self._client.close()
             self._client = None
 
 
