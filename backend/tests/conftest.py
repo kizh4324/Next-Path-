@@ -222,6 +222,8 @@ async def catalogue(db: AsyncSession) -> list[CareerLibrary]:
             is_active=True,
         )
     )
+    from data.seed_syllabus_and_projects import seed_syllabi_and_projects
+    await seed_syllabi_and_projects(db)
     await db.commit()
     return careers
 

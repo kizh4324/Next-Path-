@@ -510,3 +510,79 @@ class CounselorEscalation(BaseModel):
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 ```
+
+---
+
+### 3.12 Interactive Topic Syllabus (`CareerTopicSyllabus`) — Traces to FR-21 (roadmap.sh Alignment)
+Hierarchical step-by-step topic curriculum for a career path, structured into sequential learning phases with key concepts, estimated effort, and verified free learning resource citations.
+
+```python
+class CareerTopicSyllabus(BaseModel):
+    id: int = Field(description="Unique ID for topic")
+    career_id: str = Field(description="Foreign key referencing CareerLibrary.id")
+    phase_number: int = Field(ge=1, le=5, description="Sequential phase: 1=Foundations, 2=Core, 3=Advanced, 4=Specialization")
+    phase_title: str = Field(description="Human-readable phase title (e.g. 'Foundations & Tooling')")
+    topic_title: str = Field(description="Actionable topic name (e.g. 'Component Lifecycle & State Management')")
+    description: str = Field(description="Concise description of the topic and why it matters")
+    key_concepts: List[str] = Field(default_factory=list, description="Core vocabulary and mental models to master")
+    free_resource_name: str = Field(description="Verified free resource provider (e.g. NPTEL, freeCodeCamp, MDN)")
+    free_resource_url: str = Field(description="Direct URL to courseware or documentation")
+    estimated_hours: int = Field(default=10, description="Estimated study and practice hours")
+    is_optional: bool = Field(default=False)
+```
+
+---
+
+### 3.13 Skill-Based Project Ideas & Submissions (`SkillProjectIdea`, `ProjectSubmission`) — Traces to FR-22 (roadmap.sh Alignment)
+Curated practical project specifications mapped to specific skills and career tracks, with verifiable student proof-of-work submissions.
+
+```python
+class ProjectDifficulty(str, Enum):
+    BEGINNER = "beginner"
+    INTERMEDIATE = "intermediate"
+    ADVANCED = "advanced"
+
+class SkillProjectIdea(BaseModel):
+    id: str = Field(description="Unique slug identifier (e.g. 'task-tracker-cli')")
+    career_id: str = Field(description="Foreign key referencing CareerLibrary.id")
+    difficulty: ProjectDifficulty = Field(description="Difficulty tier: beginner, intermediate, or advanced")
+    title: str = Field(description="Project title")
+    tag: str = Field(description="Category tag (e.g. 'CLI', 'Web App', 'REST API', 'EDA', 'Design System')")
+    summary: str = Field(description="Problem statement and real-world context")
+    requirements: List[str] = Field(description="Checklist of functional requirements")
+    skills_exercised: List[str] = Field(description="Skills practiced during project execution")
+    constraints: List[str] = Field(default_factory=list, description="Architectural constraints e.g. 'Zero external DB', 'JSON persistence'")
+    example_input_output: Optional[str] = Field(None, description="CLI command example or UI interaction sample")
+
+class ProjectSubmission(BaseModel):
+    id: str = Field(description="Unique submission UUID")
+    student_id: str = Field(description="Foreign key referencing StudentProfile.id")
+    project_id: str = Field(description="Foreign key referencing SkillProjectIdea.id")
+    repository_or_live_url: str = Field(description="GitHub repo, Figma prototype, or live hosted URL")
+    reflection_notes: Optional[str] = Field(None, description="Student notes on learnings and challenges overcome")
+    status: str = Field(default="completed", description="'in_progress', 'completed', 'verified'")
+    submitted_at: datetime = Field(default_factory=datetime.utcnow)
+```
+
+---
+
+### 3.14 Career Progression & Trajectory Vectors (`CareerTrajectory`) — Traces to FR-23 (roadmap.sh Alignment)
+Directional progression graph mapping where a career path leads after completion, including lateral multidisciplinary pivots, vertical senior promotions, and delta skills required.
+
+```python
+class TrajectoryType(str, Enum):
+    VERTICAL_ADVANCEMENT = "vertical_advancement"
+    LATERAL_TRANSITION = "lateral_transition"
+    SPECIALIZATION = "specialization"
+
+class CareerTrajectory(BaseModel):
+    id: int = Field(description="Unique ID for trajectory vector")
+    source_career_id: str = Field(description="Foreign key referencing base CareerLibrary.id")
+    target_career_title: str = Field(description="Target role title (e.g. 'Lead UX Architect' or 'Product Manager')")
+    trajectory_type: TrajectoryType = Field(description="vertical_advancement, lateral_transition, or specialization")
+    typical_years_experience: str = Field(description="e.g. '2-4 years', '5+ years'")
+    expected_salary_delta_inr: str = Field(description="e.g. '+₹4-10 LPA above entry'")
+    required_delta_skills: List[str] = Field(description="The 2-4 critical skills required to cross over to this target role")
+    transferable_skills_pct: int = Field(ge=0, le=100, description="Percentage of current career skills that carry over")
+    overview: str = Field(description="Practical summary of how and why professionals make this transition")
+```

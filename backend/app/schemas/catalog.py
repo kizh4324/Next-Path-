@@ -181,3 +181,87 @@ class ScholarshipListResponse(StrictModel):
             "reads as 'not in our data' rather than 'no scholarship exists'."
         )
     )
+
+
+# --- Syllabus, Projects, and Trajectory DTOs (Epic 7 / roadmap.sh Alignment) ---
+
+
+class TopicItemDTO(StrictModel):
+    id: int
+    topic_title: str
+    description: str
+    key_concepts: list[str] = Field(default_factory=list)
+    free_resource_name: str
+    free_resource_url: str
+    estimated_hours: int = 10
+    is_optional: bool = False
+
+
+class SyllabusPhaseDTO(StrictModel):
+    phase_number: int
+    phase_title: str
+    topics: list[TopicItemDTO] = Field(default_factory=list)
+
+
+class CareerSyllabusResponse(StrictModel):
+    career_id: str
+    career_title: str
+    total_estimated_hours: int
+    phases: list[SyllabusPhaseDTO] = Field(default_factory=list)
+
+
+class SkillProjectIdeaDTO(ORMModel):
+    id: str
+    career_id: str
+    difficulty: str
+    title: str
+    tag: str
+    summary: str
+    requirements: list[str] = Field(default_factory=list)
+    skills_exercised: list[str] = Field(default_factory=list)
+    constraints: list[str] = Field(default_factory=list)
+    example_input_output: str | None = None
+
+
+class CareerProjectsResponse(StrictModel):
+    career_id: str
+    career_title: str
+    projects: list[SkillProjectIdeaDTO] = Field(default_factory=list)
+
+
+class ProjectSubmitRequest(StrictModel):
+    repository_or_live_url: str = Field(
+        min_length=5, max_length=500, description="Public GitHub repository, Figma, or deployed app URL"
+    )
+    reflection_notes: str | None = Field(
+        default=None, max_length=2000, description="Self-reflection on challenges and learnings"
+    )
+
+
+class ProjectSubmissionDTO(ORMModel):
+    id: uuid.UUID
+    student_id: uuid.UUID
+    project_id: str
+    repository_or_live_url: str
+    reflection_notes: str | None = None
+    status: str
+    submitted_at: object
+
+
+class CareerTrajectoryDTO(ORMModel):
+    id: int
+    source_career_id: str
+    target_career_title: str
+    trajectory_type: str
+    typical_years_experience: str
+    expected_salary_delta_inr: str
+    required_delta_skills: list[str] = Field(default_factory=list)
+    transferable_skills_pct: int
+    overview: str
+
+
+class CareerTrajectoryResponse(StrictModel):
+    source_career_id: str
+    source_career_title: str
+    trajectories: list[CareerTrajectoryDTO] = Field(default_factory=list)
+

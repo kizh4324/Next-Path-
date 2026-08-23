@@ -19,6 +19,8 @@ yarn-error.log*
 # Operating System files
 .DS_Store
 Thumbs.db
+image*.png
+image copy*.png
 
 # BMad user-specific configurations
 *.user.toml

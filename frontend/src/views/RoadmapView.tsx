@@ -9,6 +9,9 @@ import { ApiError } from '@/services/api_client';
 import { cn } from '@/utils/cn';
 import { formatBucket, formatInr } from '@/utils/format';
 import type { EvidenceType, Milestone, TimeframeBucket } from '@/types/models';
+import { CareerTrajectoryView } from '@/components/career/CareerTrajectoryView';
+import { SkillProjectLab } from '@/components/career/SkillProjectLab';
+import { TopicSyllabusView } from '@/components/career/TopicSyllabusView';
 
 const BUCKETS: TimeframeBucket[] = ['next_7_days', 'day_30', 'day_90', 'day_180'];
 
@@ -119,24 +122,35 @@ function MilestoneCard({
   );
 }
 
+type RoadmapTab = 'milestones' | 'syllabus' | 'projects' | 'trajectory';
+
 export function RoadmapView(): JSX.Element {
   const navigate = useNavigate();
-  const { data: roadmap, isLoading, error } = useRoadmap();
+  const { data: roadmap, isLoading, isError } = useRoadmap();
   const complete = useCompleteMilestone();
+  const [currentTab, setCurrentTab] = useState<RoadmapTab>('milestones');
 
   const [active, setActive] = useState<Milestone | null>(null);
   const [evidenceType, setEvidenceType] = useState<EvidenceType>('self_report');
   const [note, setNote] = useState('');
   const [formError, setFormError] = useState<string | null>(null);
 
-  if (isLoading) return <SkeletonCard />;
+  if (isLoading) {
+    return (
+      <div className="flex flex-col gap-lg">
+        <SkeletonCard />
+        <SkeletonCard />
+        <SkeletonCard />
+      </div>
+    );
+  }
 
-  if (error instanceof ApiError && error.status === 404) {
+  if (isError && !roadmap) {
     return (
       <EmptyState
-        title="No roadmap yet"
-        description="Pick a primary pathway from your options and we will build a 30/90/180-day plan around it."
-        action={<Button onClick={() => navigate('/results')}>See my options</Button>}
+        title="We could not load your roadmap"
+        description="Check your connection and try again."
+        action={<Button onClick={() => navigate(0)}>Retry</Button>}
       />
     );
   }
@@ -198,31 +212,106 @@ export function RoadmapView(): JSX.Element {
         </div>
       </header>
 
-      {roadmap.total_estimated_cost_inr === 0 && (
-        <Callout variant="info">
-          Every step in this plan is free. Paid options exist for some of them, but none
-          is required to make progress.
-        </Callout>
+      {/* Navigation Tabs (roadmap.sh Alignment) */}
+      <div className="flex flex-wrap gap-xs border-b border-hairline pb-2">
+        <button
+          type="button"
+          onClick={() => setCurrentTab('milestones')}
+          className={`flex items-center gap-1.5 rounded-md px-3.5 py-2 text-sm font-medium transition-colors ${
+            currentTab === 'milestones'
+              ? 'bg-primary text-surface shadow-xs'
+              : 'text-ink-secondary hover:bg-canvas-soft hover:text-ink'
+          }`}
+        >
+          <span>🎯</span>
+          <span>Action Plan Milestones</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setCurrentTab('syllabus')}
+          className={`flex items-center gap-1.5 rounded-md px-3.5 py-2 text-sm font-medium transition-colors ${
+            currentTab === 'syllabus'
+              ? 'bg-primary text-surface shadow-xs'
+              : 'text-ink-secondary hover:bg-canvas-soft hover:text-ink'
+          }`}
+        >
+          <span>📚</span>
+          <span>Topic Syllabus</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setCurrentTab('projects')}
+          className={`flex items-center gap-1.5 rounded-md px-3.5 py-2 text-sm font-medium transition-colors ${
+            currentTab === 'projects'
+              ? 'bg-primary text-surface shadow-xs'
+              : 'text-ink-secondary hover:bg-canvas-soft hover:text-ink'
+          }`}
+        >
+          <span>💻</span>
+          <span>Project Lab</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setCurrentTab('trajectory')}
+          className={`flex items-center gap-1.5 rounded-md px-3.5 py-2 text-sm font-medium transition-colors ${
+            currentTab === 'trajectory'
+              ? 'bg-primary text-surface shadow-xs'
+              : 'text-ink-secondary hover:bg-canvas-soft hover:text-ink'
+          }`}
+        >
+          <span>🧭</span>
+          <span>Career Progression</span>
+        </button>
+      </div>
+
+      {/* Tab 1: Milestones */}
+      {currentTab === 'milestones' && (
+        <div className="flex flex-col gap-lg">
+          {roadmap.total_estimated_cost_inr === 0 && (
+            <Callout variant="info">
+              Every step in this plan is free. Paid options exist for some of them, but none
+              is required to make progress.
+            </Callout>
+          )}
+
+          {BUCKETS.map((bucket) => {
+            const milestones = roadmap.milestones.filter((m) => m.timeframe_bucket === bucket);
+            if (milestones.length === 0) return null;
+            return (
+              <section key={bucket}>
+                <h2 className="mb-sm text-heading-3 text-ink">{formatBucket(bucket)}</h2>
+                <ul className="ml-xs">
+                  {milestones.map((milestone) => (
+                    <MilestoneCard
+                      key={milestone.id}
+                      milestone={milestone}
+                      onComplete={setActive}
+                    />
+                  ))}
+                </ul>
+              </section>
+            );
+          })}
+        </div>
       )}
 
-      {BUCKETS.map((bucket) => {
-        const milestones = roadmap.milestones.filter((m) => m.timeframe_bucket === bucket);
-        if (milestones.length === 0) return null;
-        return (
-          <section key={bucket}>
-            <h2 className="mb-sm text-heading-3 text-ink">{formatBucket(bucket)}</h2>
-            <ul className="ml-xs">
-              {milestones.map((milestone) => (
-                <MilestoneCard
-                  key={milestone.id}
-                  milestone={milestone}
-                  onComplete={setActive}
-                />
-              ))}
-            </ul>
-          </section>
-        );
-      })}
+      {/* Tab 2: Topic Syllabus */}
+      {currentTab === 'syllabus' && (
+        <TopicSyllabusView careerId={roadmap.primary_career_id} />
+      )}
+
+      {/* Tab 3: Project Lab */}
+      {currentTab === 'projects' && (
+        <SkillProjectLab careerId={roadmap.primary_career_id} />
+      )}
+
+      {/* Tab 4: Career Progression Trajectory */}
+      {currentTab === 'trajectory' && (
+        <CareerTrajectoryView careerId={roadmap.primary_career_id} />
+      )}
 
       <Card className="flex flex-wrap items-center justify-between gap-md">
         <div>

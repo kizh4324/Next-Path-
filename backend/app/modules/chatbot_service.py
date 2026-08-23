@@ -142,8 +142,10 @@ async def retrieve_context(
     return selected
 
 
-def build_context_block(careers: list[CareerLibrary]) -> str:
-    """Serialize career records as compact JSON for the prompt."""
+async def build_context_block(db: AsyncSession, careers: list[CareerLibrary]) -> str:
+    """Serialize career records along with syllabi, projects, and trajectories as compact JSON for the prompt."""
+    from app.models.catalog import CareerTopicSyllabus, CareerTrajectory, SkillProjectIdea
+
     payload: list[dict[str, Any]] = []
     for career in careers:
         skills = sorted(
@@ -151,6 +153,30 @@ def build_context_block(careers: list[CareerLibrary]) -> str:
             key=lambda s: ({"essential": 0, "useful": 1, "optional": 2}.get(s.category, 9),
                            s.skill_name),
         )[:MAX_SKILLS_PER_CAREER]
+
+        # Fetch syllabi, projects, and trajectories for this career
+        syllabi = (
+            await db.execute(
+                select(CareerTopicSyllabus)
+                .where(CareerTopicSyllabus.career_id == career.id)
+                .order_by(CareerTopicSyllabus.phase_number)
+            )
+        ).scalars().all()
+
+        projects = (
+            await db.execute(
+                select(SkillProjectIdea)
+                .where(SkillProjectIdea.career_id == career.id)
+            )
+        ).scalars().all()
+
+        trajectories = (
+            await db.execute(
+                select(CareerTrajectory)
+                .where(CareerTrajectory.source_career_id == career.id)
+            )
+        ).scalars().all()
+
         payload.append(
             {
                 "career_id": career.id,
@@ -166,6 +192,36 @@ def build_context_block(careers: list[CareerLibrary]) -> str:
                     {"name": s.skill_name, "importance": s.category, "free_resource":
                      s.free_learning_resource_name}
                     for s in skills
+                ],
+                "curriculum_syllabus_phases": [
+                    {
+                        "phase": s.phase_title,
+                        "topic": s.topic_title,
+                        "description": s.description,
+                        "free_resource": s.free_resource_name,
+                        "key_concepts": s.key_concepts,
+                    }
+                    for s in syllabi
+                ],
+                "portfolio_project_ideas": [
+                    {
+                        "id": p.id,
+                        "title": p.title,
+                        "difficulty": p.difficulty,
+                        "summary": p.summary,
+                        "requirements": p.requirements,
+                        "constraints": p.constraints,
+                    }
+                    for p in projects
+                ],
+                "career_progression_trajectories": [
+                    {
+                        "target_career": t.target_career_title,
+                        "type": t.trajectory_type,
+                        "salary_delta": t.expected_salary_delta_inr,
+                        "delta_skills_required": t.required_delta_skills,
+                    }
+                    for t in trajectories
                 ],
                 "last_reviewed": career.last_reviewed_date.isoformat(),
             }
@@ -252,8 +308,9 @@ async def answer_question(
         )
 
     # --- 3. One stateless, grounded call --------------------------------------
+    context_block = await build_context_block(db, careers)
     result = await llm_client.generate_message(
-        system_prompt=SYSTEM_PROMPT.format(context=build_context_block(careers)),
+        system_prompt=SYSTEM_PROMPT.format(context=context_block),
         user_content=question,
     )
 

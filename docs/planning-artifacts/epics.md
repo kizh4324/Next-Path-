@@ -542,3 +542,77 @@ So that I can evaluate pathway momentum and identify when reassessment is needed
 - **Given** milestone completion history over time,
 - **When** navigating `/dashboard`,
 - **Then** Recharts components render milestone completion velocity across 30/90/180-day buckets, skill acquisition progress, and next scheduled reassessment dates (FR-28).
+
+---
+
+## Epic 7: Interactive Syllabi, Skill Project Lab & Career Trajectory Engine (roadmap.sh Alignment)
+
+**Goal:** Transform high-level career roadmaps into actionable, phased topic curricula with practical skill-based project specifications, proof-of-work submission tracking, and directional career progression mapping inspired by roadmap.sh.
+
+### Story 7.1: Topic Syllabus Schema, Seed Pipelines & Retrieval API
+As a student exploring a career path,  
+I want an interactive step-by-step topic syllabus with learning phases, key concepts, and verified free learning resources,  
+So that I have a clear curriculum of exactly what to study and master.
+
+**Acceptance Criteria:**
+- **Given** a valid `career_id` (e.g. `ux-designer` or `software-developer`),
+- **When** calling `GET /api/v1/careers/{career_id}/syllabus`,
+- **Then** the API returns structured phases (Foundations $\rightarrow$ Core $\rightarrow$ Advanced) with topic titles, key concepts, estimated hours, and verified free resource URLs (NPTEL, SWAYAM, freeCodeCamp, MDN).
+- **And** all 27 seeded careers have curated topic syllabi populated in SQLite and PostgreSQL seed data.
+
+---
+
+### Story 7.2: Skill & Career Project Repository, Requirements & Proof-of-Work Submission API
+As a student learning career skills,  
+I want practical project ideas categorized by difficulty (Beginner, Intermediate, Advanced) with concrete functional requirements and a proof submission portal,  
+So that I can build tangible portfolio projects that prove my skills to employers.
+
+**Acceptance Criteria:**
+- **Given** a chosen career path or skill,
+- **When** calling `GET /api/v1/careers/{career_id}/projects`,
+- **Then** the API returns projects grouped by difficulty (`beginner`, `intermediate`, `advanced`) with problem statements, itemized requirements checklists, constraints, and sample inputs/outputs.
+- **When** an authenticated student submits proof-of-work via `POST /api/v1/projects/{project_id}/submit` with a GitHub/Figma/Drive URL and reflection notes,
+- **Then** a `project_submissions` record is created and linked to the student profile.
+- **When** calling `GET /api/v1/projects/my-submissions`,
+- **Then** the student's completed projects and submitted URLs are returned.
+
+---
+
+### Story 7.3: Career Trajectory & Lateral Progression Compass Engine
+As a student or early career professional,  
+I want to see where my chosen career path can lead in the next 2 to 5 years (promotions, lateral pivots, and required delta skills),  
+So that I understand my long-term career mobility and growth directions.
+
+**Acceptance Criteria:**
+- **Given** a career path (e.g. `data-analyst`),
+- **When** calling `GET /api/v1/careers/{career_id}/trajectory`,
+- **Then** the API returns vertical advancements (e.g. Lead BI Analyst) and lateral transitions (e.g. Data Scientist / Product Manager).
+- **And** each trajectory includes estimated experience needed, salary band deltas, transferable skill percentages, and the exact 2–4 delta skills needed to make the jump.
+
+---
+
+### Story 7.4: Interactive Roadmap Tabs UI (Milestones, Syllabus Navigator, Project Lab, Trajectory Compass)
+As a student on the Roadmap page,  
+I want dedicated interactive tabs for [ Milestones ], [ 📚 Topic Syllabus ], [ 💻 Project Lab ], and [ 🧭 Career Trajectory ],  
+So that I can navigate curriculum topics, explore project specs, and track my portfolio submissions in one unified workspace.
+
+**Acceptance Criteria:**
+- **Given** an active roadmap on `/roadmap`,
+- **When** the student selects the **Topic Syllabus** tab,
+- **Then** an accordion-style phased syllabus is rendered with free resource links and key concept tags.
+- **When** the student selects the **Project Lab** tab,
+- **Then** project idea cards are rendered with difficulty badges, requirement checklists, and an inline submission dialog.
+- **When** the student selects the **Career Trajectory** tab,
+- **Then** a visual progression tree renders vertical and lateral paths with transferable skill percentages.
+
+---
+
+### Story 7.5: AI Project Mentor & Solution Guidance in Gemini Chatbot
+As a student working on a project from the Project Lab,  
+I want to ask the Career Assistant for help breaking down project steps or reviewing my approach,  
+So that I receive grounded mentoring without getting stuck during project execution.
+
+**Acceptance Criteria:**
+- **Given** a student viewing a project idea,
+- **When** clicking "Ask AI Mentor about this project" or asking project questions in the Chatbot drawer,
+- **Then** the Gemini assistant injects the project specification and career requirements into context to provide structured, step-by-step guidance.

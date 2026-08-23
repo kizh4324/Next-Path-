@@ -11,6 +11,7 @@ from app.api.v1 import (
     counselor,
     guardian,
     profile,
+    projects,
     recommendations,
     roadmap,
     scholarships,
@@ -23,6 +24,7 @@ api_router.include_router(profile.router)
 api_router.include_router(careers.router)
 api_router.include_router(recommendations.router)
 api_router.include_router(roadmap.router)
+api_router.include_router(projects.router)
 api_router.include_router(scholarships.router)
 api_router.include_router(chat.router)
 api_router.include_router(guardian.router)

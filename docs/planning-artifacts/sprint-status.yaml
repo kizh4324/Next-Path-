@@ -78,3 +78,11 @@ development_status:
   6-1-in-process-scholarship-deadline-reminder-scheduler-p1: done
   6-2-visual-progress-analytics-dashboard-p1: done
   epic-6-retrospective: optional
+
+  epic-7: done
+  7-1-topic-syllabus-schema-seed-pipelines-retrieval-api: done
+  7-2-skill-project-repository-requirements-submission-api: done
+  7-3-career-trajectory-lateral-progression-compass: done
+  7-4-interactive-roadmap-tabs-ui-syllabus-project-lab-trajectory: done
+  7-5-ai-project-mentor-gemini-guidance: done
+  epic-7-retrospective: optional

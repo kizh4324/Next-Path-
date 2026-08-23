@@ -1,4 +1,4 @@
-﻿# System Architecture: API Specification
+# System Architecture: API Specification
 
 ## AI-Based Career Decision & Pathway Companion
 
@@ -179,6 +179,112 @@ Side-by-side comparison of 2 to 3 selected careers (FR-08).
   }
   ```
 - **Response `200 OK`:** Matrix comparing duration, cost range, prerequisites, and demand caveats side-by-side.
+
+#### `GET /api/v1/careers/{career_id}/syllabus`
+Retrieves the phased, step-by-step topic syllabus for a career path (FR-21 / roadmap.sh alignment).
+- **Response `200 OK`:**
+  ```json
+  {
+    "career_id": "ux-designer",
+    "career_title": "UX / Product Designer",
+    "total_estimated_hours": 120,
+    "phases": [
+      {
+        "phase_number": 1,
+        "phase_title": "Foundations of User Research",
+        "topics": [
+          {
+            "id": 101,
+            "topic_title": "User Personas & Empathy Mapping",
+            "description": "Constructing archetype representations and qualitative empathy diagrams.",
+            "key_concepts": ["User interviews", "Empathy maps", "Persona templates"],
+            "free_resource_name": "Interaction Design Foundation Open Guides",
+            "free_resource_url": "https://www.interaction-design.org/literature",
+            "estimated_hours": 15,
+            "is_optional": false
+          }
+        ]
+      }
+    ]
+  }
+  ```
+
+#### `GET /api/v1/careers/{career_id}/projects`
+Retrieves curated, practical project ideas mapped by difficulty tier (FR-22 / roadmap.sh alignment).
+- **Query Params (Optional):** `?difficulty=beginner|intermediate|advanced`
+- **Response `200 OK`:**
+  ```json
+  {
+    "career_id": "ux-designer",
+    "career_title": "UX / Product Designer",
+    "projects": [
+      {
+        "id": "ux-college-admissions-redesign",
+        "difficulty": "beginner",
+        "title": "College Admissions Portal UX Redesign",
+        "tag": "Case Study",
+        "summary": "Redesign a complex state admissions portal for high-contrast mobile usability.",
+        "requirements": [
+          "Conduct a 5-user heuristic evaluation of current portal friction points",
+          "Create low-fidelity wireframe alternatives in Figma",
+          "Document usability test results with 3 peer participants"
+        ],
+        "skills_exercised": ["Wireframing", "Heuristic Evaluation", "Figma"],
+        "constraints": ["Standard 8px grid", "WCAG AA contrast compliant"],
+        "example_input_output": "Deliverable: 3-screen interactive Figma prototype link + 1-page PDF case deck."
+      }
+    ]
+  }
+  ```
+
+#### `POST /api/v1/projects/{project_id}/submit`
+Submits a student's proof-of-work project URL with optional self-reflection notes.
+- **Request Body:**
+  ```json
+  {
+    "repository_or_live_url": "https://www.figma.com/proto/xyz/admissions-redesign",
+    "reflection_notes": "Completed usability test with 4 students; reduced form steps from 7 to 3."
+  }
+  ```
+- **Response `201 Created`:**
+  ```json
+  {
+    "submission_id": "7d2e4c1a-8f5b-4c91-a8d3-4a8e2f1c6d0b",
+    "project_id": "ux-college-admissions-redesign",
+    "status": "completed",
+    "submitted_at": "2026-08-23T14:30:00Z"
+  }
+  ```
+
+#### `GET /api/v1/careers/{career_id}/trajectory`
+Retrieves vertical advancement vectors, lateral career shifts, and delta skill requirements (FR-23 / roadmap.sh alignment).
+- **Response `200 OK`:**
+  ```json
+  {
+    "source_career_id": "ux-designer",
+    "source_career_title": "UX / Product Designer",
+    "trajectories": [
+      {
+        "target_career_title": "Lead Product Designer / UX Manager",
+        "trajectory_type": "vertical_advancement",
+        "typical_years_experience": "3-5 years",
+        "expected_salary_delta_inr": "+₹6,00,000 - ₹12,00,000 / annum",
+        "required_delta_skills": ["Design System Governance", "Stakeholder Negotiation", "Team Mentorship"],
+        "transferable_skills_pct": 85,
+        "overview": "Moves from individual screen execution to product strategy and design system architecture."
+      },
+      {
+        "target_career_title": "Product Manager",
+        "trajectory_type": "lateral_transition",
+        "typical_years_experience": "2-4 years",
+        "expected_salary_delta_inr": "+₹5,00,000 - ₹10,00,000 / annum",
+        "required_delta_skills": ["Business Metrics & Unit Economics", "Sprint Backlog Prioritization", "SQL Analytics"],
+        "transferable_skills_pct": 65,
+        "overview": "Leverages user empathy and UX case knowledge to take full ownership of business and tech delivery."
+      }
+    ]
+  }
+  ```
 
 ---
 

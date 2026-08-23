@@ -457,3 +457,81 @@ export interface ProblemDetail {
   instance?: string;
   errors?: { field: string; message: string; type: string }[];
 }
+
+// --- Topic Syllabus, Skill Projects & Career Trajectories (Epic 7 / roadmap.sh) ---
+
+export interface TopicItem {
+  id: number;
+  topic_title: string;
+  description: string;
+  key_concepts: string[];
+  free_resource_name: string;
+  free_resource_url: string;
+  estimated_hours: number;
+  is_optional: boolean;
+}
+
+export interface SyllabusPhase {
+  phase_number: number;
+  phase_title: string;
+  topics: TopicItem[];
+}
+
+export interface CareerSyllabusResponse {
+  career_id: string;
+  career_title: string;
+  total_estimated_hours: number;
+  phases: SyllabusPhase[];
+}
+
+export type ProjectDifficulty = 'beginner' | 'intermediate' | 'advanced';
+
+export interface SkillProjectIdea {
+  id: string;
+  career_id: string;
+  difficulty: ProjectDifficulty;
+  title: string;
+  tag: string;
+  summary: string;
+  requirements: string[];
+  skills_exercised: string[];
+  constraints: string[];
+  example_input_output: string | null;
+}
+
+export interface CareerProjectsResponse {
+  career_id: string;
+  career_title: string;
+  projects: SkillProjectIdea[];
+}
+
+export interface ProjectSubmission {
+  id: string;
+  student_id: string;
+  project_id: string;
+  repository_or_live_url: string;
+  reflection_notes: string | null;
+  status: string;
+  submitted_at: string;
+}
+
+export type TrajectoryType = 'vertical_advancement' | 'lateral_transition' | 'specialization';
+
+export interface CareerTrajectory {
+  id: number;
+  source_career_id: string;
+  target_career_title: string;
+  trajectory_type: TrajectoryType;
+  typical_years_experience: string;
+  expected_salary_delta_inr: string;
+  required_delta_skills: string[];
+  transferable_skills_pct: number;
+  overview: string;
+}
+
+export interface CareerTrajectoryResponse {
+  source_career_id: string;
+  source_career_title: string;
+  trajectories: CareerTrajectory[];
+}
+

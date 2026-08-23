@@ -93,6 +93,9 @@ async def run(drop_first: bool) -> int:
             f"  seeded {careers} careers, {skills} skills, "
             f"{markets} market snapshots, {scholarships} scholarships"
         )
+        from data.seed_syllabus_and_projects import seed_syllabi_and_projects
+        syllabi, projects, trajectories = await seed_syllabi_and_projects(session)
+        print(f"  seeded {syllabi} syllabus topics, {projects} project ideas, {trajectories} career trajectories")
         await verify(session)
 
     created = await create_demo_accounts()

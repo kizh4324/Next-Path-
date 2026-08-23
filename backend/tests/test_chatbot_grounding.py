@@ -211,9 +211,12 @@ async def test_unmatched_question_says_so_rather_than_guessing(
 
 
 async def test_chat_degrades_honestly_with_no_api_key(
-    client: AsyncClient, catalogue: Any, student: dict[str, Any]
+    client: AsyncClient, catalogue: Any, student: dict[str, Any], monkeypatch: pytest.MonkeyPatch
 ) -> None:
     """No stub, no key: the response must say the assistant is unavailable."""
+    from app.core.config import settings
+    monkeypatch.setattr(settings, "gemini_api_key", "")
+    monkeypatch.setattr(settings, "anthropic_api_key", "")
     response = await client.post(
         "/api/v1/chat/message",
         json={"question": "Tell me about being a data scientist"},
@@ -270,9 +273,12 @@ async def test_parent_summary_includes_costs_and_discussion_points(
 
 
 async def test_parent_summary_falls_back_to_a_template_without_an_api_key(
-    client: AsyncClient, catalogue: Any, student: dict[str, Any]
+    client: AsyncClient, catalogue: Any, student: dict[str, Any], monkeypatch: pytest.MonkeyPatch
 ) -> None:
     """Every deployment gets a usable guardian summary, key or not — and is told which."""
+    from app.core.config import settings
+    monkeypatch.setattr(settings, "gemini_api_key", "")
+    monkeypatch.setattr(settings, "anthropic_api_key", "")
     await client.post("/api/v1/recommendations/evaluate", headers=student["headers"])
     body = (await client.get("/api/v1/guardian/summary", headers=student["headers"])).json()
 

@@ -57,6 +57,13 @@ class Settings(BaseSettings):
     anthropic_max_tokens: int = 4096
     anthropic_timeout_seconds: float = 30.0
 
+    # --- Google Gemini (alternative to Anthropic) ---
+    # A free-tier alternative. When both keys are present, Gemini takes priority.
+    gemini_api_key: str = ""
+    gemini_model: str = "gemini-3.6-flash"
+    gemini_max_tokens: int = 4096
+    gemini_timeout_seconds: float = 30.0
+
     # --- Seed ingestion (Story 1.3) ---
     dataset_root: str = str(REPO_ROOT / "Dataset")
     seed_root: str = str(REPO_ROOT / "data" / "seed")
@@ -88,7 +95,16 @@ class Settings(BaseSettings):
 
     @property
     def llm_enabled(self) -> bool:
-        return bool(self.anthropic_api_key.strip())
+        return bool(self.gemini_api_key.strip()) or bool(self.anthropic_api_key.strip())
+
+    @property
+    def llm_provider(self) -> str:
+        """Which LLM backend is active. Gemini takes priority when both are set."""
+        if self.gemini_api_key.strip():
+            return "gemini"
+        if self.anthropic_api_key.strip():
+            return "anthropic"
+        return "none"
 
     @property
     def is_production(self) -> bool:

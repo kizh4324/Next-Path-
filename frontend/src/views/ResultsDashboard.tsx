@@ -118,6 +118,13 @@ export function ResultsDashboard(): JSX.Element {
             recommendation={recommendation}
             selected={comparing.includes(recommendation.career_id)}
             onToggleCompare={toggleCompare}
+            chosenAs={
+              primary === recommendation.career_id
+                ? 'primary'
+                : backup === recommendation.career_id
+                  ? 'backup'
+                  : undefined
+            }
             onChoose={(careerId) => {
               if (primary === careerId) setPrimary(null);
               else if (backup === careerId) setBackup(null);

@@ -3,7 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { ApiError } from '@/services/api_client';
-import { guardianApi, roadmapApi, scholarshipApi } from '@/services/endpoints';
+import { careerApi, guardianApi, projectApi, roadmapApi, scholarshipApi } from '@/services/endpoints';
 import { queryKeys } from '@/hooks/useRecommendations';
 import type { EvidenceType } from '@/types/models';
 
@@ -71,3 +71,66 @@ export function useGuardianSummary(enabled = true) {
     staleTime: Infinity,
   });
 }
+
+export function useCareerSyllabus(careerId: string | null | undefined, enabled = true) {
+  return useQuery({
+    queryKey: queryKeys.syllabus(careerId ?? ''),
+    queryFn: () => careerApi.syllabus(careerId!),
+    enabled: enabled && Boolean(careerId),
+    staleTime: 10 * 60 * 1000,
+  });
+}
+
+export function useCareerProjects(
+  careerId: string | null | undefined,
+  difficulty?: string,
+  enabled = true,
+) {
+  return useQuery({
+    queryKey: queryKeys.projects(careerId ?? '', difficulty),
+    queryFn: () => careerApi.projects(careerId!, difficulty),
+    enabled: enabled && Boolean(careerId),
+    staleTime: 10 * 60 * 1000,
+  });
+}
+
+export function useCareerTrajectory(careerId: string | null | undefined, enabled = true) {
+  return useQuery({
+    queryKey: queryKeys.trajectory(careerId ?? ''),
+    queryFn: () => careerApi.trajectory(careerId!),
+    enabled: enabled && Boolean(careerId),
+    staleTime: 10 * 60 * 1000,
+  });
+}
+
+export function useProjectSubmissions(enabled = true) {
+  return useQuery({
+    queryKey: queryKeys.projectSubmissions,
+    queryFn: projectApi.mySubmissions,
+    enabled,
+    staleTime: 2 * 60 * 1000,
+  });
+}
+
+export function useSubmitProject() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      projectId,
+      repositoryOrLiveUrl,
+      reflectionNotes,
+    }: {
+      projectId: string;
+      repositoryOrLiveUrl: string;
+      reflectionNotes?: string | null;
+    }) =>
+      projectApi.submit(projectId, {
+        repository_or_live_url: repositoryOrLiveUrl,
+        reflection_notes: reflectionNotes,
+      }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: queryKeys.projectSubmissions });
+    },
+  });
+}
+

@@ -255,3 +255,167 @@ async def get_scholarship_or_404(db: AsyncSession, scholarship_id: int) -> Schol
             status_code=status.HTTP_404_NOT_FOUND, detail="Scholarship not found."
         )
     return ScholarshipDTO.model_validate(scholarship)
+
+
+# --- Syllabus, Projects, and Trajectories Services (Epic 7 / roadmap.sh Alignment) ---
+
+
+async def get_career_syllabus(db: AsyncSession, career_id: str) -> CareerSyllabusResponse:
+    career = await get_career_or_404(db, career_id)
+
+    from app.models.catalog import CareerTopicSyllabus
+    from app.schemas.catalog import (
+        CareerSyllabusResponse,
+        SyllabusPhaseDTO,
+        TopicItemDTO,
+    )
+
+    rows = (
+        (
+            await db.execute(
+                select(CareerTopicSyllabus)
+                .where(CareerTopicSyllabus.career_id == career_id)
+                .order_by(CareerTopicSyllabus.phase_number, CareerTopicSyllabus.id)
+            )
+        )
+        .scalars()
+        .all()
+    )
+
+    phases_dict: dict[int, dict] = {}
+    total_hours = 0
+
+    for row in rows:
+        total_hours += row.estimated_hours
+        p_num = row.phase_number
+        if p_num not in phases_dict:
+            phases_dict[p_num] = {
+                "phase_number": p_num,
+                "phase_title": row.phase_title,
+                "topics": [],
+            }
+        phases_dict[p_num]["topics"].append(
+            TopicItemDTO(
+                id=row.id,
+                topic_title=row.topic_title,
+                description=row.description,
+                key_concepts=row.key_concepts,
+                free_resource_name=row.free_resource_name,
+                free_resource_url=row.free_resource_url,
+                estimated_hours=row.estimated_hours,
+                is_optional=row.is_optional,
+            )
+        )
+
+    phases = [
+        SyllabusPhaseDTO(
+            phase_number=p["phase_number"],
+            phase_title=p["phase_title"],
+            topics=p["topics"],
+        )
+        for p in sorted(phases_dict.values(), key=lambda x: x["phase_number"])
+    ]
+
+    return CareerSyllabusResponse(
+        career_id=career.id,
+        career_title=career.title,
+        total_estimated_hours=total_hours,
+        phases=phases,
+    )
+
+
+async def get_career_projects(
+    db: AsyncSession, career_id: str, difficulty: str | None = None
+) -> CareerProjectsResponse:
+    career = await get_career_or_404(db, career_id)
+
+    from app.models.catalog import SkillProjectIdea
+    from app.schemas.catalog import CareerProjectsResponse, SkillProjectIdeaDTO
+
+    statement = select(SkillProjectIdea).where(SkillProjectIdea.career_id == career_id)
+    if difficulty:
+        statement = statement.where(SkillProjectIdea.difficulty == difficulty.lower())
+
+    rows = (await db.execute(statement.order_by(SkillProjectIdea.id))).scalars().all()
+
+    return CareerProjectsResponse(
+        career_id=career.id,
+        career_title=career.title,
+        projects=[SkillProjectIdeaDTO.model_validate(r) for r in rows],
+    )
+
+
+async def submit_project(
+    db: AsyncSession, profile: Any, project_id: str, payload: Any
+) -> ProjectSubmissionDTO:
+    from app.models.catalog import ProjectSubmission, SkillProjectIdea
+    from app.schemas.catalog import ProjectSubmissionDTO
+
+    project = await db.get(SkillProjectIdea, project_id)
+    if project is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Project idea '{project_id}' not found.",
+        )
+
+    submission = ProjectSubmission(
+        student_id=profile.id,
+        project_id=project.id,
+        repository_or_live_url=payload.repository_or_live_url.strip(),
+        reflection_notes=payload.reflection_notes.strip() if payload.reflection_notes else None,
+        status="completed",
+    )
+    db.add(submission)
+    await db.commit()
+    await db.refresh(submission)
+
+    return ProjectSubmissionDTO.model_validate(submission)
+
+
+async def get_student_project_submissions(
+    db: AsyncSession, profile: Any
+) -> list[ProjectSubmissionDTO]:
+    from app.models.catalog import ProjectSubmission
+    from app.schemas.catalog import ProjectSubmissionDTO
+
+    rows = (
+        (
+            await db.execute(
+                select(ProjectSubmission)
+                .where(ProjectSubmission.student_id == profile.id)
+                .order_by(ProjectSubmission.submitted_at.desc())
+            )
+        )
+        .scalars()
+        .all()
+    )
+
+    return [ProjectSubmissionDTO.model_validate(r) for r in rows]
+
+
+async def get_career_trajectories(
+    db: AsyncSession, career_id: str
+) -> CareerTrajectoryResponse:
+    career = await get_career_or_404(db, career_id)
+
+    from app.models.catalog import CareerTrajectory
+    from app.schemas.catalog import CareerTrajectoryDTO, CareerTrajectoryResponse
+
+    rows = (
+        (
+            await db.execute(
+                select(CareerTrajectory)
+                .where(CareerTrajectory.source_career_id == career_id)
+                .order_by(CareerTrajectory.id)
+            )
+        )
+        .scalars()
+        .all()
+    )
+
+    return CareerTrajectoryResponse(
+        source_career_id=career.id,
+        source_career_title=career.title,
+        trajectories=[CareerTrajectoryDTO.model_validate(r) for r in rows],
+    )
+

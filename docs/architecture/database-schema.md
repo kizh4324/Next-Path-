@@ -1,4 +1,4 @@
-﻿# System Architecture: Database Schema & Seed Data Ingestion
+# System Architecture: Database Schema & Seed Data Ingestion
 
 ## AI-Based Career Decision & Pathway Companion
 
@@ -348,6 +348,80 @@ CREATE TABLE counselor_escalations (
 CREATE INDEX idx_escalations_student ON counselor_escalations(student_id);
 CREATE INDEX idx_escalations_status ON counselor_escalations(status);
 CREATE INDEX idx_escalations_trigger ON counselor_escalations(trigger_reason);
+
+-- -----------------------------------------------------------------------------
+-- 2.12 Career Topic Syllabi Table (FR-21 / roadmap.sh Syllabus Alignment)
+-- -----------------------------------------------------------------------------
+CREATE TABLE career_topic_syllabi (
+    id SERIAL PRIMARY KEY,
+    career_id VARCHAR(64) NOT NULL REFERENCES career_library(id) ON DELETE CASCADE,
+    phase_number INT NOT NULL CHECK (phase_number BETWEEN 1 AND 5),
+    phase_title VARCHAR(100) NOT NULL,
+    topic_title VARCHAR(150) NOT NULL,
+    description TEXT NOT NULL,
+    key_concepts JSONB NOT NULL DEFAULT '[]'::jsonb,
+    free_resource_name VARCHAR(100) NOT NULL,
+    free_resource_url VARCHAR(500) NOT NULL,
+    estimated_hours INT NOT NULL DEFAULT 10,
+    is_optional BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL
+);
+
+CREATE INDEX idx_syllabi_career_phase ON career_topic_syllabi(career_id, phase_number);
+
+-- -----------------------------------------------------------------------------
+-- 2.13 Skill-Based Project Ideas Table (FR-22 / roadmap.sh Projects Alignment)
+-- -----------------------------------------------------------------------------
+CREATE TABLE skill_project_ideas (
+    id VARCHAR(64) PRIMARY KEY,
+    career_id VARCHAR(64) NOT NULL REFERENCES career_library(id) ON DELETE CASCADE,
+    difficulty VARCHAR(20) NOT NULL CHECK (difficulty IN ('beginner', 'intermediate', 'advanced')),
+    title VARCHAR(150) NOT NULL,
+    tag VARCHAR(50) NOT NULL,
+    summary TEXT NOT NULL,
+    requirements JSONB NOT NULL DEFAULT '[]'::jsonb,
+    skills_exercised JSONB NOT NULL DEFAULT '[]'::jsonb,
+    constraints JSONB NOT NULL DEFAULT '[]'::jsonb,
+    example_input_output TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL
+);
+
+CREATE INDEX idx_projects_career_diff ON skill_project_ideas(career_id, difficulty);
+
+-- -----------------------------------------------------------------------------
+-- 2.14 Project Submissions Table (FR-22 / Proof-of-Work Verification)
+-- -----------------------------------------------------------------------------
+CREATE TABLE project_submissions (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    student_id UUID NOT NULL REFERENCES student_profiles(id) ON DELETE CASCADE,
+    project_id VARCHAR(64) NOT NULL REFERENCES skill_project_ideas(id) ON DELETE CASCADE,
+    repository_or_live_url VARCHAR(500) NOT NULL,
+    reflection_notes TEXT,
+    status VARCHAR(20) NOT NULL DEFAULT 'completed',
+    submitted_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL
+);
+
+CREATE INDEX idx_project_sub_student ON project_submissions(student_id);
+CREATE INDEX idx_project_sub_project ON project_submissions(project_id);
+
+-- -----------------------------------------------------------------------------
+-- 2.15 Career Trajectories Table (FR-23 / roadmap.sh Progression Alignment)
+-- -----------------------------------------------------------------------------
+CREATE TABLE career_trajectories (
+    id SERIAL PRIMARY KEY,
+    source_career_id VARCHAR(64) NOT NULL REFERENCES career_library(id) ON DELETE CASCADE,
+    target_career_title VARCHAR(150) NOT NULL,
+    trajectory_type VARCHAR(30) NOT NULL CHECK (trajectory_type IN ('vertical_advancement', 'lateral_transition', 'specialization')),
+    typical_years_experience VARCHAR(50) NOT NULL,
+    expected_salary_delta_inr VARCHAR(100) NOT NULL,
+    required_delta_skills JSONB NOT NULL DEFAULT '[]'::jsonb,
+    transferable_skills_pct INT NOT NULL CHECK (transferable_skills_pct BETWEEN 0 AND 100),
+    overview TEXT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL
+);
+
+CREATE INDEX idx_trajectories_source ON career_trajectories(source_career_id);
 ```
 
 ---

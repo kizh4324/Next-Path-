@@ -274,6 +274,11 @@ async def run(do_truncate: bool, verify_only: bool) -> int:
             print(f"  market snapshots:      {markets}")
             scholarships = await seed_scholarships(session)
             print(f"  scholarships upserted: {scholarships}")
+            from data.seed_syllabus_and_projects import seed_syllabi_and_projects
+            syllabi, projects, trajectories = await seed_syllabi_and_projects(session)
+            print(f"  syllabi written:       {syllabi}")
+            print(f"  projects written:      {projects}")
+            print(f"  trajectories written:  {trajectories}")
 
         await verify(session)
     return 0

@@ -16,6 +16,11 @@ export const queryKeys = {
   careers: (params?: Record<string, unknown>) => ['careers', params ?? {}] as const,
   career: (id: string) => ['careers', id] as const,
   skillGaps: (id: string) => ['careers', id, 'skill-gaps'] as const,
+  syllabus: (careerId: string) => ['careers', careerId, 'syllabus'] as const,
+  projects: (careerId: string, difficulty?: string) =>
+    ['careers', careerId, 'projects', difficulty ?? 'all'] as const,
+  trajectory: (careerId: string) => ['careers', careerId, 'trajectory'] as const,
+  projectSubmissions: ['projects', 'my-submissions'] as const,
   scholarships: (params: Record<string, unknown>) => ['scholarships', params] as const,
   counselorQueue: (status?: string) => ['counselor', 'queue', status ?? 'all'] as const,
 };

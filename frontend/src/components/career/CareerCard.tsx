@@ -23,11 +23,13 @@ export function CareerCard({
   recommendation,
   selected,
   onToggleCompare,
+  chosenAs,
   onChoose,
 }: {
   recommendation: Recommendation;
   selected?: boolean;
   onToggleCompare?: (careerId: string) => void;
+  chosenAs?: 'primary' | 'backup';
   onChoose?: (careerId: string) => void;
 }): JSX.Element {
   const career = recommendation.career;
@@ -138,8 +140,15 @@ export function CareerCard({
           </button>
         )}
         {onChoose && (
-          <Button variant="ghost" onClick={() => onChoose(recommendation.career_id)}>
-            Choose this path
+          <Button
+            variant={chosenAs ? 'primary' : 'ghost'}
+            onClick={() => onChoose(recommendation.career_id)}
+          >
+            {chosenAs === 'primary'
+              ? '✓ Primary choice'
+              : chosenAs === 'backup'
+                ? '✓ Backup choice'
+                : 'Choose this path'}
           </Button>
         )}
       </div>

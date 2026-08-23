@@ -227,3 +227,119 @@ class MarketSnapshot(Base):
     career: Mapped[CareerLibrary] = relationship(
         "CareerLibrary", back_populates="market_snapshots"
     )
+
+
+class CareerTopicSyllabus(Base):
+    """Step-by-step topic syllabus with free learning resources (FR-21)."""
+
+    __tablename__ = "career_topic_syllabi"
+    __table_args__ = (
+        CheckConstraint("phase_number BETWEEN 1 AND 5", name="ck_syllabi_phase_number"),
+        Index("idx_syllabi_career_phase", "career_id", "phase_number"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    career_id: Mapped[str] = mapped_column(
+        String(100), ForeignKey("career_library.id", ondelete="CASCADE"), nullable=False
+    )
+    phase_number: Mapped[int] = mapped_column(Integer, nullable=False)
+    phase_title: Mapped[str] = mapped_column(String(100), nullable=False)
+    topic_title: Mapped[str] = mapped_column(String(150), nullable=False)
+    description: Mapped[str] = mapped_column(Text, nullable=False)
+    key_concepts: Mapped[list[str]] = mapped_column(JSONColumn, default=list, nullable=False)
+    free_resource_name: Mapped[str] = mapped_column(String(100), nullable=False)
+    free_resource_url: Mapped[str] = mapped_column(String(500), nullable=False)
+    estimated_hours: Mapped[int] = mapped_column(Integer, default=10, nullable=False)
+    is_optional: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+
+    created_at: Mapped[datetime] = created_at_column()
+
+    career: Mapped[CareerLibrary] = relationship("CareerLibrary")
+
+
+class SkillProjectIdea(Base):
+    """Practical skill-based project specifications mapped to difficulty tiers (FR-22)."""
+
+    __tablename__ = "skill_project_ideas"
+    __table_args__ = (
+        CheckConstraint(
+            "difficulty IN ('beginner', 'intermediate', 'advanced')",
+            name="ck_project_ideas_difficulty",
+        ),
+        Index("idx_projects_career_diff", "career_id", "difficulty"),
+    )
+
+    id: Mapped[str] = mapped_column(String(100), primary_key=True)
+    career_id: Mapped[str] = mapped_column(
+        String(100), ForeignKey("career_library.id", ondelete="CASCADE"), nullable=False
+    )
+    difficulty: Mapped[str] = mapped_column(String(20), nullable=False)
+    title: Mapped[str] = mapped_column(String(150), nullable=False)
+    tag: Mapped[str] = mapped_column(String(50), nullable=False)
+    summary: Mapped[str] = mapped_column(Text, nullable=False)
+    requirements: Mapped[list[str]] = mapped_column(JSONColumn, default=list, nullable=False)
+    skills_exercised: Mapped[list[str]] = mapped_column(JSONColumn, default=list, nullable=False)
+    constraints: Mapped[list[str]] = mapped_column(JSONColumn, default=list, nullable=False)
+    example_input_output: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+    created_at: Mapped[datetime] = created_at_column()
+
+    career: Mapped[CareerLibrary] = relationship("CareerLibrary")
+    submissions: Mapped[list[ProjectSubmission]] = relationship(
+        "ProjectSubmission", back_populates="project", cascade="all, delete-orphan"
+    )
+
+
+class ProjectSubmission(Base):
+    """Student proof-of-work submission for practical project tasks (FR-22)."""
+
+    __tablename__ = "project_submissions"
+    __table_args__ = (
+        Index("idx_project_sub_student", "student_id"),
+        Index("idx_project_sub_project", "project_id"),
+    )
+
+    id: Mapped[uuid.UUID] = mapped_column(UUIDColumn, primary_key=True, default=uuid.uuid4)
+    student_id: Mapped[uuid.UUID] = mapped_column(
+        UUIDColumn, ForeignKey("student_profiles.id", ondelete="CASCADE"), nullable=False
+    )
+    project_id: Mapped[str] = mapped_column(
+        String(100), ForeignKey("skill_project_ideas.id", ondelete="CASCADE"), nullable=False
+    )
+    repository_or_live_url: Mapped[str] = mapped_column(String(500), nullable=False)
+    reflection_notes: Mapped[str | None] = mapped_column(Text, nullable=True)
+    status: Mapped[str] = mapped_column(String(20), default="completed", nullable=False)
+
+    submitted_at: Mapped[datetime] = created_at_column()
+    updated_at: Mapped[datetime] = updated_at_column()
+
+    project: Mapped[SkillProjectIdea] = relationship("SkillProjectIdea", back_populates="submissions")
+
+
+class CareerTrajectory(Base):
+    """Career progression vectors mapping vertical and lateral growth (FR-23)."""
+
+    __tablename__ = "career_trajectories"
+    __table_args__ = (
+        CheckConstraint(
+            "trajectory_type IN ('vertical_advancement', 'lateral_transition', 'specialization')",
+            name="ck_trajectories_type",
+        ),
+        Index("idx_trajectories_source", "source_career_id"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    source_career_id: Mapped[str] = mapped_column(
+        String(100), ForeignKey("career_library.id", ondelete="CASCADE"), nullable=False
+    )
+    target_career_title: Mapped[str] = mapped_column(String(150), nullable=False)
+    trajectory_type: Mapped[str] = mapped_column(String(30), nullable=False)
+    typical_years_experience: Mapped[str] = mapped_column(String(50), nullable=False)
+    expected_salary_delta_inr: Mapped[str] = mapped_column(String(100), nullable=False)
+    required_delta_skills: Mapped[list[str]] = mapped_column(JSONColumn, default=list, nullable=False)
+    transferable_skills_pct: Mapped[int] = mapped_column(Integer, nullable=False)
+    overview: Mapped[str] = mapped_column(Text, nullable=False)
+
+    created_at: Mapped[datetime] = created_at_column()
+
+    source_career: Mapped[CareerLibrary] = relationship("CareerLibrary")

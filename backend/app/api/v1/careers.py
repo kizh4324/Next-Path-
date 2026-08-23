@@ -10,7 +10,10 @@ from app.schemas.catalog import (
     CareerCompareRequest,
     CareerCompareResponse,
     CareerDetailDTO,
+    CareerProjectsResponse,
     CareerSummaryDTO,
+    CareerSyllabusResponse,
+    CareerTrajectoryResponse,
 )
 from app.schemas.roadmap import SkillGapResponse
 
@@ -50,3 +53,30 @@ async def skill_gaps(
 ) -> SkillGapResponse:
     """Skills split into essential / useful / optional, each with a free route (FR-11, FR-12)."""
     return await roadmap_service.get_skill_gaps(db, profile, career_id)
+
+
+@router.get("/{career_id}/syllabus", response_model=CareerSyllabusResponse)
+async def career_syllabus(
+    career_id: str, db: DbSession
+) -> CareerSyllabusResponse:
+    """Phased topic syllabus with key concepts and free learning resources (FR-21 / roadmap.sh)."""
+    return await catalog_service.get_career_syllabus(db, career_id)
+
+
+@router.get("/{career_id}/projects", response_model=CareerProjectsResponse)
+async def career_projects(
+    career_id: str,
+    db: DbSession,
+    difficulty: str | None = Query(default=None, description="Filter by beginner|intermediate|advanced"),
+) -> CareerProjectsResponse:
+    """Curated practical project ideas by difficulty tier (FR-22 / roadmap.sh)."""
+    return await catalog_service.get_career_projects(db, career_id, difficulty=difficulty)
+
+
+@router.get("/{career_id}/trajectory", response_model=CareerTrajectoryResponse)
+async def career_trajectory(
+    career_id: str, db: DbSession
+) -> CareerTrajectoryResponse:
+    """Career progression vectors and lateral transition possibilities (FR-23 / roadmap.sh)."""
+    return await catalog_service.get_career_trajectories(db, career_id)
+

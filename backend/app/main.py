@@ -43,7 +43,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         "Starting %s (env=%s, llm=%s)",
         settings.app_name,
         settings.environment,
-        "enabled" if settings.llm_enabled else "disabled — deterministic fallbacks active",
+        f"enabled via {settings.llm_provider}" if settings.llm_enabled else "disabled — deterministic fallbacks active",
     )
     if settings.is_production and settings.jwt_secret_key.startswith("dev-only"):
         # Failing to start is the right outcome: a production deployment signing tokens

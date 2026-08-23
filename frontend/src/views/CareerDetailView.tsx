@@ -3,6 +3,9 @@
 import { Link, useParams } from 'react-router-dom';
 
 import { SkillList } from '@/components/career/CareerCard';
+import { CareerTrajectoryView } from '@/components/career/CareerTrajectoryView';
+import { SkillProjectLab } from '@/components/career/SkillProjectLab';
+import { TopicSyllabusView } from '@/components/career/TopicSyllabusView';
 import { Badge, Callout, Card, EmptyState, SkeletonCard } from '@/components/ui';
 import { useCareer, useSkillGaps } from '@/hooks/useRecommendations';
 import { formatDate, formatInrRange } from '@/utils/format';
@@ -192,6 +195,14 @@ export function CareerDetailView(): JSX.Element {
           <SkillList title="Optional" skills={gaps.optional} />
         </Card>
       )}
+
+      {/* Curriculum, Projects & Trajectory Tabs (roadmap.sh Alignment) */}
+      <section className="flex flex-col gap-md">
+        <h2 className="text-heading-2 text-ink">Learning Curriculum & Career Path</h2>
+        <TopicSyllabusView careerId={career.id} />
+        <SkillProjectLab careerId={career.id} />
+        <CareerTrajectoryView careerId={career.id} />
+      </section>
 
       <Card>
         <h2 className="text-title text-ink">Where this information comes from</h2>

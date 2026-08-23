@@ -4,7 +4,10 @@ import { api } from '@/services/api_client';
 import type {
   CareerCompareResponse,
   CareerDetail,
+  CareerProjectsResponse,
   CareerSummary,
+  CareerSyllabusResponse,
+  CareerTrajectoryResponse,
   ChatMessageResponse,
   ConsentResponse,
   ErasureReceipt,
@@ -18,6 +21,7 @@ import type {
   ParentSummaryResponse,
   PathwaySelectResponse,
   ProfileStatusResponse,
+  ProjectSubmission,
   ReassessResponse,
   RecommendationBatch,
   RoadmapResponse,
@@ -59,6 +63,20 @@ export const careerApi = {
   compare: (careerIds: string[]) =>
     api.post<CareerCompareResponse>('/careers/compare', { career_ids: careerIds }),
   skillGaps: (careerId: string) => api.get<SkillGapResponse>(`/careers/${careerId}/skill-gaps`),
+  syllabus: (careerId: string) =>
+    api.get<CareerSyllabusResponse>(`/careers/${careerId}/syllabus`),
+  projects: (careerId: string, difficulty?: string) =>
+    api.get<CareerProjectsResponse>(`/careers/${careerId}/projects`, { difficulty }),
+  trajectory: (careerId: string) =>
+    api.get<CareerTrajectoryResponse>(`/careers/${careerId}/trajectory`),
+};
+
+export const projectApi = {
+  submit: (
+    projectId: string,
+    body: { repository_or_live_url: string; reflection_notes?: string | null },
+  ) => api.post<ProjectSubmission>(`/projects/${projectId}/submit`, body),
+  mySubmissions: () => api.get<ProjectSubmission[]>('/projects/my-submissions'),
 };
 
 export const recommendationApi = {
