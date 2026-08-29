@@ -1,0 +1,8 @@
+{
+  "name": "Next_Path",
+  "description": "A career decision companion for Indian students to explore options with honest fit, feasibility, and evidence labels.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
