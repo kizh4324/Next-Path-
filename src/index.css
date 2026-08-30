@@ -1,0 +1,129 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    background-color: #fdf9f5;
+  }
+
+  body {
+    @apply bg-canvas text-ink font-sans text-body-md antialiased;
+    margin: 0;
+    min-height: 100vh;
+    background-color: #fdf9f5;
+  }
+
+  /* High-trust focus ring: 2px primary with warm paper offset */
+  :focus-visible {
+    @apply outline-none ring-2 ring-primary ring-offset-2 ring-offset-canvas;
+  }
+
+  ::selection {
+    background-color: #d5e3ff;
+    color: #001b3c;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  /* Editorial Minimalism: 1px hairline border (#e6e2de), flat document elevation, no shadow on standard cards */
+  .card {
+    @apply bg-surface border border-hairline rounded-lg p-lg;
+  }
+
+  .card-warm {
+    @apply bg-canvas-soft border border-hairline rounded-lg p-lg;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-xs min-h-touch px-lg text-button
+           font-medium transition-all duration-150 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed
+           disabled:active:scale-100;
+  }
+
+  /* Primary: Fully pill-shaped (#005db2) */
+  .btn-primary {
+    @apply btn bg-primary text-on-primary rounded-full hover:bg-primary-active shadow-none;
+  }
+
+  /* Secondary: White surface, hairline border, 8px radius */
+  .btn-utility {
+    @apply btn bg-surface text-ink border border-hairline rounded-md hover:bg-canvas-soft;
+  }
+
+  .btn-ghost {
+    @apply btn text-primary rounded-md hover:bg-canvas-soft;
+  }
+
+  .btn-destructive {
+    @apply btn bg-error text-on-error rounded-md hover:opacity-90;
+  }
+
+  /* Inputs: White surface, 1px border, 4px radius (sharper for data entry) */
+  .input {
+    @apply w-full min-h-touch bg-surface border border-hairline rounded-xs px-sm py-xs
+           text-body-sm text-ink placeholder:text-ink-faint transition-colors
+           focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1 focus:ring-offset-canvas;
+  }
+
+  .input-error {
+    @apply border-error bg-error-soft/30;
+    border-width: 1.5px;
+  }
+
+  /* Neutral Badge: White pill + hairline border. Neutral text only for fit/feasibility. */
+  .badge {
+    @apply inline-flex items-center gap-xs bg-surface border border-hairline
+           rounded-full px-sm py-xxs text-caption font-normal text-ink whitespace-nowrap;
+  }
+
+  /* Status chips with 6px indicator dots */
+  .status-dot-success {
+    @apply inline-block h-1.5 w-1.5 rounded-full bg-success shrink-0;
+  }
+
+  .status-dot-warning {
+    @apply inline-block h-1.5 w-1.5 rounded-full bg-warning shrink-0;
+  }
+
+  .chip {
+    @apply inline-flex items-center min-h-touch bg-surface border border-hairline
+           rounded-full px-sm text-body-sm text-ink-secondary transition-all
+           hover:border-outline active:scale-[0.98];
+  }
+
+  .chip-selected {
+    @apply border-primary text-primary font-medium;
+    background-color: #d5e3ff/30;
+  }
+
+  .eyebrow {
+    @apply text-eyebrow uppercase tracking-wider text-ink-muted font-semibold;
+  }
+
+  .verified-tag {
+    @apply inline-flex items-center gap-1 text-[11px] text-ink-muted border border-hairline rounded px-1.5 py-0.5 bg-canvas-soft;
+  }
+
+  .skip-link {
+    @apply sr-only focus:not-sr-only focus:absolute focus:left-md focus:top-md focus:z-50
+           focus:bg-surface focus:text-ink focus:px-md focus:py-xs focus:rounded-md
+           focus:border focus:border-hairline;
+  }
+}
