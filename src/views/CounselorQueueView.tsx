@@ -64,6 +64,8 @@ function SnapshotView({ escalation }: { escalation: Escalation }): JSX.Element {
             'full_name',
             'education_stage',
             'grade_or_year',
+            'degree',
+            'engineering_branch',
             'current_stream',
             'budget_tier',
             'relocation_willingness',

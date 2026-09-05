@@ -51,11 +51,16 @@ export function generateAdaptiveRoadmap(
   primaryCareer: Career,
   backupCareer: Career | null,
   _educationStage: string = 'class_11_12',
+  degree?: string | null,
+  engineeringBranch?: string | null,
 ): RoadmapResponse {
   const milestones: Milestone[] = [];
   let mCounter = 1;
 
   const makeId = () => `m-${roadmapId.slice(0, 8)}-${mCounter++}`;
+
+  const branchText = engineeringBranch ? ` (${engineeringBranch})` : '';
+  const degreeContext = degree ? `${degree}${branchText}` : null;
 
   const exams = primaryCareer.india_entry_routes?.flatMap((r) => r.entrance_exams || []) || [];
   const primaryExam = exams[0] || null;
@@ -149,8 +154,12 @@ export function generateAdaptiveRoadmap(
     id: makeId(),
     roadmap_id: roadmapId,
     timeframe_bucket: 'day_90',
-    title: `Build & Submit Starter Project for ${primaryCareer.title}`,
-    description: `Complete the Beginner project specification from the Skill Project Lab. Share repository link or write-up artifact for verification.`,
+    title: degreeContext
+      ? `Bridge ${degreeContext} Curriculum with ${primaryCareer.title} Domain`
+      : `Build & Submit Starter Project for ${primaryCareer.title}`,
+    description: degreeContext
+      ? `Synthesize your current coursework in ${degreeContext} by building a practical portfolio project addressing challenges in ${primaryCareer.title}. Share repository link or project documentation for verification.`
+      : `Complete the Beginner project specification from the Skill Project Lab. Share repository link or write-up artifact for verification.`,
     milestone_type: 'project_output',
     estimated_hours: 20,
     is_free_or_low_cost: true,

@@ -106,20 +106,41 @@ const RELOCATION: { value: RelocationWillingness; label: string }[] = [
   { value: 'abroad', label: 'India or abroad' },
 ];
 
-const STREAMS = [
-  'Science (PCM)',
-  'Science (PCB)',
-  'Science (PCMB)',
-  'Commerce',
-  'Arts / Humanities',
-  'Vocational',
+const STUDY_OPTIONS = [
+  'Class 8–10',
+  'Class 11–12',
+  'B.E / B.Tech',
+  'B.Sc',
+  'BCA',
+  'B.Com',
+  'BA / Humanities',
+  'Diploma',
+  'Other',
   'Not decided yet',
-];
+] as const;
+
+const ENGINEERING_BRANCHES = [
+  'Computer Science Engineering (CSE)',
+  'Information Technology (IT)',
+  'Artificial Intelligence & Data Science (AI & DS)',
+  'Artificial Intelligence & Machine Learning (AI & ML)',
+  'Cyber Security',
+  'Electronics & Communication Engineering (ECE)',
+  'Electrical & Electronics Engineering (EEE)',
+  'Mechanical Engineering',
+  'Civil Engineering',
+  'Biomedical Engineering',
+  'Biotechnology',
+  'Chemical Engineering',
+  'Other Engineering / Technology',
+] as const;
 
 interface DraftState {
   education_stage: EducationStage | null;
   grade_or_year: string;
   current_stream: string;
+  degree: string;
+  engineering_branch: string;
   interests: { label: string; riasec: RiasecKey; strength: number }[];
   aptitude_signals: Record<string, number>;
   work_style_preferences: Record<string, string>;
@@ -132,6 +153,8 @@ const EMPTY_DRAFT: DraftState = {
   education_stage: null,
   grade_or_year: '',
   current_stream: '',
+  degree: '',
+  engineering_branch: '',
   interests: [],
   aptitude_signals: {},
   work_style_preferences: {},
@@ -143,7 +166,23 @@ const EMPTY_DRAFT: DraftState = {
 function loadDraft(): DraftState {
   try {
     const raw = window.localStorage.getItem(DRAFT_KEY);
-    return raw ? { ...EMPTY_DRAFT, ...(JSON.parse(raw) as DraftState) } : EMPTY_DRAFT;
+    if (!raw) return EMPTY_DRAFT;
+    const parsed = JSON.parse(raw) as Partial<DraftState>;
+    const draft: DraftState = { ...EMPTY_DRAFT, ...parsed };
+
+    // Support existing drafts that had stream stored
+    if (!draft.degree && draft.current_stream) {
+      if (draft.current_stream.startsWith('B.E / B.Tech')) {
+        draft.degree = 'B.E / B.Tech';
+        const parts = draft.current_stream.split(' - ');
+        if (parts[1]) {
+          draft.engineering_branch = parts[1];
+        }
+      } else if (STUDY_OPTIONS.includes(draft.current_stream as any)) {
+        draft.degree = draft.current_stream;
+      }
+    }
+    return draft;
   } catch {
     return EMPTY_DRAFT;
   }
@@ -187,6 +226,84 @@ export function OnboardingWizard(): JSX.Element {
   const update = <K extends keyof DraftState>(key: K, value: DraftState[K]): void =>
     setDraft((current) => ({ ...current, [key]: value }));
 
+  const handleStageSelect = (stageValue: EducationStage): void => {
+    setDraft((current) => {
+      let degree = current.degree;
+      let engineeringBranch = current.engineering_branch;
+      let currentStream = current.current_stream;
+
+      if (stageValue === 'class_8_10') {
+        if (!degree || degree === 'Class 11–12' || degree === 'B.E / B.Tech') {
+          degree = 'Class 8–10';
+          engineeringBranch = '';
+          currentStream = 'Class 8–10';
+        }
+      } else if (stageValue === 'class_11_12') {
+        if (!degree || degree === 'Class 8–10' || degree === 'B.E / B.Tech') {
+          degree = 'Class 11–12';
+          engineeringBranch = '';
+          currentStream = 'Class 11–12';
+        }
+      } else if (stageValue === 'early_college') {
+        if (degree === 'Class 8–10' || degree === 'Class 11–12') {
+          degree = '';
+          engineeringBranch = '';
+          currentStream = '';
+        }
+      }
+
+      return {
+        ...current,
+        education_stage: stageValue,
+        degree,
+        engineering_branch: engineeringBranch,
+        current_stream: currentStream,
+      };
+    });
+  };
+
+  const handleStudyChange = (studyValue: string): void => {
+    setDraft((current) => {
+      let newStage = current.education_stage;
+      if (studyValue === 'Class 8–10') {
+        newStage = 'class_8_10';
+      } else if (studyValue === 'Class 11–12') {
+        newStage = 'class_11_12';
+      } else if (
+        studyValue === 'B.E / B.Tech' ||
+        studyValue === 'B.Sc' ||
+        studyValue === 'BCA' ||
+        studyValue === 'B.Com' ||
+        studyValue === 'BA / Humanities' ||
+        studyValue === 'Diploma'
+      ) {
+        newStage = 'early_college';
+      }
+
+      const branch = studyValue === 'B.E / B.Tech' ? current.engineering_branch : '';
+      const stream =
+        studyValue === 'B.E / B.Tech' && branch
+          ? `B.E / B.Tech - ${branch}`
+          : studyValue;
+
+      return {
+        ...current,
+        education_stage: newStage,
+        degree: studyValue,
+        engineering_branch: branch,
+        current_stream: stream,
+      };
+    });
+  };
+
+  const handleBranchChange = (branchValue: string): void => {
+    setDraft((current) => ({
+      ...current,
+      engineering_branch: branchValue,
+      current_stream: branchValue ? `B.E / B.Tech - ${branchValue}` : 'B.E / B.Tech',
+    }));
+  };
+
   const toggleInterest = (label: string, riasec: RiasecKey): void =>
     setDraft((current) => {
       const exists = current.interests.some((entry) => entry.label === label);
@@ -202,10 +319,11 @@ export function OnboardingWizard(): JSX.Element {
     let earned = 10;
     if (draft.education_stage) earned += 10;
     if (draft.grade_or_year) earned += 5;
+    if (draft.degree || draft.current_stream) earned += 5;
     if (draft.interests.length > 0) earned += 25;
     if (Object.keys(draft.aptitude_signals).length > 0) earned += 20;
-    if (Object.keys(draft.work_style_preferences).length > 0) earned += 10;
-    if (draft.academic_records_available) earned += 5;
+    if (Object.keys(draft.work_style_preferences).length > 0) earned += 15;
+    if (draft.academic_records_available) earned += 10;
     return Math.min(100, earned);
   }, [draft]);
 
@@ -214,6 +332,9 @@ export function OnboardingWizard(): JSX.Element {
     if (step === 0) {
       if (!draft.education_stage) next.education_stage = 'Choose where you are in your education.';
       if (!draft.grade_or_year.trim()) next.grade_or_year = 'Tell us your class or year.';
+      if (draft.degree === 'B.E / B.Tech' && !draft.engineering_branch) {
+        next.engineering_branch = 'Please select your engineering branch.';
+      }
     }
     if (step === 1 && draft.interests.length === 0) {
       next.interests = 'Pick at least one — this is what the match is built on.';
@@ -230,10 +351,17 @@ export function OnboardingWizard(): JSX.Element {
   async function submit(): Promise<void> {
     if (!validateStep()) return;
 
+    const streamToSubmit =
+      draft.degree === 'B.E / B.Tech' && draft.engineering_branch
+        ? `B.E / B.Tech - ${draft.engineering_branch}`
+        : draft.degree || draft.current_stream || null;
+
     const payload: OnboardingInput = onboardingSchema.parse({
       education_stage: draft.education_stage,
       grade_or_year: draft.grade_or_year.trim(),
-      current_stream: draft.current_stream || null,
+      current_stream: streamToSubmit,
+      degree: draft.degree || null,
+      engineering_branch: draft.engineering_branch || null,
       interests: draft.interests,
       aptitude_signals: draft.aptitude_signals,
       work_style_preferences: draft.work_style_preferences,
@@ -294,7 +422,7 @@ export function OnboardingWizard(): JSX.Element {
                   <button
                     key={stage.value}
                     type="button"
-                    onClick={() => update('education_stage', stage.value)}
+                    onClick={() => handleStageSelect(stage.value)}
                     aria-pressed={isSelected}
                     className={`card text-left transition-all border ${
                       isSelected
@@ -340,21 +468,48 @@ export function OnboardingWizard(): JSX.Element {
               )}
             </Field>
 
-            {draft.education_stage !== 'class_8_10' && (
+            <Field
+              label="What are you currently studying?"
+              hint="Select your current class, degree, or program."
+              error={errors.degree}
+            >
+              {({ id, describedBy, invalid }) => (
+                <Select
+                  id={id}
+                  aria-describedby={describedBy}
+                  invalid={invalid}
+                  value={draft.degree}
+                  onChange={(event) => handleStudyChange(event.target.value)}
+                >
+                  <option value="">Select what you are studying</option>
+                  {STUDY_OPTIONS.map((opt) => (
+                    <option key={opt} value={opt}>
+                      {opt}
+                    </option>
+                  ))}
+                </Select>
+              )}
+            </Field>
+
+            {draft.degree === 'B.E / B.Tech' && (
               <Field
-                label="Which stream or subject group are you studying?"
-                hint="Leave unselected if you haven't finalized yet."
+                label="Which engineering branch are you studying?"
+                hint="Select your engineering branch."
+                error={errors.engineering_branch}
+                required
               >
-                {({ id }) => (
+                {({ id, describedBy, invalid }) => (
                   <Select
                     id={id}
-                    value={draft.current_stream}
-                    onChange={(event) => update('current_stream', event.target.value)}
+                    aria-describedby={describedBy}
+                    invalid={invalid}
+                    value={draft.engineering_branch}
+                    onChange={(event) => handleBranchChange(event.target.value)}
                   >
-                    <option value="">Select a stream</option>
-                    {STREAMS.map((stream) => (
-                      <option key={stream} value={stream}>
-                        {stream}
+                    <option value="">Select an engineering branch</option>
+                    {ENGINEERING_BRANCHES.map((branch) => (
+                      <option key={branch} value={branch}>
+                        {branch}
                       </option>
                     ))}
                   </Select>
@@ -538,8 +693,14 @@ export function OnboardingWizard(): JSX.Element {
                 <dd className="text-ink font-medium mt-0.5">{draft.grade_or_year || '—'}</dd>
               </div>
               <div className="p-xs bg-canvas-soft rounded-md">
-                <dt className="eyebrow">Current Stream</dt>
-                <dd className="text-ink font-medium mt-0.5">{draft.current_stream || 'Exploratory'}</dd>
+                <dt className="eyebrow">Currently Studying</dt>
+                <dd className="text-ink font-medium mt-0.5">
+                  {draft.degree === 'B.E / B.Tech'
+                    ? draft.engineering_branch
+                      ? `B.E / B.Tech (${draft.engineering_branch})`
+                      : 'B.E / B.Tech'
+                    : draft.degree || draft.current_stream || 'Not decided yet'}
+                </dd>
               </div>
               <div className="p-xs bg-canvas-soft rounded-md">
                 <dt className="eyebrow">Key Interests Identified</dt>

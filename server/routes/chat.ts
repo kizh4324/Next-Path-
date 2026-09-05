@@ -27,6 +27,9 @@ router.post('/message', async (req: Request, res: Response) => {
     const result = await answerCareerQuery(question, career, {
       educationStage: profile?.education_stage,
       budgetTier: profile?.budget_tier,
+      degree: profile?.degree,
+      engineeringBranch: profile?.engineering_branch,
+      currentStream: profile?.current_stream,
     });
 
     // If safety crisis flag triggered, auto log an escalation in counselor queue

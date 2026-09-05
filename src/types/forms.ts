@@ -58,7 +58,9 @@ export const onboardingSchema = z.object({
     errorMap: () => ({ message: 'Choose where you are in your education.' }),
   }),
   grade_or_year: z.string().min(1, 'Tell us your class or year.').max(100),
-  current_stream: z.string().max(100).optional().nullable(),
+  current_stream: z.string().max(200).optional().nullable(),
+  degree: z.string().max(100).optional().nullable(),
+  engineering_branch: z.string().max(150).optional().nullable(),
   interests: z
     .array(interestEntrySchema)
     .min(1, 'Pick at least one thing you enjoy — this is what the match is built on.'),

@@ -1,9 +1,26 @@
-/** Sign in, account creation, and password reset flows with Editorial Minimalism. */
+/**
+ * Redesigned Login / Sign-In experience matching the Next Path reference design.
+ * Clean, modern, student-friendly interface adhering to the Design System tokens.
+ */
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {
+  ArrowLeft,
+  ArrowRight,
+  Eye,
+  EyeOff,
+  Globe,
+  GraduationCap,
+  HelpCircle,
+  Lock,
+  Mail,
+  School,
+  ShieldCheck,
+  User,
+  Users,
+} from 'lucide-react';
 
-import { Button, Callout, Card, Field, Input, Select } from '@/components/ui';
 import { useAuth } from '@/hooks/useAuth';
 import { ApiError } from '@/services/api_client';
 import { loginSchema, registerSchema } from '@/types/forms';
@@ -11,25 +28,44 @@ import type { UserRole } from '@/types/models';
 
 type Mode = 'login' | 'register' | 'forgot';
 
+const REMEMBER_EMAIL_KEY = 'nextpath_remember_email';
+
 export function AuthView(): JSX.Element {
   const navigate = useNavigate();
   const { login, register } = useAuth();
 
   const [mode, setMode] = useState<Mode>('login');
+  const [role, setRole] = useState<UserRole>('counselor');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
-  const [role, setRole] = useState<UserRole>('student');
+  const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const [forgotSent, setForgotSent] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
+  const [infoMessage, setInfoMessage] = useState<string | null>(null);
 
-  async function submit(event: React.FormEvent): Promise<void> {
+  // Load remembered email on mount
+  useEffect(() => {
+    try {
+      const savedEmail = window.localStorage.getItem(REMEMBER_EMAIL_KEY);
+      if (savedEmail) {
+        setEmail(savedEmail);
+        setRememberMe(true);
+      }
+    } catch {
+      // Ignore storage errors
+    }
+  }, []);
+
+  async function handleSubmit(event: React.FormEvent): Promise<void> {
     event.preventDefault();
     setErrors({});
+    setInfoMessage(null);
 
     if (mode === 'forgot') {
-      if (!email.includes('@')) {
+      if (!email || !email.includes('@')) {
         setErrors({ email: 'Please enter a valid email address.' });
         return;
       }
@@ -37,7 +73,7 @@ export function AuthView(): JSX.Element {
       setTimeout(() => {
         setSubmitting(false);
         setForgotSent(true);
-      }, 600);
+      }, 500);
       return;
     }
 
@@ -56,6 +92,17 @@ export function AuthView(): JSX.Element {
       return;
     }
 
+    // Persist or clear remembered email
+    try {
+      if (rememberMe && email) {
+        window.localStorage.setItem(REMEMBER_EMAIL_KEY, email);
+      } else {
+        window.localStorage.removeItem(REMEMBER_EMAIL_KEY);
+      }
+    } catch {
+      // Ignore storage errors
+    }
+
     setSubmitting(true);
     try {
       if (mode === 'login') {
@@ -63,222 +110,512 @@ export function AuthView(): JSX.Element {
       } else {
         await register({ email, password, full_name: fullName, role });
       }
-      navigate(role === 'counselor' ? '/counselor' : '/results');
+
+      // Route according to user role
+      if (role === 'counselor') {
+        navigate('/counselor');
+      } else if (role === 'guardian') {
+        navigate('/guardian');
+      } else {
+        navigate('/results');
+      }
     } catch (caught) {
       setErrors({
         form:
           caught instanceof ApiError
             ? caught.message
-            : 'Something went wrong. Please check your details and try again.',
+            : 'Authentication failed. Please check your credentials and try again.',
       });
     } finally {
       setSubmitting(false);
     }
   }
 
-  function fillDemo(demoRole: UserRole): void {
-    if (demoRole === 'student') {
-      setEmail('student@example.com');
-      setPassword('password123');
-      setFullName('Aarav Sharma');
-      setRole('student');
-    } else {
-      setEmail('counselor@example.com');
-      setPassword('password123');
-      setFullName('Dr. Meera Iyer');
-      setRole('counselor');
-    }
-  }
+  // Role subtitle badge
+  const roleSubtitle =
+    role === 'counselor'
+      ? 'Cohort Advisory Console'
+      : role === 'guardian'
+        ? 'Parent Advisory Hub'
+        : 'Student Discovery Portal';
+
+  // Role input labels and placeholders
+  const identifierLabel =
+    role === 'counselor'
+      ? 'Counselor / Educator ID'
+      : role === 'guardian'
+        ? 'Parent or Guardian Email'
+        : 'Student ID or Email';
+
+  const identifierPlaceholder =
+    role === 'counselor'
+      ? 'dr.marcus@highschool.edu'
+      : role === 'guardian'
+        ? 'parent@example.com'
+        : 'student@example.com';
+
+  const submitButtonLabel =
+    role === 'counselor'
+      ? 'Sign In to Advisor Workspace'
+      : role === 'guardian'
+        ? 'Sign In to Parent Hub'
+        : 'Sign In to Student Portal';
 
   return (
-    <div className="mx-auto flex max-w-[500px] flex-col gap-lg px-md py-xl">
-      <header className="text-center">
-        <div className="mx-auto mb-xs flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-on-primary font-bold text-lg">
-          N
+    <div className="min-h-screen bg-canvas text-ink flex flex-col justify-between antialiased selection:bg-[#d5e3ff] selection:text-[#001b3c]">
+      {/* Top Navigation Bar */}
+      <header className="w-full border-b border-hairline/70 bg-surface/80 backdrop-blur-sm sticky top-0 z-20">
+        <div className="max-w-[480px] sm:max-w-xl mx-auto px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <button
+              type="button"
+              onClick={() => {
+                if (window.history.length > 1) {
+                  navigate(-1);
+                } else {
+                  navigate('/');
+                }
+              }}
+              aria-label="Go back"
+              className="p-1.5 -ml-1 text-ink hover:text-ink-secondary transition-colors rounded-full hover:bg-canvas-soft focus:outline-none focus:ring-2 focus:ring-primary/20"
+            >
+              <ArrowLeft className="w-5 h-5 stroke-[2.2]" />
+            </button>
+
+            {/* Next Path Logo & Brand */}
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-lg bg-[#0075de] flex items-center justify-center text-white shadow-sm shadow-primary/20 shrink-0">
+                <svg
+                  className="w-4.5 h-4.5"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M4 18L10 12L15 17L21 6" />
+                  <circle cx="4" cy="18" r="1.5" fill="currentColor" />
+                  <circle cx="10" cy="12" r="1.5" fill="currentColor" />
+                  <circle cx="15" cy="17" r="1.5" fill="currentColor" />
+                  <circle cx="21" cy="6" r="1.5" fill="currentColor" />
+                </svg>
+              </div>
+              <span className="font-extrabold text-base tracking-tight text-ink">
+                NEXT PATH
+              </span>
+            </div>
+          </div>
+
+          {/* Right Action Icons */}
+          <div className="flex items-center gap-1">
+            <button
+              type="button"
+              aria-label="Help and Support"
+              onClick={() =>
+                setInfoMessage(
+                  'Need assistance? Contact support@nextpath.edu or your school counselor.',
+                )
+              }
+              className="p-2 text-ink-secondary hover:text-ink transition-colors rounded-full hover:bg-canvas-soft focus:outline-none"
+            >
+              <HelpCircle className="w-5 h-5" />
+            </button>
+
+            <button
+              type="button"
+              aria-label="Language options"
+              onClick={() =>
+                setInfoMessage('English is currently selected. Multilingual support available.')
+              }
+              className="p-2 text-ink-secondary hover:text-ink transition-colors rounded-full hover:bg-canvas-soft focus:outline-none"
+            >
+              <Globe className="w-5 h-5" />
+            </button>
+
+            <div
+              className="w-7 h-7 ml-1 rounded-full bg-[#3b49df] text-white flex items-center justify-center shadow-sm"
+              title="User Profile"
+              aria-hidden="true"
+            >
+              <User className="w-4 h-4" />
+            </div>
+          </div>
         </div>
-        <h1 className="text-heading-1 text-ink font-bold tracking-tight">Next_Path</h1>
-        <p className="mx-auto mt-xs max-w-[40ch] text-body-md text-ink-secondary leading-relaxed">
-          Grounded, high-trust career pathways for Indian students. Real college costs, entrance timelines, and verified evidence.
-        </p>
       </header>
 
-      <Card className="p-xl bg-surface border-hairline">
-        {mode !== 'forgot' && (
-          <div
-            className="mb-lg flex rounded-full border border-hairline bg-canvas-soft p-1"
-            role="tablist"
-            aria-label="Sign in or create an account"
-          >
-            {(['login', 'register'] as const).map((option) => (
-              <button
-                key={option}
-                type="button"
-                role="tab"
-                aria-selected={mode === option}
-                onClick={() => {
-                  setMode(option);
-                  setErrors({});
-                  setForgotSent(false);
-                }}
-                className={`min-h-touch flex-1 rounded-full text-body-sm font-medium transition-all ${
-                  mode === option
-                    ? 'bg-surface text-primary font-semibold shadow-sm border border-hairline'
-                    : 'text-ink-secondary hover:text-ink'
-                }`}
-              >
-                {option === 'login' ? 'Sign In' : 'Create Account'}
-              </button>
-            ))}
+      {/* Main Login Content Card */}
+      <main className="w-full max-w-[460px] mx-auto px-4 py-6 sm:py-8 flex-1 flex flex-col justify-center">
+        {/* Informational notification toast */}
+        {infoMessage && (
+          <div className="mb-4 rounded-xl border border-[#0075de]/30 bg-[#0075de]/10 px-4 py-2.5 text-xs text-[#005bab] flex items-center justify-between animate-fade-in">
+            <span>{infoMessage}</span>
+            <button
+              type="button"
+              onClick={() => setInfoMessage(null)}
+              className="text-ink-muted hover:text-ink ml-2 font-bold"
+            >
+              ×
+            </button>
           </div>
         )}
 
-        {mode === 'forgot' && (
-          <div className="mb-md">
+        {/* Heading & Subtitle */}
+        <div className="text-center mb-6">
+          <h1 className="text-2xl sm:text-[28px] font-extrabold text-ink tracking-tight">
+            {mode === 'login'
+              ? 'Welcome Back'
+              : mode === 'register'
+                ? 'Create an Account'
+                : 'Reset Password'}
+          </h1>
+          <p className="mt-2 text-xs sm:text-sm text-ink-muted leading-relaxed max-w-[340px] mx-auto">
+            {mode === 'login'
+              ? 'Empowering your next career breakthrough with tailored AI insights.'
+              : mode === 'register'
+                ? 'Begin your guided career discovery with personalized pathways.'
+                : 'Enter your verified email to receive secure recovery instructions.'}
+          </p>
+        </div>
+
+        {/* Mode: Forgot Password Confirmation */}
+        {mode === 'forgot' && forgotSent ? (
+          <div className="bg-surface rounded-2xl border border-hairline/90 p-6 shadow-sm flex flex-col gap-4 text-center">
+            <div className="w-12 h-12 mx-auto rounded-full bg-[#0075de]/10 text-[#0075de] flex items-center justify-center">
+              <Mail className="w-6 h-6" />
+            </div>
+            <div>
+              <h2 className="text-lg font-bold text-ink">Check your inbox</h2>
+              <p className="text-xs sm:text-sm text-ink-secondary mt-1 leading-relaxed">
+                We have dispatched password recovery instructions to{' '}
+                <strong className="text-ink font-semibold">{email}</strong>.
+              </p>
+            </div>
             <button
               type="button"
               onClick={() => {
                 setMode('login');
                 setForgotSent(false);
               }}
-              className="text-caption text-primary hover:underline flex items-center gap-1 mb-xs"
+              className="mt-2 w-full bg-[#0075de] hover:bg-[#005bab] text-white font-semibold text-sm rounded-xl py-3 transition-colors"
             >
-              ← Back to Sign In
-            </button>
-            <h2 className="text-heading-3 text-ink font-semibold">Reset your password</h2>
-            <p className="text-body-sm text-ink-muted mt-xxs">
-              Enter your email address and we will send you a secure link to reset your account password.
-            </p>
-          </div>
-        )}
-
-        {forgotSent ? (
-          <div className="flex flex-col gap-md py-sm">
-            <Callout variant="info" title="Check your inbox">
-              We have sent password reset instructions to <strong className="text-ink">{email}</strong>. Please check your email to continue.
-            </Callout>
-            <Button variant="utility" onClick={() => setMode('login')} fullWidth>
               Return to Sign In
-            </Button>
+            </button>
           </div>
         ) : (
-          <form className="flex flex-col gap-md" onSubmit={(event) => void submit(event)}>
-            {mode === 'register' && (
-              <>
-                <Field label="Full Name" error={errors.full_name} required>
-                  {({ id, invalid }) => (
-                    <Input
-                      id={id}
-                      value={fullName}
-                      invalid={invalid}
-                      onChange={(event) => setFullName(event.target.value)}
-                      placeholder="e.g. Priya Patel"
-                      autoComplete="name"
-                    />
-                  )}
-                </Field>
-
-                <Field label="I am joining as a" hint="Parents and counselors have tailored summary portals.">
-                  {({ id }) => (
-                    <Select
-                      id={id}
-                      value={role}
-                      onChange={(event) => setRole(event.target.value as UserRole)}
-                    >
-                      <option value="student">Student (Class 8–12 / College)</option>
-                      <option value="guardian">Parent or Guardian</option>
-                      <option value="counselor">Career Counselor</option>
-                    </Select>
-                  )}
-                </Field>
-              </>
-            )}
-
-            <Field label="Email address" error={errors.email} required>
-              {({ id, invalid }) => (
-                <Input
-                  id={id}
-                  type="email"
-                  value={email}
-                  invalid={invalid}
-                  onChange={(event) => setEmail(event.target.value)}
-                  placeholder="student@example.com"
-                  autoComplete="email"
-                />
-              )}
-            </Field>
-
+          <div className="flex flex-col gap-4">
+            {/* LOGGING IN AS Section Header */}
             {mode !== 'forgot' && (
-              <Field
-                label="Password"
-                error={errors.password}
-                hint={mode === 'register' ? 'At least 8 characters.' : undefined}
-                required
-              >
-                {({ id, invalid }) => (
-                  <Input
-                    id={id}
-                    type="password"
-                    value={password}
-                    invalid={invalid}
-                    onChange={(event) => setPassword(event.target.value)}
-                    placeholder="••••••••"
-                    autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
-                  />
-                )}
-              </Field>
-            )}
+              <div>
+                <div className="flex items-center justify-between px-1 mb-2">
+                  <span className="text-[11px] font-bold tracking-wider text-ink-muted uppercase">
+                    LOGGING IN AS:
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#0075de]">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#0075de]" />
+                    {roleSubtitle}
+                  </span>
+                </div>
 
-            {mode === 'login' && (
-              <div className="flex justify-end -mt-xs">
-                <button
-                  type="button"
-                  onClick={() => setMode('forgot')}
-                  className="text-caption text-primary hover:underline focus:outline-none"
+                {/* Role Selection Tabs */}
+                <div
+                  className="grid grid-cols-3 gap-2.5"
+                  role="radiogroup"
+                  aria-label="User role selection"
                 >
-                  Forgot password?
-                </button>
+                  {/* Student */}
+                  <button
+                    type="button"
+                    role="radio"
+                    aria-checked={role === 'student'}
+                    onClick={() => {
+                      setRole('student');
+                      setErrors({});
+                    }}
+                    className={`rounded-xl py-3 px-2 flex flex-col items-center justify-center gap-1.5 transition-all focus:outline-none focus:ring-2 focus:ring-[#0075de]/20 ${
+                      role === 'student'
+                        ? 'bg-surface border-2 border-[#0075de] shadow-sm text-[#0075de]'
+                        : 'bg-[#ece9e4]/60 hover:bg-[#ece9e4] text-ink-secondary hover:text-ink'
+                    }`}
+                  >
+                    <GraduationCap
+                      className={`w-5 h-5 ${role === 'student' ? 'text-[#0075de]' : 'text-ink-secondary'}`}
+                    />
+                    <span className="text-xs font-semibold">Student</span>
+                  </button>
+
+                  {/* Parent */}
+                  <button
+                    type="button"
+                    role="radio"
+                    aria-checked={role === 'guardian'}
+                    onClick={() => {
+                      setRole('guardian');
+                      setErrors({});
+                    }}
+                    className={`rounded-xl py-3 px-2 flex flex-col items-center justify-center gap-1.5 transition-all focus:outline-none focus:ring-2 focus:ring-[#0075de]/20 ${
+                      role === 'guardian'
+                        ? 'bg-surface border-2 border-[#0075de] shadow-sm text-[#0075de]'
+                        : 'bg-[#ece9e4]/60 hover:bg-[#ece9e4] text-ink-secondary hover:text-ink'
+                    }`}
+                  >
+                    <Users
+                      className={`w-5 h-5 ${role === 'guardian' ? 'text-[#0075de]' : 'text-ink-secondary'}`}
+                    />
+                    <span className="text-xs font-semibold">Parent</span>
+                  </button>
+
+                  {/* Counselor */}
+                  <button
+                    type="button"
+                    role="radio"
+                    aria-checked={role === 'counselor'}
+                    onClick={() => {
+                      setRole('counselor');
+                      setErrors({});
+                    }}
+                    className={`rounded-xl py-3 px-2 flex flex-col items-center justify-center gap-1.5 transition-all focus:outline-none focus:ring-2 focus:ring-[#0075de]/20 ${
+                      role === 'counselor'
+                        ? 'bg-surface border-2 border-[#0075de] shadow-sm text-[#0075de]'
+                        : 'bg-[#ece9e4]/60 hover:bg-[#ece9e4] text-ink-secondary hover:text-ink'
+                    }`}
+                  >
+                    <School
+                      className={`w-5 h-5 ${role === 'counselor' ? 'text-[#0075de]' : 'text-ink-secondary'}`}
+                    />
+                    <span className="text-xs font-semibold">Counselor</span>
+                  </button>
+                </div>
               </div>
             )}
 
-            {errors.form && <Callout variant="error">{errors.form}</Callout>}
+            {/* Form Surface */}
+            <form
+              onSubmit={(e) => void handleSubmit(e)}
+              className="bg-surface rounded-2xl border border-hairline/90 p-5 sm:p-6 shadow-sm flex flex-col gap-4"
+              noValidate
+            >
+              {/* Back to sign in link if in forgot mode */}
+              {mode === 'forgot' && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMode('login');
+                    setErrors({});
+                  }}
+                  className="text-xs text-[#0075de] hover:underline flex items-center gap-1 font-semibold w-fit"
+                >
+                  ← Back to Sign In
+                </button>
+              )}
 
-            <Button type="submit" loading={submitting} fullWidth className="mt-xs">
-              {mode === 'login'
-                ? 'Sign In to Next_Path'
-                : mode === 'register'
-                  ? 'Create My Account'
-                  : 'Send Reset Link'}
-            </Button>
-          </form>
+              {/* Full Name field if registering */}
+              {mode === 'register' && (
+                <div className="flex flex-col gap-1.5">
+                  <label
+                    htmlFor="field-fullname"
+                    className="text-xs sm:text-sm font-semibold text-ink"
+                  >
+                    Full Name
+                  </label>
+                  <div className="relative flex items-center rounded-xl bg-[#f4f3f0] border border-transparent focus-within:border-[#0075de] focus-within:bg-surface focus-within:ring-2 focus-within:ring-[#0075de]/20 transition-all px-3.5 py-3">
+                    <User className="w-5 h-5 text-ink-muted shrink-0 mr-2.5" />
+                    <input
+                      id="field-fullname"
+                      type="text"
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      placeholder="e.g. Priya Patel"
+                      className="w-full bg-transparent border-0 outline-none text-ink text-sm sm:text-base placeholder:text-ink-faint p-0"
+                      autoComplete="name"
+                      required
+                    />
+                  </div>
+                  {errors.full_name && (
+                    <p className="text-xs text-error mt-0.5">{errors.full_name}</p>
+                  )}
+                </div>
+              )}
+
+              {/* Identifier / Email Field */}
+              <div className="flex flex-col gap-1.5">
+                <div className="flex items-center justify-between">
+                  <label
+                    htmlFor="field-identifier"
+                    className="text-xs sm:text-sm font-semibold text-ink"
+                  >
+                    {mode === 'forgot' ? 'Registered Email' : identifierLabel}
+                  </label>
+                  <span className="text-xs font-semibold text-[#0075de] select-none">
+                    Verified Domain
+                  </span>
+                </div>
+                <div className="relative flex items-center rounded-xl bg-[#f4f3f0] border border-transparent focus-within:border-[#0075de] focus-within:bg-surface focus-within:ring-2 focus-within:ring-[#0075de]/20 transition-all px-3.5 py-3">
+                  <Mail className="w-5 h-5 text-ink-muted shrink-0 mr-2.5" />
+                  <input
+                    id="field-identifier"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder={identifierPlaceholder}
+                    className="w-full bg-transparent border-0 outline-none text-ink text-sm sm:text-base placeholder:text-ink-faint p-0"
+                    autoComplete="email"
+                    required
+                  />
+                </div>
+                {errors.email && (
+                  <p className="text-xs text-error mt-0.5">{errors.email}</p>
+                )}
+              </div>
+
+              {/* Password Field */}
+              {mode !== 'forgot' && (
+                <div className="flex flex-col gap-1.5">
+                  <label
+                    htmlFor="field-password"
+                    className="text-xs sm:text-sm font-semibold text-ink"
+                  >
+                    {mode === 'register' ? 'Create Password' : 'Password'}
+                  </label>
+                  <div className="relative flex items-center rounded-xl bg-[#f4f3f0] border border-transparent focus-within:border-[#0075de] focus-within:bg-surface focus-within:ring-2 focus-within:ring-[#0075de]/20 transition-all px-3.5 py-3">
+                    <Lock className="w-5 h-5 text-ink-muted shrink-0 mr-2.5" />
+                    <input
+                      id="field-password"
+                      type={showPassword ? 'text' : 'password'}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="••••••••••••"
+                      className="w-full bg-transparent border-0 outline-none text-ink text-sm sm:text-base placeholder:text-ink-faint p-0 tracking-wide"
+                      autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      aria-label={showPassword ? 'Hide password' : 'Show password'}
+                      className="p-1 text-ink-muted hover:text-ink transition-colors focus:outline-none shrink-0 ml-2"
+                    >
+                      {showPassword ? (
+                        <EyeOff className="w-5 h-5" />
+                      ) : (
+                        <Eye className="w-5 h-5" />
+                      )}
+                    </button>
+                  </div>
+                  {errors.password && (
+                    <p className="text-xs text-error mt-0.5">{errors.password}</p>
+                  )}
+                </div>
+              )}
+
+              {/* Remember Me & Forgot Password Row */}
+              {mode === 'login' && (
+                <div className="flex items-center justify-between pt-0.5">
+                  <label className="inline-flex items-center gap-2 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={rememberMe}
+                      onChange={(e) => setRememberMe(e.target.checked)}
+                      className="w-4 h-4 rounded border-hairline text-[#0075de] focus:ring-[#0075de] accent-[#0075de]"
+                    />
+                    <span className="text-xs sm:text-sm font-medium text-ink-secondary">
+                      Remember me
+                    </span>
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMode('forgot');
+                      setErrors({});
+                    }}
+                    className="text-xs sm:text-sm font-semibold text-[#0075de] hover:underline focus:outline-none"
+                  >
+                    Forgot password?
+                  </button>
+                </div>
+              )}
+
+              {/* Form level error */}
+              {errors.form && (
+                <div className="rounded-xl border border-error/30 bg-error-soft/30 p-3 text-xs text-error">
+                  {errors.form}
+                </div>
+              )}
+
+              {/* Main Submit Button */}
+              <button
+                type="submit"
+                disabled={submitting}
+                className="mt-1 w-full bg-[#0075de] hover:bg-[#005bab] active:scale-[0.99] text-white font-semibold text-sm sm:text-base rounded-xl py-3.5 px-4 flex items-center justify-center gap-2 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-[#0075de]/30"
+              >
+                {submitting ? (
+                  <span className="inline-flex items-center gap-2">
+                    <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <span>Processing...</span>
+                  </span>
+                ) : (
+                  <>
+                    <span>
+                      {mode === 'login'
+                        ? submitButtonLabel
+                        : mode === 'register'
+                          ? 'Create Free Account'
+                          : 'Send Reset Link'}
+                    </span>
+                    <ArrowRight className="w-4 h-4 stroke-[2.5]" />
+                  </>
+                )}
+              </button>
+            </form>
+          </div>
         )}
 
-        {/* Quick Demo Pre-fill helper for instant exploration */}
-        <div className="mt-lg border-t border-hairline pt-md text-center">
-          <p className="text-caption text-ink-muted mb-xs">Fast exploration shortcuts:</p>
-          <div className="flex justify-center gap-xs">
-            <button
-              type="button"
-              onClick={() => fillDemo('student')}
-              className="text-caption text-primary border border-hairline rounded-full px-sm py-1 bg-canvas-soft hover:bg-canvas-container"
-            >
-              Fill Student Demo
-            </button>
-            <button
-              type="button"
-              onClick={() => fillDemo('counselor')}
-              className="text-caption text-primary border border-hairline rounded-full px-sm py-1 bg-canvas-soft hover:bg-canvas-container"
-            >
-              Fill Counselor Demo
-            </button>
+        {/* Bottom Sign-up / Sign-in toggle */}
+        <div className="mt-5 text-center">
+          {mode === 'login' ? (
+            <p className="text-xs sm:text-sm text-ink-secondary">
+              Don&apos;t have an institutional account?{' '}
+              <button
+                type="button"
+                onClick={() => {
+                  setMode('register');
+                  setErrors({});
+                }}
+                className="font-semibold text-[#0075de] hover:underline focus:outline-none"
+              >
+                Sign Up Free
+              </button>
+            </p>
+          ) : (
+            <p className="text-xs sm:text-sm text-ink-secondary">
+              Already have an account?{' '}
+              <button
+                type="button"
+                onClick={() => {
+                  setMode('login');
+                  setErrors({});
+                }}
+                className="font-semibold text-[#0075de] hover:underline focus:outline-none"
+              >
+                Sign In
+              </button>
+            </p>
+          )}
+        </div>
+
+        {/* Security & Ethics Badge */}
+        <div className="mt-6 mb-4 flex justify-center">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#f0ede8] border border-hairline/80 text-[11px] sm:text-xs font-medium text-ink-muted select-none">
+            <ShieldCheck className="w-3.5 h-3.5 text-[#0075de]" />
+            <span>256-Bit Encrypted • SOC2 • Responsible AI Ethics</span>
           </div>
         </div>
-      </Card>
+      </main>
 
-      <div className="rounded-lg border border-hairline bg-canvas-soft p-md text-center">
-        <p className="text-caption text-ink-secondary leading-relaxed">
-          <strong className="font-semibold text-ink">DPDP Act Compliant:</strong> Minors under 18 can freely draft their profile. We request parental consent before finalizing options. You can delete all your data permanently at any time.
-        </p>
-      </div>
+      {/* Footer / Empty baseline for balanced vertical alignment */}
+      <footer className="w-full py-2" />
     </div>
   );
 }
+

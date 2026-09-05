@@ -204,6 +204,8 @@ router.post('/select-pathways', (req: Request, res: Response) => {
     primaryCareer,
     backupCareer || null,
     profile?.education_stage || 'class_11_12',
+    profile?.degree,
+    profile?.engineering_branch,
   );
 
   // Format roadmap response to match RoadmapResponse in models.ts

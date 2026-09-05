@@ -93,6 +93,8 @@ router.post('/', (req: Request, res: Response) => {
     education_stage = 'class_11_12',
     grade_or_year = 'Class 11',
     current_stream,
+    degree,
+    engineering_branch,
     interests = [],
     aptitude_signals = {},
     work_style_preferences = {},
@@ -114,12 +116,21 @@ router.post('/', (req: Request, res: Response) => {
   if (budget_tier) score += 10;
   if (relocation_willingness) score += 10;
 
+  const formattedStream =
+    current_stream ||
+    (degree === 'B.E / B.Tech' && engineering_branch
+      ? `B.E / B.Tech - ${engineering_branch}`
+      : degree) ||
+    null;
+
   const newProfile: StudentProfile = {
     id: `prof-${user.id}`,
     user_id: user.id,
     education_stage,
     grade_or_year,
-    current_stream: current_stream || null,
+    current_stream: formattedStream,
+    degree: degree || null,
+    engineering_branch: engineering_branch || null,
     interests,
     aptitude_signals,
     work_style_preferences,

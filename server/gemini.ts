@@ -51,6 +51,9 @@ export async function answerCareerQuery(
   studentContext?: {
     educationStage?: string;
     budgetTier?: string;
+    degree?: string | null;
+    engineeringBranch?: string | null;
+    currentStream?: string | null;
   },
 ): Promise<{
   answer: string;
@@ -73,8 +76,12 @@ export async function answerCareerQuery(
       `Regional Caveats: ${career.regional_caveats.join('; ')}\n`
     : 'No specific career selected. General Indian career guidance context.';
 
+  const degreeStr = studentContext?.degree
+    ? `${studentContext.degree}${studentContext.engineeringBranch ? ` (${studentContext.engineeringBranch})` : ''}`
+    : studentContext?.currentStream || 'Not specified';
+
   const studentInfo = studentContext
-    ? `Student Stage: ${studentContext.educationStage || 'Not specified'}, Family Budget Tier: ${studentContext.budgetTier || 'Not specified'}\n`
+    ? `Student Stage: ${studentContext.educationStage || 'Not specified'}, Currently Studying: ${degreeStr}, Family Budget Tier: ${studentContext.budgetTier || 'Not specified'}\n`
     : '';
 
   const systemInstruction =

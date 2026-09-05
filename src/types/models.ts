@@ -108,6 +108,8 @@ export interface StudentProfileResponse {
   education_stage: EducationStage;
   grade_or_year: string;
   current_stream: string | null;
+  degree?: string | null;
+  engineering_branch?: string | null;
   interests: InterestEntry[];
   aptitude_signals: Record<string, number>;
   work_style_preferences: Record<string, string>;

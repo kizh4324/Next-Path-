@@ -32,6 +32,8 @@ router.get('/', (req: Request, res: Response) => {
       primary,
       backup,
       profile?.education_stage || 'class_11_12',
+      profile?.degree,
+      profile?.engineering_branch,
     );
 
     roadmap = {
