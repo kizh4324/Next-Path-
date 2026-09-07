@@ -5,6 +5,7 @@ import { BrowserRouter } from 'react-router-dom';
 
 import { App } from '@/App';
 import { AuthProvider } from '@/hooks/useAuth';
+import { LanguageProvider } from '@/context/LanguageContext';
 import { ApiError } from '@/services/api_client';
 import '@/index.css';
 
@@ -38,7 +39,9 @@ createRoot(container).render(
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <AuthProvider>
-          <App />
+          <LanguageProvider>
+            <App />
+          </LanguageProvider>
         </AuthProvider>
       </BrowserRouter>
     </QueryClientProvider>

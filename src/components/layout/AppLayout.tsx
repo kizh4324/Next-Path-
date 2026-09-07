@@ -5,16 +5,8 @@ import { useEffect, useState } from 'react';
 
 import { ChatbotFAB } from '@/components/chat/ChatbotFAB';
 import { useAuth } from '@/hooks/useAuth';
+import { useLanguage, SUPPORTED_LANGUAGES, type SupportedLanguage } from '@/context/LanguageContext';
 import { cn } from '@/utils/cn';
-
-const LANGUAGES = [
-  { code: 'en', label: 'English' },
-  { code: 'hi', label: 'हिन्दी' },
-  { code: 'ta', label: 'தமிழ்' },
-  { code: 'te', label: 'తెలుగు' },
-  { code: 'bn', label: 'বাংলা' },
-  { code: 'mr', label: 'मराठी' },
-];
 
 const STUDENT_NAV = [
   { to: '/results', label: 'My Options' },
@@ -61,7 +53,7 @@ export function AppHeader(): JSX.Element {
   const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [selectedLang, setSelectedLang] = useState('en');
+  const { language, setLanguage } = useLanguage();
 
   const links = user?.role === 'counselor' || user?.role === 'admin' ? COUNSELOR_NAV : STUDENT_NAV;
 
@@ -112,11 +104,11 @@ export function AppHeader(): JSX.Element {
           <div className="relative">
             <select
               aria-label="Choose interface language"
-              value={selectedLang}
-              onChange={(e) => setSelectedLang(e.target.value)}
+              value={language}
+              onChange={(e) => setLanguage(e.target.value as SupportedLanguage)}
               className="h-8 rounded-full border border-hairline bg-surface px-2.5 pr-6 text-caption font-medium text-ink-secondary hover:bg-canvas-soft focus:outline-none focus:ring-2 focus:ring-primary appearance-none cursor-pointer"
             >
-              {LANGUAGES.map((lang) => (
+              {SUPPORTED_LANGUAGES.map((lang) => (
                 <option key={lang.code} value={lang.code}>
                   {lang.label}
                 </option>

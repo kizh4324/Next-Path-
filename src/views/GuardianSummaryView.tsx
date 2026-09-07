@@ -30,6 +30,7 @@ import {
 
 import { Button, EmptyState } from '@/components/ui';
 import { useAuth } from '@/hooks/useAuth';
+import { useLanguage } from '@/context/LanguageContext';
 import { useGuardianSummary } from '@/hooks/useRoadmap';
 import { ApiError } from '@/services/api_client';
 import { formatDate } from '@/utils/format';
@@ -49,6 +50,7 @@ function DiscussionGuideModal({
   prompts,
   tips = [],
 }: DiscussionModalProps): JSX.Element | null {
+  const { t } = useLanguage();
   if (!isOpen) return null;
 
   return (
@@ -66,10 +68,10 @@ function DiscussionGuideModal({
         <div className="flex items-start justify-between gap-sm border-b border-hairline pb-sm">
           <div>
             <h2 id="discussion-guide-title" className="text-heading-3 font-semibold text-ink">
-              Family Discussion Guide
+              {t('discussion_modal_title', 'Family Discussion Guide')}
             </h2>
             <p className="mt-xxs text-caption text-ink-muted">
-              Constructive conversation starters with {studentName}
+              {t('discussion_modal_sub', 'Constructive conversation starters with')} {studentName}
             </p>
           </div>
           <button
@@ -84,7 +86,7 @@ function DiscussionGuideModal({
 
         <div className="mt-md space-y-md text-body-sm text-ink-secondary max-h-[70vh] overflow-y-auto pr-xs">
           <div>
-            <h3 className="text-body font-semibold text-ink">Core Questions to Ask</h3>
+            <h3 className="text-body font-semibold text-ink">{t('core_questions', 'Core Questions to Ask')}</h3>
             <ul className="mt-xs space-y-xs">
               {prompts.map((prompt, i) => (
                 <li key={i} className="flex items-start gap-xs rounded-md bg-canvas-soft p-sm">
@@ -96,7 +98,7 @@ function DiscussionGuideModal({
           </div>
 
           <div>
-            <h3 className="text-body font-semibold text-ink">Counselor Recommendations</h3>
+            <h3 className="text-body font-semibold text-ink">{t('counselor_recommendations', 'Counselor Recommendations')}</h3>
             <ul className="mt-xs space-y-xs">
               {tips.map((tip, i) => (
                 <li key={i} className="flex items-start gap-xs text-ink-secondary text-caption leading-relaxed">
@@ -114,7 +116,7 @@ function DiscussionGuideModal({
 
         <div className="mt-lg flex justify-end border-t border-hairline pt-sm">
           <Button variant="utility" onClick={onClose}>
-            Close
+            {t('close', 'Close')}
           </Button>
         </div>
       </div>
@@ -123,31 +125,32 @@ function DiscussionGuideModal({
 }
 
 function QualitativeBadge({ label }: { label: string }): JSX.Element {
+  const { t } = useLanguage();
   const norm = label.toLowerCase();
   if (norm.includes('strong')) {
     return (
       <span className="inline-flex items-center gap-1 rounded-full bg-[#eaf5ea] px-2.5 py-0.5 text-caption font-semibold text-[#1c6b24] border border-[#c3e6c6]">
-        Strong
+        {t('strong', 'Strong')}
       </span>
     );
   }
   if (norm.includes('moderate')) {
     return (
       <span className="inline-flex items-center gap-1 rounded-full bg-[#ebf4fd] px-2.5 py-0.5 text-caption font-semibold text-[#005bab] border border-[#c8e2fb]">
-        Moderate
+        {t('moderate', 'Moderate')}
       </span>
     );
   }
   if (norm.includes('developing')) {
     return (
       <span className="inline-flex items-center gap-1 rounded-full bg-[#fef7ea] px-2.5 py-0.5 text-caption font-semibold text-[#915802] border border-[#fde4b8]">
-        Developing
+        {t('developing', 'Developing')}
       </span>
     );
   }
   return (
     <span className="inline-flex items-center gap-1 rounded-full bg-canvas-container px-2.5 py-0.5 text-caption font-medium text-ink-muted border border-hairline">
-      Insufficient evidence
+      {t('insufficient_evidence', 'Insufficient evidence')}
     </span>
   );
 }
@@ -155,6 +158,7 @@ function QualitativeBadge({ label }: { label: string }): JSX.Element {
 export function GuardianSummaryView(): JSX.Element {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { t } = useLanguage();
   const { data: summary, isLoading, error, refetch } = useGuardianSummary();
   const [guideModalOpen, setGuideModalOpen] = useState(false);
 
@@ -229,9 +233,9 @@ export function GuardianSummaryView(): JSX.Element {
     return (
       <div className="mx-auto max-w-xl py-lg">
         <EmptyState
-          title="Access restricted"
+          title={t('access_restricted', 'Access restricted')}
           description="You do not have authorization to view this student's records. Please make sure you are logged in with the verified guardian account linked to this student."
-          action={<Button onClick={() => navigate('/login')}>Switch account</Button>}
+          action={<Button onClick={() => navigate('/login')}>{t('switch_account', 'Switch account')}</Button>}
         />
       </div>
     );
@@ -242,12 +246,12 @@ export function GuardianSummaryView(): JSX.Element {
     return (
       <div className="mx-auto max-w-xl py-lg">
         <EmptyState
-          title="Unable to load progress right now"
-          description="Please check your internet connection and try refreshing the dashboard."
+          title={t('unable_to_load', 'Unable to load progress right now')}
+          description={t('check_connection', 'Please check your internet connection and try refreshing the dashboard.')}
           action={
             <Button variant="utility" onClick={() => void refetch()}>
               <RotateCw className="mr-xs h-4 w-4" />
-              Try again
+              {t('try_again', 'Try again')}
             </Button>
           }
         />
@@ -265,15 +269,15 @@ export function GuardianSummaryView(): JSX.Element {
   const nextSteps = summary.next_steps || [];
   const familyDiscussion = summary.family_discussion || {
     prompts: [
-      `What interests ${studentName.split(' ')[0]} most?`,
-      'Which pathway feels realistic for our family?',
-      'What support is needed right now?',
+      t('prompt_1', `What interests ${studentName.split(' ')[0]} most?`).replace('{name}', studentName.split(' ')[0]),
+      t('prompt_2', 'Which pathway feels realistic for our family?'),
+      t('prompt_3', 'What support is needed right now?'),
     ],
-    helper_text: 'Use these prompts to support your child’s decision.',
+    helper_text: t('discussion_helper', 'Use these prompts to support your child’s decision.'),
     guide_tips: [
-      'Focus on strengths and curiosity rather than entrance exam marks alone.',
-      'Always consider both a primary aspiration and a viable backup plan.',
-      'Check scholarships and lower-cost state institutions early.',
+      t('tip_1', 'Focus on strengths and curiosity rather than entrance exam marks alone.'),
+      t('tip_2', 'Always consider both a primary aspiration and a viable backup plan.'),
+      t('tip_3', 'Check scholarships and lower-cost state institutions early.'),
     ],
   };
 
@@ -293,7 +297,7 @@ export function GuardianSummaryView(): JSX.Element {
       <header className="flex flex-col gap-xs pt-xs">
         <div className="flex items-center justify-between gap-sm">
           <span className="inline-flex items-center gap-1.5 rounded-full border border-hairline bg-canvas-soft px-3 py-1 text-caption font-semibold tracking-wide uppercase text-ink-muted">
-            For Parents & Guardians
+            {t('for_parents', 'For Parents & Guardians')}
           </span>
           <button
             type="button"
@@ -302,12 +306,12 @@ export function GuardianSummaryView(): JSX.Element {
             title="Print or save PDF summary"
           >
             <Printer className="h-3.5 w-3.5" />
-            <span className="hidden sm:inline">Print / Save</span>
+            <span className="hidden sm:inline">{t('print_save', 'Print / Save')}</span>
           </button>
         </div>
-        <h1 className="text-heading-2 font-bold text-ink tracking-tight">Your child's progress</h1>
+        <h1 className="text-heading-2 font-bold text-ink tracking-tight">{t('page_title', "Your child's progress")}</h1>
         <p className="text-body-sm text-ink-secondary">
-          A simple view of learning, assessment and career exploration.
+          {t('page_subtitle', 'A simple view of learning, assessment and career exploration.')}
         </p>
       </header>
 
@@ -328,7 +332,7 @@ export function GuardianSummaryView(): JSX.Element {
             <div className="flex flex-wrap items-center justify-between gap-x-sm gap-y-1">
               <h3 className="text-title font-bold text-ink truncate">{studentName}</h3>
               <span className="inline-flex items-center gap-1 rounded-full bg-canvas-container px-2 py-0.5 text-caption font-medium text-ink-muted">
-                Student
+                {t('student', 'Student')}
               </span>
             </div>
 
@@ -342,24 +346,24 @@ export function GuardianSummaryView(): JSX.Element {
         {/* Snapshot Details Grid */}
         <div className="mt-md grid grid-cols-1 gap-sm border-t border-hairline pt-sm sm:grid-cols-2">
           <div>
-            <span className="text-caption text-ink-muted uppercase tracking-wider block">Current focus</span>
+            <span className="text-caption text-ink-muted uppercase tracking-wider block">{t('current_focus', 'Current focus')}</span>
             <p className="mt-0.5 text-body-sm font-semibold text-ink">
               {student?.current_focus || 'Technology & Problem Solving'}
             </p>
           </div>
 
           <div>
-            <span className="text-caption text-ink-muted uppercase tracking-wider block">Assessment</span>
+            <span className="text-caption text-ink-muted uppercase tracking-wider block">{t('assessment', 'Assessment')}</span>
             <div className="mt-0.5 flex items-center gap-2">
               {isAssessmentCompleted ? (
                 <span className="inline-flex items-center gap-1 text-body-sm font-semibold text-[#1c6b24]">
                   <CheckCircle2 className="h-4 w-4" />
-                  Completed
+                  {t('completed', 'Completed')}
                 </span>
               ) : (
                 <span className="inline-flex items-center gap-1 text-body-sm font-medium text-[#915802]">
                   <Circle className="h-3.5 w-3.5" />
-                  In progress
+                  {t('in_progress', 'In progress')}
                 </span>
               )}
               {student?.last_assessment_date && (
@@ -376,11 +380,11 @@ export function GuardianSummaryView(): JSX.Element {
       <section aria-labelledby="assessment-heading" className="rounded-lg border border-hairline bg-surface p-md shadow-xs">
         <div className="flex items-center justify-between gap-sm border-b border-hairline pb-sm">
           <div>
-            <h2 id="assessment-heading" className="text-title font-bold text-ink">Assessment Overview</h2>
-            <p className="text-caption text-ink-muted">Qualitative indicators based on profile activity</p>
+            <h2 id="assessment-heading" className="text-title font-bold text-ink">{t('assessment_overview', 'Assessment Overview')}</h2>
+            <p className="text-caption text-ink-muted">{t('assessment_subtitle', 'Qualitative indicators based on profile activity')}</p>
           </div>
           <span className="rounded-full bg-canvas-soft px-2 py-0.5 text-caption font-medium text-ink-muted">
-            No test scores
+            {t('no_test_scores', 'No test scores')}
           </span>
         </div>
 
@@ -395,13 +399,13 @@ export function GuardianSummaryView(): JSX.Element {
           </div>
         ) : (
           <div className="my-md rounded-md bg-canvas-soft p-md text-center">
-            <p className="text-body-sm text-ink-secondary">Assessment not completed yet.</p>
+            <p className="text-body-sm text-ink-secondary">{t('not_completed_yet', 'Assessment not completed yet.')}</p>
             <Button
               variant="utility"
               className="mt-sm"
               onClick={() => navigate('/onboarding')}
             >
-              Continue assessment
+              {t('continue_assessment', 'Continue assessment')}
             </Button>
           </div>
         )}
@@ -412,7 +416,7 @@ export function GuardianSummaryView(): JSX.Element {
             onClick={() => navigate('/results')}
             className="group inline-flex items-center gap-1 text-body-sm font-semibold text-primary hover:text-primary-active"
           >
-            <span>View full assessment</span>
+            <span>{t('view_full_assessment', 'View full assessment')}</span>
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
           </button>
         </div>
@@ -422,13 +426,13 @@ export function GuardianSummaryView(): JSX.Element {
       <section aria-labelledby="progress-heading" className="rounded-lg border border-hairline bg-surface p-md shadow-xs">
         <div className="flex flex-wrap items-center justify-between gap-sm">
           <div>
-            <h2 id="progress-heading" className="text-title font-bold text-ink">Progress</h2>
+            <h2 id="progress-heading" className="text-title font-bold text-ink">{t('progress_title', 'Progress')}</h2>
             <p className="text-body-sm font-medium text-ink-secondary mt-xxs">
-              {completedMilestones} of {totalMilestones} milestones complete
+              {completedMilestones} of {totalMilestones} {t('milestones_complete', 'milestones complete')}
             </p>
           </div>
           <span className="rounded-full bg-canvas-container px-2.5 py-1 text-caption font-bold text-primary">
-            {completionPercentage}% complete
+            {completionPercentage}% {t('complete', 'complete')}
           </span>
         </div>
 
@@ -449,7 +453,7 @@ export function GuardianSummaryView(): JSX.Element {
         <div className="mt-md space-y-sm text-body-sm">
           {completedItems.length > 0 && (
             <div>
-              <span className="text-caption font-semibold uppercase tracking-wider text-[#1c6b24]">Completed</span>
+              <span className="text-caption font-semibold uppercase tracking-wider text-[#1c6b24]">{t('completed', 'Completed')}</span>
               <ul className="mt-xs space-y-1.5">
                 {completedItems.map((item, idx) => (
                   <li key={idx} className="flex items-center gap-2 text-ink">
@@ -463,7 +467,7 @@ export function GuardianSummaryView(): JSX.Element {
 
           {upcomingItems.length > 0 && (
             <div className={completedItems.length > 0 ? 'border-t border-hairline pt-sm' : ''}>
-              <span className="text-caption font-semibold uppercase tracking-wider text-ink-muted">Upcoming</span>
+              <span className="text-caption font-semibold uppercase tracking-wider text-ink-muted">{t('upcoming', 'Upcoming')}</span>
               <ul className="mt-xs space-y-1.5">
                 {upcomingItems.slice(0, 3).map((item, idx) => (
                   <li key={idx} className="flex items-center gap-2 text-ink-secondary">
@@ -477,7 +481,7 @@ export function GuardianSummaryView(): JSX.Element {
 
           {totalMilestones === 0 && (
             <p className="py-sm text-center text-caption text-ink-muted">
-              No progress milestones completed yet.
+              {t('no_milestones_yet', 'No progress milestones completed yet.')}
             </p>
           )}
         </div>
@@ -488,7 +492,7 @@ export function GuardianSummaryView(): JSX.Element {
             onClick={() => navigate('/roadmap')}
             className="group inline-flex items-center gap-1 text-body-sm font-semibold text-primary hover:text-primary-active"
           >
-            <span>View roadmap</span>
+            <span>{t('view_roadmap', 'View roadmap')}</span>
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
           </button>
         </div>
@@ -498,8 +502,8 @@ export function GuardianSummaryView(): JSX.Element {
       <section aria-labelledby="careers-heading" className="rounded-lg border border-hairline bg-surface p-md shadow-xs">
         <div className="flex items-center justify-between gap-sm border-b border-hairline pb-sm">
           <div>
-            <h2 id="careers-heading" className="text-title font-bold text-ink">Career Options</h2>
-            <p className="text-caption text-ink-muted">Currently relevant pathways based on student evidence</p>
+            <h2 id="careers-heading" className="text-title font-bold text-ink">{t('career_options', 'Career Options')}</h2>
+            <p className="text-caption text-ink-muted">{t('career_options_subtitle', 'Currently relevant pathways based on student evidence')}</p>
           </div>
         </div>
 
@@ -521,7 +525,7 @@ export function GuardianSummaryView(): JSX.Element {
           </div>
         ) : (
           <div className="my-md text-center py-sm text-ink-muted text-body-sm">
-            Continue exploring to build your pathway options.
+            {t('continue_exploring', 'Continue exploring to build your pathway options.')}
           </div>
         )}
 
@@ -531,7 +535,7 @@ export function GuardianSummaryView(): JSX.Element {
             onClick={() => navigate('/compare')}
             className="group inline-flex items-center gap-1 text-body-sm font-semibold text-primary hover:text-primary-active"
           >
-            <span>Compare options</span>
+            <span>{t('compare_options', 'Compare options')}</span>
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
           </button>
         </div>
@@ -541,8 +545,8 @@ export function GuardianSummaryView(): JSX.Element {
       <section aria-labelledby="feasibility-heading" className="rounded-lg border border-hairline bg-surface p-md shadow-xs">
         <div className="flex items-center justify-between gap-sm border-b border-hairline pb-sm">
           <div>
-            <h2 id="feasibility-heading" className="text-title font-bold text-ink">Pathway Feasibility</h2>
-            <p className="text-caption text-ink-muted">Estimated programme fees and duration in India</p>
+            <h2 id="feasibility-heading" className="text-title font-bold text-ink">{t('pathway_feasibility', 'Pathway Feasibility')}</h2>
+            <p className="text-caption text-ink-muted">{t('feasibility_subtitle', 'Estimated programme fees and duration in India')}</p>
           </div>
         </div>
 
@@ -558,7 +562,7 @@ export function GuardianSummaryView(): JSX.Element {
               <p className="mt-0.5 text-caption text-ink-muted">{item.route_name}</p>
               {item.low_cost_alternative && (
                 <p className="mt-0.5 text-caption text-ink-faint">
-                  Cheaper option: {item.low_cost_alternative}
+                  {t('cheaper_option', 'Cheaper option')}: {item.low_cost_alternative}
                 </p>
               )}
             </div>
@@ -568,14 +572,14 @@ export function GuardianSummaryView(): JSX.Element {
         <div className="mt-md flex flex-wrap items-center justify-between gap-sm border-t border-hairline pt-sm">
           <span className="inline-flex items-center gap-1 text-caption text-ink-muted">
             <Sparkles className="h-3.5 w-3.5 text-primary" />
-            Scholarship & lower-cost state options available
+            {t('scholarship_note', 'Scholarship & lower-cost state options available')}
           </span>
           <button
             type="button"
             onClick={() => navigate('/compare')}
             className="group inline-flex items-center gap-1 text-body-sm font-semibold text-primary hover:text-primary-active"
           >
-            <span>View costs & routes</span>
+            <span>{t('view_costs_routes', 'View costs & routes')}</span>
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
           </button>
         </div>
@@ -583,8 +587,8 @@ export function GuardianSummaryView(): JSX.Element {
 
       {/* 9. NEXT STEPS (Priority 6) */}
       <section aria-labelledby="next-steps-heading" className="rounded-lg border border-hairline bg-surface p-md shadow-xs">
-        <h2 id="next-steps-heading" className="text-title font-bold text-ink">Next Steps</h2>
-        <p className="mt-xxs text-caption text-ink-muted">Immediate action items from your child's roadmap</p>
+        <h2 id="next-steps-heading" className="text-title font-bold text-ink">{t('next_steps', 'Next Steps')}</h2>
+        <p className="mt-xxs text-caption text-ink-muted">{t('next_steps_subtitle', "Immediate action items from your child's roadmap")}</p>
 
         {nextSteps.length > 0 ? (
           <ul className="mt-sm space-y-2 text-body-sm">
@@ -597,7 +601,7 @@ export function GuardianSummaryView(): JSX.Element {
           </ul>
         ) : (
           <p className="mt-sm text-body-sm text-ink-muted">
-            Your child's roadmap will appear after the assessment and pathway exploration are completed.
+            {t('roadmap_wait_msg', "Your child's roadmap will appear after the assessment and pathway exploration are completed.")}
           </p>
         )}
       </section>
@@ -605,9 +609,9 @@ export function GuardianSummaryView(): JSX.Element {
       {/* 10. FAMILY PRIORITIES (Priority 7) */}
       {familyPriorities.length > 0 && (
         <section aria-labelledby="priorities-heading" className="rounded-lg border border-hairline bg-surface p-md shadow-xs">
-          <h2 id="priorities-heading" className="text-title font-bold text-ink">Family Priorities</h2>
+          <h2 id="priorities-heading" className="text-title font-bold text-ink">{t('family_priorities', 'Family Priorities')}</h2>
           <p className="mt-xxs text-caption text-ink-muted">
-            Shared family criteria — informs guidance without overriding your child's choices.
+            {t('priorities_subtitle', "Shared family criteria — informs guidance without overriding your child's choices.")}
           </p>
           <div className="mt-sm flex flex-wrap gap-xs">
             {familyPriorities.map((priority) => (
@@ -626,7 +630,7 @@ export function GuardianSummaryView(): JSX.Element {
       <section aria-labelledby="discussion-heading" className="rounded-lg border border-hairline bg-surface p-md shadow-xs">
         <div className="flex items-start justify-between gap-sm">
           <div>
-            <h2 id="discussion-heading" className="text-title font-bold text-ink">Family Discussion</h2>
+            <h2 id="discussion-heading" className="text-title font-bold text-ink">{t('family_discussion', 'Family Discussion')}</h2>
             <p className="mt-xxs text-caption text-ink-muted">{familyDiscussion.helper_text}</p>
           </div>
           <MessageSquare className="h-5 w-5 text-primary shrink-0 mt-0.5" />
@@ -647,7 +651,7 @@ export function GuardianSummaryView(): JSX.Element {
             onClick={() => setGuideModalOpen(true)}
             className="group inline-flex items-center gap-1 text-body-sm font-semibold text-primary hover:text-primary-active"
           >
-            <span>View discussion guide</span>
+            <span>{t('view_discussion_guide', 'View discussion guide')}</span>
             <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
           </button>
         </div>
@@ -657,9 +661,9 @@ export function GuardianSummaryView(): JSX.Element {
       <section aria-label="Guidance note" className="flex items-start gap-sm rounded-lg border border-hairline bg-canvas-soft p-md text-caption text-ink-secondary">
         <Info className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
         <div>
-          <h3 className="font-semibold text-ink text-body-sm">Guidance, not a prediction.</h3>
+          <h3 className="font-semibold text-ink text-body-sm">{t('guidance_title', 'Guidance, not a prediction.')}</h3>
           <p className="mt-0.5 leading-relaxed">
-            Interests, skills and plans can change. Review the pathway as your child gains new experience.
+            {t('guidance_desc', 'Interests, skills and plans can change. Review the pathway as your child gains new experience.')}
           </p>
         </div>
       </section>
@@ -668,9 +672,9 @@ export function GuardianSummaryView(): JSX.Element {
       <div className="flex items-center justify-between px-xs py-xxs text-caption text-ink-muted">
         <span className="flex items-center gap-1.5">
           <Calendar className="h-3.5 w-3.5" />
-          Next review: 90 days
+          {t('next_review', 'Next review: 90 days')}
         </span>
-        <span>Roadmap updates dynamically</span>
+        <span>{t('roadmap_dynamic', 'Roadmap updates dynamically')}</span>
       </div>
 
       {/* DISCUSSION GUIDE MODAL */}
