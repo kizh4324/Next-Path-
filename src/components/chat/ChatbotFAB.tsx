@@ -210,6 +210,13 @@ export function ChatbotFAB(): JSX.Element {
   const [open, setOpen] = useState(false);
   const location = useLocation();
   const isCoursesPage = location.pathname === '/courses';
+  const isScholarshipsPage = location.pathname === '/scholarships';
+
+  useEffect(() => {
+    const handleOpen = () => setOpen(true);
+    window.addEventListener('open-nextpath-ai-chat', handleOpen);
+    return () => window.removeEventListener('open-nextpath-ai-chat', handleOpen);
+  }, []);
 
   return (
     <>
@@ -240,6 +247,28 @@ export function ChatbotFAB(): JSX.Element {
             <path d="M12 2a10 10 0 0 1 10 10c0 5.523-4.477 10-10 10a9.96 9.96 0 0 1-4.708-1.175L2 22l1.175-5.292A9.96 9.96 0 0 1 2 12C2 6.477 6.477 2 12 2z" />
             <path d="M8 12h.01M12 12h.01M16 12h.01" strokeWidth="2.5" />
           </svg>
+        </button>
+      ) : isScholarshipsPage ? (
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          aria-label="Ask NextPath AI"
+          aria-expanded={open}
+          className={cn(
+            'fixed bottom-6 right-6 z-30 flex min-h-[44px] items-center gap-2 rounded-full',
+            'bg-[#391c57] hover:bg-[#2c1543] text-white px-4 py-2.5 text-sm font-medium shadow-md',
+            'transition-all hover:scale-[1.02] active:scale-95',
+            'focus:outline-none focus:ring-2 focus:ring-[#d6b6f6]',
+          )}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[#d6b6f6]" aria-hidden="true">
+            <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+            <path d="M5 3v4"/>
+            <path d="M19 17v4"/>
+            <path d="M3 5h4"/>
+            <path d="M17 19h4"/>
+          </svg>
+          <span>Ask NextPath AI</span>
         </button>
       ) : (
         <button
