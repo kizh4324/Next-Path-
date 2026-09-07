@@ -55,9 +55,27 @@ export function useSaveProfile() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (input: OnboardingInput) => profileApi.create(input),
-    onSuccess: () => {
+    onSuccess: (profile) => {
+      queryClient.setQueryData(queryKeys.profile, profile);
+      const isMinor =
+        profile.education_stage === 'class_8_10' || profile.education_stage === 'class_11_12';
+      const consentRequired = isMinor;
+      const consentRecorded = Boolean(profile.consent_recorded_at && profile.consent_given_by);
+      const canGen = (!consentRequired || consentRecorded) && profile.profile_completeness_pct >= 40;
+
+      queryClient.setQueryData(queryKeys.profileStatus, {
+        profile_exists: true,
+        profile_completeness_pct: profile.profile_completeness_pct,
+        is_minor_stage: isMinor,
+        consent_required: consentRequired,
+        consent_recorded: consentRecorded,
+        can_generate_recommendations: canGen,
+        blocking_reason: null,
+      });
+
       void queryClient.invalidateQueries({ queryKey: queryKeys.profile });
       void queryClient.invalidateQueries({ queryKey: queryKeys.profileStatus });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.recommendations });
     },
   });
 }

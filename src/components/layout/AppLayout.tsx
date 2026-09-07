@@ -5,7 +5,6 @@ import { useEffect, useState } from 'react';
 
 import { ChatbotFAB } from '@/components/chat/ChatbotFAB';
 import { useAuth } from '@/hooks/useAuth';
-import { useLanguage, SUPPORTED_LANGUAGES, type SupportedLanguage } from '@/context/LanguageContext';
 import { cn } from '@/utils/cn';
 
 const STUDENT_NAV = [
@@ -13,7 +12,6 @@ const STUDENT_NAV = [
   { to: '/roadmap', label: 'Roadmap' },
   { to: '/courses', label: 'Courses' },
   { to: '/scholarships', label: 'Scholarships' },
-  { to: '/guardian', label: 'For Parents' },
   { to: '/progress', label: 'Progress' },
   { to: '/settings', label: 'Account' },
 ];
@@ -53,9 +51,13 @@ export function AppHeader(): JSX.Element {
   const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
-  const { language, setLanguage } = useLanguage();
 
   const links = user?.role === 'counselor' || user?.role === 'admin' ? COUNSELOR_NAV : STUDENT_NAV;
+
+  const displayName =
+    user?.full_name?.trim() ||
+    user?.email?.split('@')[0] ||
+    '';
 
   function handleLogout(): void {
     logout();
@@ -66,7 +68,7 @@ export function AppHeader(): JSX.Element {
     <header className="sticky top-0 z-30 border-b border-hairline bg-surface/95 backdrop-blur-sm">
       <div className="mx-auto flex max-w-content items-center justify-between gap-md px-md py-sm">
         {/* Brand */}
-        <Link to="/" className="flex items-center gap-xs text-title font-bold text-ink tracking-tight">
+        <Link to="/" className="flex shrink-0 items-center gap-xs text-title font-bold text-ink tracking-tight">
           <span
             aria-hidden="true"
             className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-on-primary text-body font-bold shadow-sm"
@@ -76,82 +78,69 @@ export function AppHeader(): JSX.Element {
           <span>Next_Path</span>
         </Link>
 
-        {/* Desktop Nav */}
-        {isAuthenticated && (
-          <nav aria-label="Main" className="hidden items-center gap-1 md:flex">
-            {links.map((link) => (
-              <NavLink
-                key={link.to}
-                to={link.to}
-                className={({ isActive }) =>
-                  cn(
-                    'rounded-full px-md py-1.5 text-body-sm font-medium transition-all duration-150',
-                    isActive
-                      ? 'bg-canvas-container text-primary font-semibold border border-hairline'
-                      : 'text-ink-secondary hover:text-ink hover:bg-canvas-soft',
-                  )
-                }
-              >
-                {link.label}
-              </NavLink>
-            ))}
-          </nav>
-        )}
-
-        {/* Right Actions: Language Selector & Auth */}
-        <div className="flex items-center gap-xs">
-          {/* Language Selector */}
-          <div className="relative">
-            <select
-              aria-label="Choose interface language"
-              value={language}
-              onChange={(e) => setLanguage(e.target.value as SupportedLanguage)}
-              className="h-8 rounded-full border border-hairline bg-surface px-2.5 pr-6 text-caption font-medium text-ink-secondary hover:bg-canvas-soft focus:outline-none focus:ring-2 focus:ring-primary appearance-none cursor-pointer"
-            >
-              {SUPPORTED_LANGUAGES.map((lang) => (
-                <option key={lang.code} value={lang.code}>
-                  {lang.label}
-                </option>
+        {/* Desktop Nav: My Options | Roadmap | Courses | Scholarships | Progress | Account | [Username] | Sign out */}
+        {isAuthenticated ? (
+          <div className="hidden md:flex flex-1 items-center justify-end gap-1.5 lg:gap-2.5">
+            <nav aria-label="Main" className="flex items-center gap-1 lg:gap-1.5 xl:gap-2">
+              {links.map((link) => (
+                <NavLink
+                  key={link.to}
+                  to={link.to}
+                  className={({ isActive }) =>
+                    cn(
+                      'rounded-full px-3 py-1.5 text-body-sm font-medium transition-all duration-150 whitespace-nowrap',
+                      isActive
+                        ? 'bg-canvas-container text-primary font-semibold border border-hairline'
+                        : 'text-ink-secondary hover:text-ink hover:bg-canvas-soft',
+                    )
+                  }
+                >
+                  {link.label}
+                </NavLink>
               ))}
-            </select>
-            <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-ink-muted">
-              ▼
-            </span>
-          </div>
+            </nav>
 
-          {isAuthenticated ? (
-            <div className="flex items-center gap-xs">
-              <span className="hidden text-caption text-ink-muted lg:inline border-l border-hairline pl-xs">
-                {user?.full_name}
-              </span>
+            <div className="flex items-center gap-1.5 lg:gap-2 border-l border-hairline pl-2 lg:pl-3">
+              {displayName && (
+                <span
+                  className="text-body-sm font-medium text-ink-muted whitespace-nowrap max-w-[140px] truncate"
+                  title={displayName}
+                >
+                  {displayName}
+                </span>
+              )}
               <button
                 type="button"
                 onClick={handleLogout}
-                className="btn-ghost text-xs px-2.5 py-1 min-h-touch text-ink-muted hover:text-error"
+                className="btn-ghost text-body-sm px-2.5 py-1 min-h-touch text-ink-muted hover:text-error whitespace-nowrap"
               >
                 Sign out
               </button>
-              <button
-                type="button"
-                aria-label="Open mobile menu"
-                aria-expanded={menuOpen}
-                onClick={() => setMenuOpen((open) => !open)}
-                className="btn-utility min-h-touch px-sm md:hidden"
-              >
-                {menuOpen ? 'Close' : 'Menu'}
-              </button>
             </div>
-          ) : (
-            <div className="flex items-center gap-xs">
-              <Link to="/login" className="btn-utility text-xs px-3 py-1.5">
-                Sign in
-              </Link>
-              <Link to="/signup" className="btn-primary text-xs px-3.5 py-1.5">
-                Get Started
-              </Link>
-            </div>
-          )}
-        </div>
+          </div>
+        ) : (
+          <div className="flex items-center gap-xs">
+            <Link to="/login" className="btn-utility text-xs px-3 py-1.5">
+              Sign in
+            </Link>
+            <Link to="/signup" className="btn-primary text-xs px-3.5 py-1.5">
+              Get Started
+            </Link>
+          </div>
+        )}
+
+        {/* Mobile menu button */}
+        {isAuthenticated && (
+          <button
+            type="button"
+            aria-label="Open mobile menu"
+            aria-expanded={menuOpen}
+            onClick={() => setMenuOpen((open) => !open)}
+            className="btn-utility min-h-touch px-sm md:hidden shrink-0"
+          >
+            {menuOpen ? 'Close' : 'Menu'}
+          </button>
+        )}
       </div>
 
       {/* Mobile Drawer */}
@@ -173,6 +162,21 @@ export function AppHeader(): JSX.Element {
                 {link.label}
               </NavLink>
             ))}
+            {displayName && (
+              <div className="mt-2 border-t border-hairline pt-2 flex items-center justify-between px-md py-1">
+                <span className="text-caption font-medium text-ink-muted truncate">{displayName}</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    handleLogout();
+                  }}
+                  className="btn-ghost text-xs text-ink-muted hover:text-error min-h-touch"
+                >
+                  Sign out
+                </button>
+              </div>
+            )}
           </div>
         </nav>
       )}

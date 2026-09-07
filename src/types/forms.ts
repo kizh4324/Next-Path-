@@ -76,6 +76,8 @@ export const onboardingSchema = z.object({
     .default('within_state'),
   preferred_languages: z.array(z.string()).default(['English', 'Hindi']),
   academic_records_available: z.boolean().default(false),
+  consent_given_by: z.string().max(255).optional().nullable(),
+  consent_type: z.string().max(100).optional().nullable(),
 });
 export type OnboardingInput = z.infer<typeof onboardingSchema>;
 

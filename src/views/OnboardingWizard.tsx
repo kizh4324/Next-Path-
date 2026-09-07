@@ -11,11 +11,13 @@
  */
 
 import { useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate, useSearchParams } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 
 import { MinorConsentModal } from '@/components/auth/MinorConsentModal';
 import { Button, Callout, Card, Chip, Field, Input, ProgressBar, Select } from '@/components/ui';
-import { useProfileStatus, useSaveProfile } from '@/hooks/useRecommendations';
+import { useAuth } from '@/hooks/useAuth';
+import { queryKeys, useProfileStatus, useSaveProfile } from '@/hooks/useRecommendations';
 import { ApiError } from '@/services/api_client';
 import { onboardingSchema, type OnboardingInput } from '@/types/forms';
 import type { BudgetTier, EducationStage, RelocationWillingness, RiasecKey } from '@/types/models';
@@ -198,6 +200,10 @@ const STEP_TITLES = [
 
 export function OnboardingWizard(): JSX.Element {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const isEditing = searchParams.get('edit') === 'true';
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
   const [step, setStep] = useState(0);
   const [draft, setDraft] = useState<DraftState>(loadDraft);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -206,7 +212,17 @@ export function OnboardingWizard(): JSX.Element {
   const [profileId, setProfileId] = useState<string | null>(null);
 
   const saveProfile = useSaveProfile();
-  const { data: status } = useProfileStatus();
+  const { data: status, isLoading: statusLoading } = useProfileStatus();
+  const hasCompletedLocal =
+    typeof window !== 'undefined' && window.localStorage.getItem('onboarding_completed') === 'true';
+
+  // If user has already completed onboarding and is not explicitly editing,
+  // directly open the My Options / Recommendation Results page.
+  useEffect(() => {
+    if (!isEditing && !statusLoading && (status?.profile_exists || hasCompletedLocal)) {
+      navigate('/results', { replace: true });
+    }
+  }, [isEditing, statusLoading, status?.profile_exists, hasCompletedLocal, navigate]);
 
   // Persist on every change. This is what makes a dropped connection survivable.
   useEffect(() => {
@@ -369,11 +385,21 @@ export function OnboardingWizard(): JSX.Element {
       relocation_willingness: draft.relocation_willingness,
       preferred_languages: ['English'],
       academic_records_available: draft.academic_records_available,
+      consent_given_by: user?.full_name || 'Guardian Consent',
+      consent_type: isMinorStage ? 'guardian_consent_minor' : 'self_consent_adult',
     });
 
     try {
       const profile = await saveProfile.mutateAsync(payload);
-      window.localStorage.removeItem(DRAFT_KEY);
+      if (typeof window !== 'undefined') {
+        window.localStorage.removeItem(DRAFT_KEY);
+        window.localStorage.setItem('onboarding_completed', 'true');
+      }
+
+      // Pre-refresh status and recommendations queries
+      await queryClient.refetchQueries({ queryKey: queryKeys.profileStatus });
+      await queryClient.refetchQueries({ queryKey: queryKeys.recommendations });
+
       // A minor cannot proceed to results until a guardian records consent (FR-20).
       if (isMinorStage && !profile.consent_given_by) {
         setProfileId(profile.id);
@@ -389,6 +415,10 @@ export function OnboardingWizard(): JSX.Element {
             : 'We could not save your answers. Please try again.',
       });
     }
+  }
+
+  if (!isEditing && !statusLoading && (status?.profile_exists || hasCompletedLocal)) {
+    return <Navigate to="/results" replace />;
   }
 
   return (
@@ -766,6 +796,11 @@ export function OnboardingWizard(): JSX.Element {
         onClose={() => setConsentOpen(false)}
         onRecorded={() => {
           setConsentOpen(false);
+          if (typeof window !== 'undefined') {
+            window.localStorage.setItem('onboarding_completed', 'true');
+          }
+          void queryClient.invalidateQueries({ queryKey: queryKeys.profileStatus });
+          void queryClient.invalidateQueries({ queryKey: queryKeys.recommendations });
           navigate('/results');
         }}
       />

@@ -6,6 +6,7 @@ import { Suspense, lazy, type ReactNode } from 'react';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { Spinner } from '@/components/ui';
 import { useAuth } from '@/hooks/useAuth';
+import { useProfileStatus } from '@/hooks/useRecommendations';
 import { AuthView } from '@/views/AuthView';
 import { CareerComparisonView } from '@/views/CareerComparisonView';
 import { CareerDetailView } from '@/views/CareerDetailView';
@@ -52,7 +53,9 @@ function RequireCounselor({ children }: { children: ReactNode }): JSX.Element {
 /** Send each role to the screen that is actually useful to them. */
 function HomeRedirect(): JSX.Element {
   const { user, isAuthenticated, isLoading } = useAuth();
-  if (isLoading) return <FullPageSpinner />;
+  const { data: status, isLoading: statusLoading } = useProfileStatus(isAuthenticated);
+
+  if (isLoading || (isAuthenticated && statusLoading)) return <FullPageSpinner />;
   if (!isAuthenticated) return <Navigate to="/login" replace />;
   if (user?.role === 'counselor' || user?.role === 'admin') {
     return <Navigate to="/counselor" replace />;
@@ -60,7 +63,12 @@ function HomeRedirect(): JSX.Element {
   if (user?.role === 'guardian') {
     return <Navigate to="/guardian" replace />;
   }
-  return <Navigate to="/results" replace />;
+  const hasCompletedLocal =
+    typeof window !== 'undefined' && window.localStorage.getItem('onboarding_completed') === 'true';
+  if (status?.profile_exists || hasCompletedLocal) {
+    return <Navigate to="/results" replace />;
+  }
+  return <Navigate to="/onboarding" replace />;
 }
 
 export function App(): JSX.Element {

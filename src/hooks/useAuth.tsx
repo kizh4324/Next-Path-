@@ -54,6 +54,9 @@ export function AuthProvider({ children }: { children: ReactNode }): JSX.Element
 
   const logout = useCallback(() => {
     tokenStore.clear();
+    if (typeof window !== 'undefined') {
+      window.localStorage.removeItem('onboarding_completed');
+    }
     queryClient.clear();
   }, [queryClient]);
 

@@ -23,6 +23,7 @@ import {
 
 import { useAuth } from '@/hooks/useAuth';
 import { ApiError } from '@/services/api_client';
+import { profileApi } from '@/services/endpoints';
 import { loginSchema, registerSchema } from '@/types/forms';
 import type { UserRole } from '@/types/models';
 
@@ -117,7 +118,22 @@ export function AuthView(): JSX.Element {
       } else if (role === 'guardian') {
         navigate('/guardian');
       } else {
-        navigate('/results');
+        try {
+          const status = await profileApi.status();
+          if (status?.profile_exists) {
+            if (typeof window !== 'undefined') {
+              window.localStorage.setItem('onboarding_completed', 'true');
+            }
+            navigate('/results');
+          } else {
+            if (typeof window !== 'undefined') {
+              window.localStorage.removeItem('onboarding_completed');
+            }
+            navigate('/onboarding');
+          }
+        } catch {
+          navigate('/results');
+        }
       }
     } catch (caught) {
       setErrors({

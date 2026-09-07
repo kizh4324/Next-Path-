@@ -1,7 +1,7 @@
 /** Multi-option results (FR-05, FR-06, FR-07 — Story 2.4). */
 
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Navigate, useNavigate } from 'react-router-dom';
 
 import { CareerCard } from '@/components/career/CareerCard';
 import { Button, Callout, Card, EmptyState, SkeletonCard } from '@/components/ui';
@@ -10,10 +10,11 @@ import { ApiError } from '@/services/api_client';
 
 export function ResultsDashboard(): JSX.Element {
   const navigate = useNavigate();
+  const hasCompletedLocal =
+    typeof window !== 'undefined' && window.localStorage.getItem('onboarding_completed') === 'true';
   const { data: status, isLoading: statusLoading } = useProfileStatus();
-  const { data: batch, isLoading, error } = useRecommendations(
-    status?.can_generate_recommendations ?? false,
-  );
+  const canGenerate = Boolean(status?.can_generate_recommendations || hasCompletedLocal);
+  const { data: batch, isLoading, error } = useRecommendations(canGenerate);
   const evaluate = useEvaluate();
   const selectPathways = useSelectPathways();
 
@@ -21,6 +22,19 @@ export function ResultsDashboard(): JSX.Element {
   const [primary, setPrimary] = useState<string | null>(null);
   const [backup, setBackup] = useState<string | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
+
+  // If recommendations have not yet been evaluated, automatically evaluate them once profile exists
+  useEffect(() => {
+    if (
+      (status?.profile_exists || hasCompletedLocal) &&
+      !batch &&
+      !isLoading &&
+      !evaluate.isPending &&
+      !evaluate.data
+    ) {
+      evaluate.mutate();
+    }
+  }, [status?.profile_exists, hasCompletedLocal, batch, isLoading, evaluate]);
 
   function toggleCompare(careerId: string): void {
     setComparing((current) =>
@@ -45,7 +59,7 @@ export function ResultsDashboard(): JSX.Element {
     }
   }
 
-  if (statusLoading) {
+  if (statusLoading || (hasCompletedLocal && !status?.profile_exists)) {
     return (
       <div className="grid gap-md md:grid-cols-2">
         <SkeletonCard />
@@ -54,23 +68,27 @@ export function ResultsDashboard(): JSX.Element {
     );
   }
 
-  if (!status?.profile_exists) {
-    return (
-      <EmptyState
-        title="Let's start with a few questions"
-        description="We need to know a little about what you enjoy and what is realistic for you before we can suggest anything useful."
-        action={<Button onClick={() => navigate('/onboarding')}>Start</Button>}
-      />
-    );
+  if (!status?.profile_exists && !hasCompletedLocal) {
+    return <Navigate to="/onboarding" replace />;
   }
 
-  if (!status.can_generate_recommendations) {
+  if (status && !status.can_generate_recommendations && !hasCompletedLocal) {
     return (
       <EmptyState
         title="One more step"
         description={status.blocking_reason ?? 'Finish your profile to see your options.'}
         action={<Button onClick={() => navigate('/onboarding')}>Continue my profile</Button>}
       />
+    );
+  }
+
+  if (isLoading || evaluate.isPending || (!batch && !error)) {
+    return (
+      <div className="grid gap-md md:grid-cols-2">
+        <SkeletonCard />
+        <SkeletonCard />
+        <SkeletonCard />
+      </div>
     );
   }
 

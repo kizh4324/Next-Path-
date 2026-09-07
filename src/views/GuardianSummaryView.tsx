@@ -162,21 +162,29 @@ export function GuardianSummaryView(): JSX.Element {
   const { data: summary, isLoading, error, refetch } = useGuardianSummary();
   const [guideModalOpen, setGuideModalOpen] = useState(false);
 
-  // 1. DYNAMIC STUDENT NAME RESOLUTION
-  // Never hardcode any student name. Source of truth is authenticated response or session.
-  const studentName =
-    summary?.student?.full_name?.trim() ||
-    (user?.role === 'student' ? user?.full_name?.trim() : '') ||
-    'Student';
+  // DYNAMIC USER NAME RESOLUTION (Role-consistent)
+  // For a student login: display the currently logged-in student's own name.
+  // For a parent/guardian login: display the currently logged-in parent/guardian's own name or username.
+  // Do not display the child's name when the parent/guardian is logged in.
+  // Do not display a specific hardcoded name such as "Aanya" for every user.
+  const displayedUserName =
+    user?.role === 'guardian'
+      ? (user.full_name?.trim() || user.email?.split('@')[0] || 'Parent')
+      : user?.role === 'student'
+        ? (user.full_name?.trim() || user.email?.split('@')[0] || 'Student')
+        : (user?.full_name?.trim() || user?.email?.split('@')[0] || 'User');
 
-  const studentInitials =
-    studentName
+  const userInitials =
+    displayedUserName
       .split(' ')
       .filter(Boolean)
       .map((part) => part[0])
       .slice(0, 2)
       .join('')
-      .toUpperCase() || 'S';
+      .toUpperCase() || 'U';
+
+  const childName = summary?.student?.full_name?.trim() || 'your child';
+  const childFirstName = childName.split(' ')[0];
 
   // 14. LOADING STATE
   if (isLoading) {
@@ -269,7 +277,7 @@ export function GuardianSummaryView(): JSX.Element {
   const nextSteps = summary.next_steps || [];
   const familyDiscussion = summary.family_discussion || {
     prompts: [
-      t('prompt_1', `What interests ${studentName.split(' ')[0]} most?`).replace('{name}', studentName.split(' ')[0]),
+      t('prompt_1', `What interests ${childFirstName} most?`).replace('{name}', childFirstName),
       t('prompt_2', 'Which pathway feels realistic for our family?'),
       t('prompt_3', 'What support is needed right now?'),
     ],
@@ -295,10 +303,7 @@ export function GuardianSummaryView(): JSX.Element {
     <div className="mx-auto flex max-w-xl flex-col gap-md pb-3xl">
       {/* 3. PAGE HEADER */}
       <header className="flex flex-col gap-xs pt-xs">
-        <div className="flex items-center justify-between gap-sm">
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-hairline bg-canvas-soft px-3 py-1 text-caption font-semibold tracking-wide uppercase text-ink-muted">
-            {t('for_parents', 'For Parents & Guardians')}
-          </span>
+        <div className="flex items-center justify-end gap-sm">
           <button
             type="button"
             onClick={() => window.print()}
@@ -315,24 +320,24 @@ export function GuardianSummaryView(): JSX.Element {
         </p>
       </header>
 
-      {/* 4. STUDENT SNAPSHOT (Priority 1) */}
+      {/* 4. USER SNAPSHOT (Priority 1) */}
       <section aria-labelledby="snapshot-heading" className="rounded-lg border border-hairline bg-surface p-md shadow-xs transition-shadow">
-        <h2 id="snapshot-heading" className="sr-only">Student Snapshot</h2>
+        <h2 id="snapshot-heading" className="sr-only">User Snapshot</h2>
         <div className="flex items-start gap-md">
-          {/* Student Avatar */}
+          {/* User Avatar */}
           <div
             aria-hidden="true"
             className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-primary/10 border border-primary/20 text-title font-bold text-primary shadow-xs"
           >
-            {studentInitials}
+            {userInitials}
           </div>
 
           {/* Core Info */}
           <div className="flex-1 min-w-0">
             <div className="flex flex-wrap items-center justify-between gap-x-sm gap-y-1">
-              <h3 className="text-title font-bold text-ink truncate">{studentName}</h3>
+              <h3 className="text-title font-bold text-ink truncate">{displayedUserName}</h3>
               <span className="inline-flex items-center gap-1 rounded-full bg-canvas-container px-2 py-0.5 text-caption font-medium text-ink-muted">
-                {t('student', 'Student')}
+                {user?.role === 'guardian' ? 'Parent / Guardian' : t('student', 'Student')}
               </span>
             </div>
 
@@ -681,7 +686,7 @@ export function GuardianSummaryView(): JSX.Element {
       <DiscussionGuideModal
         isOpen={guideModalOpen}
         onClose={() => setGuideModalOpen(false)}
-        studentName={studentName}
+        studentName={childName}
         prompts={familyDiscussion.prompts}
         tips={familyDiscussion.guide_tips}
       />
