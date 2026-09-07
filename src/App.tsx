@@ -10,6 +10,7 @@ import { AuthView } from '@/views/AuthView';
 import { CareerComparisonView } from '@/views/CareerComparisonView';
 import { CareerDetailView } from '@/views/CareerDetailView';
 import { CounselorQueueView } from '@/views/CounselorQueueView';
+import { CoursesView } from '@/views/CoursesView';
 import { GuardianSummaryView } from '@/views/GuardianSummaryView';
 import { OnboardingWizard } from '@/views/OnboardingWizard';
 import { ResultsDashboard } from '@/views/ResultsDashboard';
@@ -77,6 +78,7 @@ export function App(): JSX.Element {
         <Route path="/careers/:careerId" element={<CareerDetailView />} />
         <Route path="/compare" element={<CareerComparisonView />} />
         <Route path="/roadmap" element={<RoadmapView />} />
+        <Route path="/courses" element={<CoursesView />} />
         <Route path="/scholarships" element={<ScholarshipsView />} />
         <Route path="/guardian" element={<GuardianSummaryView />} />
         <Route

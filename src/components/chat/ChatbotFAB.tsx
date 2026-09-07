@@ -6,6 +6,7 @@
  */
 
 import { useEffect, useRef, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 
 import { Badge, Button, Callout, Spinner } from '@/components/ui';
 import { useChatbot } from '@/hooks/useChatbot';
@@ -207,30 +208,62 @@ export function ChatbotDrawer({
 
 export function ChatbotFAB(): JSX.Element {
   const [open, setOpen] = useState(false);
+  const location = useLocation();
+  const isCoursesPage = location.pathname === '/courses';
 
   return (
     <>
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        aria-label="Open the career assistant"
-        aria-expanded={open}
-        className={cn(
-          'fixed bottom-lg right-lg z-30 flex min-h-touch items-center gap-xs rounded-full',
-          'bg-ai-accent px-md py-sm text-button text-on-primary shadow-level-1',
-          'transition-transform hover:scale-[1.02]',
-        )}
-      >
-        <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-          <path
-            d="M3 5.5A2.5 2.5 0 015.5 3h9A2.5 2.5 0 0117 5.5v6a2.5 2.5 0 01-2.5 2.5H8l-4 3v-3H5.5A2.5 2.5 0 013 11.5v-6z"
+      {isCoursesPage ? (
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          aria-label="Ask NextPath AI"
+          aria-expanded={open}
+          className={cn(
+            'fixed bottom-6 right-6 z-30 flex h-12 w-12 items-center justify-center rounded-full',
+            'bg-[#d6b6f6]/10 hover:bg-[#d6b6f6]/20 border border-[#d6b6f6]/40 text-[#391c57]',
+            'transition-transform hover:scale-105 active:scale-95 shadow-none',
+            'focus:outline-none focus:ring-2 focus:ring-[#0075de]',
+          )}
+        >
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
             stroke="currentColor"
-            strokeWidth="1.5"
+            strokeWidth="1.8"
+            strokeLinecap="round"
             strokeLinejoin="round"
-          />
-        </svg>
-        Ask
-      </button>
+            aria-hidden="true"
+          >
+            <path d="M12 2a10 10 0 0 1 10 10c0 5.523-4.477 10-10 10a9.96 9.96 0 0 1-4.708-1.175L2 22l1.175-5.292A9.96 9.96 0 0 1 2 12C2 6.477 6.477 2 12 2z" />
+            <path d="M8 12h.01M12 12h.01M16 12h.01" strokeWidth="2.5" />
+          </svg>
+        </button>
+      ) : (
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          aria-label="Open the career assistant"
+          aria-expanded={open}
+          className={cn(
+            'fixed bottom-lg right-lg z-30 flex min-h-touch items-center gap-xs rounded-full',
+            'bg-ai-accent px-md py-sm text-button text-on-primary shadow-level-1',
+            'transition-transform hover:scale-[1.02]',
+          )}
+        >
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <path
+              d="M3 5.5A2.5 2.5 0 015.5 3h9A2.5 2.5 0 0117 5.5v6a2.5 2.5 0 01-2.5 2.5H8l-4 3v-3H5.5A2.5 2.5 0 013 11.5v-6z"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinejoin="round"
+            />
+          </svg>
+          Ask
+        </button>
+      )}
       <ChatbotDrawer open={open} onClose={() => setOpen(false)} />
     </>
   );

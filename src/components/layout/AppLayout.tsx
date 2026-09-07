@@ -19,6 +19,7 @@ const LANGUAGES = [
 const STUDENT_NAV = [
   { to: '/results', label: 'My Options' },
   { to: '/roadmap', label: 'Roadmap' },
+  { to: '/courses', label: 'Courses' },
   { to: '/scholarships', label: 'Scholarships' },
   { to: '/guardian', label: 'For Parents' },
   { to: '/progress', label: 'Progress' },
