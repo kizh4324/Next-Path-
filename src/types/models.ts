@@ -401,16 +401,83 @@ export interface CostBreakdownItem {
   low_cost_alternative_route: string | null;
 }
 
+export interface ChildProgressStudent {
+  id: string;
+  full_name: string;
+  avatar_url: string | null;
+  education_stage: string;
+  grade_or_year?: string | null;
+  stream: string | null;
+  current_focus: string;
+  assessment_status: 'completed' | 'in_progress' | 'not_started';
+  last_assessment_date: string | null;
+}
+
+export interface AssessmentDimension {
+  name: string;
+  label: 'Strong' | 'Moderate' | 'Developing' | 'Insufficient evidence';
+  notes?: string;
+}
+
+export interface AssessmentOverview {
+  status: 'completed' | 'in_progress' | 'not_started';
+  dimensions: AssessmentDimension[];
+  last_completed_at: string | null;
+}
+
+export interface ChildProgressRoadmap {
+  total_milestones: number;
+  completed_milestones: number;
+  completion_percentage: number;
+  completed_items: string[];
+  upcoming_items: string[];
+}
+
+export interface CareerOptionItem {
+  id: string;
+  career_title: string;
+  fit_label: string;
+  feasibility_label: string;
+  cost_range: string;
+  duration: string;
+  route_name: string;
+  low_cost_alternative: string | null;
+  scholarship_available: boolean;
+}
+
+export interface FamilyDiscussionInfo {
+  prompts: string[];
+  helper_text: string;
+  guide_tips: string[];
+}
+
+export interface ReassessmentInfo {
+  next_review_days: number;
+  next_review_label: string;
+  note: string;
+}
+
 export interface ParentSummaryResponse {
-  id: string | null;
-  student_id: string;
-  recommendation_batch_id: string;
-  summary_text: string;
-  generated_at: string | null;
-  cost_breakdown: CostBreakdownItem[];
-  discussion_points: string[];
-  guardian_priorities_reflected: string[];
-  generated_without_ai: boolean;
+  id?: string | null;
+  student_id?: string;
+  recommendation_batch_id?: string;
+  summary_text?: string;
+  generated_at?: string | null;
+  cost_breakdown?: CostBreakdownItem[];
+  discussion_points?: string[];
+  guardian_priorities_reflected?: string[];
+  generated_without_ai?: boolean;
+
+  // Rich Child Progress Dashboard fields
+  student?: ChildProgressStudent;
+  assessment_overview?: AssessmentOverview;
+  progress?: ChildProgressRoadmap;
+  career_options?: CareerOptionItem[];
+  pathway_feasibility?: CareerOptionItem[];
+  family_priorities?: string[];
+  next_steps?: string[];
+  family_discussion?: FamilyDiscussionInfo;
+  reassessment?: ReassessmentInfo;
 }
 
 // --- Counselor ----------------------------------------------------------------------------

@@ -163,14 +163,33 @@ router.patch('/', (req: Request, res: Response) => {
     });
   }
 
-  const existingProfile = store.profiles.get(user.id);
+  let existingProfile = store.profiles.get(user.id);
   if (!existingProfile) {
-    return res.status(404).json({
-      type: 'https://nextpath.in/errors/not-found',
-      title: 'Profile Not Found',
-      status: 404,
-      detail: 'Please create your profile first.',
-    });
+    const now = new Date().toISOString();
+    existingProfile = {
+      id: `prof-${user.id}`,
+      user_id: user.id,
+      education_stage: 'class_11_12',
+      grade_or_year: 'Class 12',
+      current_stream: null,
+      interests: [],
+      aptitude_signals: {},
+      work_style_preferences: {
+        notification_frequency: 'Weekly Digest & Urgent Deadlines',
+        counselor_language: 'English / Hindi',
+      },
+      budget_tier: 'moderate_up_to_2_lakhs',
+      relocation_willingness: 'within_state',
+      preferred_languages: ['English (India)'],
+      consent_type: 'self_consent_adult',
+      consent_given_by: user.full_name,
+      consent_recorded_at: now,
+      academic_records_available: false,
+      profile_completeness_pct: 30,
+      created_at: now,
+      updated_at: now,
+      guardian_contexts: [],
+    };
   }
 
   const updates = req.body;

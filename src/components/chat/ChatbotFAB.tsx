@@ -211,6 +211,7 @@ export function ChatbotFAB(): JSX.Element {
   const location = useLocation();
   const isCoursesPage = location.pathname === '/courses';
   const isScholarshipsPage = location.pathname === '/scholarships';
+  const isProgressPage = location.pathname === '/progress';
 
   useEffect(() => {
     const handleOpen = () => setOpen(true);
@@ -220,7 +221,39 @@ export function ChatbotFAB(): JSX.Element {
 
   return (
     <>
-      {isCoursesPage ? (
+      {isProgressPage ? (
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          aria-label="AI Assistant"
+          aria-expanded={open}
+          className={cn(
+            'fixed bottom-20 md:bottom-6 right-4 md:right-6 z-30 flex min-h-[44px] items-center gap-2 rounded-full',
+            'bg-surface hover:bg-[#faf7fc] border border-[#d6b6f6] text-[#391c57] px-4 py-2.5 text-sm font-semibold shadow-level-1',
+            'transition-all hover:scale-[1.02] active:scale-95 cursor-pointer',
+            'focus:outline-none focus:ring-2 focus:ring-[#0075de]',
+          )}
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#391c57"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
+            <path d="M5 3v4" />
+            <path d="M19 17v4" />
+            <path d="M3 5h4" />
+            <path d="M17 19h4" />
+          </svg>
+          <span>AI Assistant</span>
+        </button>
+      ) : isCoursesPage ? (
         <button
           type="button"
           onClick={() => setOpen(true)}

@@ -62,6 +62,17 @@ export function useSaveProfile() {
   });
 }
 
+export function usePatchProfile() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (updates: Record<string, unknown>) => profileApi.patch(updates),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: queryKeys.profile });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.profileStatus });
+    },
+  });
+}
+
 export function useRecommendations(enabled = true) {
   return useQuery({
     queryKey: queryKeys.recommendations,

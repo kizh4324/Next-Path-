@@ -4,6 +4,48 @@ import { getAuthUser } from './auth';
 
 const router = Router();
 
+// GET /account/export
+router.get('/export', (req: Request, res: Response) => {
+  const user = getAuthUser(req);
+  if (!user) {
+    return res.status(401).json({
+      type: 'https://nextpath.in/errors/unauthorized',
+      title: 'Unauthorized',
+      status: 401,
+      detail: 'Valid authentication token required.',
+    });
+  }
+
+  const userId = user.id;
+  const profile = store.profiles.get(userId) || null;
+  const roadmap = store.roadmaps.get(userId) || null;
+  const recommendations = store.recommendations.get(userId) || [];
+  const submissions = store.projectSubmissions.get(userId) || [];
+
+  const exportPayload = {
+    export_metadata: {
+      exported_at: new Date().toISOString(),
+      student_id: user.id,
+      system: 'Next_Path Student Portal',
+      compliance: 'Section 12, Digital Personal Data Protection Act, 2023',
+    },
+    student: {
+      id: user.id,
+      full_name: user.full_name,
+      email: user.email,
+      role: user.role,
+      phone_number: user.phone_number,
+      created_at: user.created_at,
+    },
+    academic_profile: profile,
+    career_roadmap: roadmap,
+    pathway_recommendations: recommendations,
+    project_submissions: submissions,
+  };
+
+  return res.status(200).json(exportPayload);
+});
+
 // DELETE /account
 router.delete('/', (req: Request, res: Response) => {
   const user = getAuthUser(req);

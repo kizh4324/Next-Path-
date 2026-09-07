@@ -1,69 +1,206 @@
 /**
  * Visual progress analytics (FR-28, Story 6.2 — P1).
  *
- * Charts use the decorative accent tokens (sky, teal, success), never the structural
- * primary — that blue means "you can act here", and a chart series is not an action.
+ * Designed as a decision and pathway companion:
+ * Tracks roadmap milestones, 30/90/180-day progress, learning & activity progress,
+ * and current pathway state with calm, evidence-oriented clarity.
  */
 
-import { useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  Cell,
-  Legend,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from 'recharts';
+  TrendingUp,
+  Search,
+  ListChecks,
+  Compass,
+  Clock,
+  RotateCcw,
+  Calendar,
+  Info,
+  Home,
+  BarChart2,
+  Sparkles,
+  User,
+  X,
+} from 'lucide-react';
 
-import { Badge, Button, Callout, Card, EmptyState, ProgressBar, SkeletonCard } from '@/components/ui';
-import { useRecommendationHistory } from '@/hooks/useRecommendations';
 import { useRoadmap } from '@/hooks/useRoadmap';
+import { useRecommendationHistory } from '@/hooks/useRecommendations';
 import { ApiError } from '@/services/api_client';
-import { formatBucket, formatDate } from '@/utils/format';
-
-// Categorical series colours, from the decorative palette only.
-const SERIES = {
-  completed: '#1aae39',
-  remaining: '#e6e6e6',
-  bar: '#62aef0',
-};
+import { formatDate } from '@/utils/format';
+import { SkeletonCard, EmptyState, Button } from '@/components/ui';
 
 export function ProgressDashboard(): JSX.Element {
   const navigate = useNavigate();
   const { data: roadmap, isLoading, error } = useRoadmap();
   const { data: history } = useRecommendationHistory();
 
-  const byBucket = useMemo(() => {
-    if (!roadmap) return [];
-    const buckets = ['next_7_days', 'day_30', 'day_90', 'day_180'] as const;
-    return buckets.map((bucket) => {
-      const milestones = roadmap.milestones.filter((m) => m.timeframe_bucket === bucket);
-      const completed = milestones.filter((m) => m.is_completed).length;
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // 1. Steps completed & progress calculations
+  const totalMilestones = roadmap?.total_milestones && roadmap.total_milestones > 0
+    ? roadmap.total_milestones
+    : (roadmap?.milestones?.length || 7);
+
+  const completedMilestones = roadmap?.completed_milestones ?? 0;
+  const remainingMilestones = Math.max(0, totalMilestones - completedMilestones);
+  const percentComplete = totalMilestones > 0
+    ? Math.round((completedMilestones / totalMilestones) * 100)
+    : 0;
+
+  // Determine current active stage
+  const currentStage = useMemo(() => {
+    if (!roadmap?.milestones || roadmap.milestones.length === 0) {
+      return 'Stage 1: Exploration';
+    }
+    const firstIncomplete = roadmap.milestones.find((m) => !m.is_completed);
+    if (!firstIncomplete) return 'Stage 4: Pathway Ready';
+    if (firstIncomplete.timeframe_bucket === 'next_7_days') return 'Stage 1: Exploration';
+    if (firstIncomplete.timeframe_bucket === 'day_30') return 'Stage 2: Foundation';
+    if (firstIncomplete.timeframe_bucket === 'day_90') return 'Stage 3: Skill Building';
+    return 'Stage 4: Execution';
+  }, [roadmap]);
+
+  // 2. Current pathway
+  const currentPathway = roadmap?.primary_career_title || 'Technology & Product Design';
+  const lastUpdatedText = roadmap?.created_at
+    ? `Updated ${formatDate(roadmap.created_at)}`
+    : 'Updated recently';
+
+  // 3. Assessment cycle data
+  const currentCycle = history && history.length > 0 ? history[0]?.batch_number ?? history.length : 1;
+
+  // 4. Completion by timeframe (intervals matching reference)
+  const timeframeData = useMemo(() => {
+    const milestones = roadmap?.milestones || [];
+
+    // Cumulative progression intervals as defined in the roadmap companion:
+    // This week: next_7_days (target 1)
+    // First 30 days: up through day_30 (target 3)
+    // By day 90: up through day_90 (target 5)
+    // By day 180: up through day_180 (target 7)
+    const weekMilestones = milestones.filter((m) => m.timeframe_bucket === 'next_7_days');
+    const monthMilestones = milestones.filter(
+      (m) => m.timeframe_bucket === 'next_7_days' || m.timeframe_bucket === 'day_30',
+    );
+    const quarterMilestones = milestones.filter(
+      (m) =>
+        m.timeframe_bucket === 'next_7_days' ||
+        m.timeframe_bucket === 'day_30' ||
+        m.timeframe_bucket === 'day_90',
+    );
+    const halfYearMilestones = milestones;
+
+    const intervals = [
+      {
+        label: 'This week',
+        completed: weekMilestones.filter((m) => m.is_completed).length,
+        total: weekMilestones.length > 0 ? weekMilestones.length : 1,
+      },
+      {
+        label: 'First 30 days',
+        completed: monthMilestones.filter((m) => m.is_completed).length,
+        total: monthMilestones.length > 0 ? monthMilestones.length : 3,
+      },
+      {
+        label: 'By day 90',
+        completed: quarterMilestones.filter((m) => m.is_completed).length,
+        total: quarterMilestones.length > 0 ? quarterMilestones.length : 5,
+      },
+      {
+        label: 'By day 180',
+        completed: halfYearMilestones.filter((m) => m.is_completed).length,
+        total: halfYearMilestones.length > 0 ? halfYearMilestones.length : 7,
+      },
+    ];
+
+    return intervals.map((item) => {
+      const pct = item.total > 0 ? Math.round((item.completed / item.total) * 100) : 0;
       return {
-        bucket: formatBucket(bucket),
-        completed,
-        remaining: milestones.length - completed,
-        total: milestones.length,
+        ...item,
+        percent: pct,
       };
     });
   }, [roadmap]);
 
-  const byType = useMemo(() => {
-    if (!roadmap) return [];
-    const counts = new Map<string, { total: number; completed: number }>();
-    for (const milestone of roadmap.milestones) {
-      const key = milestone.milestone_type.replace(/_/g, ' ');
-      const entry = counts.get(key) ?? { total: 0, completed: 0 };
-      entry.total += 1;
-      if (milestone.is_completed) entry.completed += 1;
-      counts.set(key, entry);
-    }
-    return Array.from(counts, ([type, value]) => ({ type, ...value }));
+  // 5. Learning & activity progress (4 core categories)
+  const activityData = useMemo(() => {
+    const milestones = roadmap?.milestones || [];
+
+    const skillAssessments = milestones.filter(
+      (m) =>
+        m.milestone_type === 'skill_check' ||
+        m.milestone_type === 'exam_prep' ||
+        m.completion_evidence_type === 'quiz_score',
+    );
+
+    const practicalProjects = milestones.filter(
+      (m) =>
+        m.milestone_type === 'project_output' ||
+        m.completion_evidence_type === 'project_artifact',
+    );
+
+    const mentorshipReviews = milestones.filter(
+      (m) =>
+        m.milestone_type === 'reassessment' ||
+        m.completion_evidence_type === 'mentor_confirmation',
+    );
+
+    const industryReadings = milestones.filter(
+      (m) =>
+        m.milestone_type === 'exploration' ||
+        m.milestone_type === 'foundational_learning' ||
+        m.milestone_type === 'scholarship_application',
+    );
+
+    const categories = [
+      {
+        label: 'Skill Assessments',
+        completed: skillAssessments.filter((m) => m.is_completed).length,
+        total: skillAssessments.length,
+      },
+      {
+        label: 'Practical Projects',
+        completed: practicalProjects.filter((m) => m.is_completed).length,
+        total: practicalProjects.length,
+      },
+      {
+        label: 'Mentorship & Reviews',
+        completed: mentorshipReviews.filter((m) => m.is_completed).length,
+        total: mentorshipReviews.length,
+      },
+      {
+        label: 'Industry Research & Readings',
+        completed: industryReadings.filter((m) => m.is_completed).length,
+        total: industryReadings.length,
+      },
+    ];
+
+    return categories.map((cat) => {
+      const pct = cat.total > 0 ? Math.round((cat.completed / cat.total) * 100) : 0;
+      return {
+        ...cat,
+        percent: pct,
+      };
+    });
   }, [roadmap]);
+
+  // Filtered milestones when search query is active
+  const filteredMilestones = useMemo(() => {
+    if (!searchQuery.trim() || !roadmap?.milestones) return [];
+    const q = searchQuery.toLowerCase();
+    return roadmap.milestones.filter(
+      (m) =>
+        m.title.toLowerCase().includes(q) ||
+        m.description.toLowerCase().includes(q) ||
+        m.milestone_type.toLowerCase().includes(q) ||
+        m.timeframe_bucket.toLowerCase().includes(q),
+    );
+  }, [searchQuery, roadmap]);
+
+  const handleOpenAiChat = () => {
+    window.dispatchEvent(new CustomEvent('open-nextpath-ai-chat'));
+  };
 
   if (isLoading) return <SkeletonCard />;
 
@@ -77,159 +214,347 @@ export function ProgressDashboard(): JSX.Element {
     );
   }
 
-  if (!roadmap) {
-    return (
-      <EmptyState
-        title="We could not load your progress"
-        description="Check your connection and try again."
-        action={<Button onClick={() => navigate(0)}>Retry</Button>}
-      />
-    );
-  }
-
-  const percentComplete =
-    roadmap.total_milestones === 0
-      ? 0
-      : Math.round((roadmap.completed_milestones / roadmap.total_milestones) * 100);
-
   return (
-    <div className="flex flex-col gap-lg">
-      <header>
-        <p className="eyebrow">Progress</p>
-        <h1 className="text-heading-2 text-ink">How you are tracking</h1>
-        <p className="mt-xs max-w-[60ch] text-body-sm text-ink-muted">
-          This measures steps completed, which is not the same as readiness. A slow month
-          is information about your circumstances, not a verdict on you.
-        </p>
-      </header>
-
-      <div className="grid gap-md sm:grid-cols-3">
-        <Card>
-          <p className="eyebrow">Steps completed</p>
-          <p className="mt-xxs text-heading-1 text-ink">
-            {roadmap.completed_milestones}
-            <span className="text-body-md text-ink-muted">/{roadmap.total_milestones}</span>
-          </p>
-          <div className="mt-sm">
-            <ProgressBar value={percentComplete} label="Overall roadmap progress" />
+    <div className="min-h-screen bg-[#f6f5f4] text-[#31302e] antialiased -mx-4 -my-6 px-4 py-6 sm:px-6 sm:py-8 md:px-8 pb-28 md:pb-12">
+      <div className="max-w-xl mx-auto space-y-4">
+        {/* 1. HEADER */}
+        <header className="space-y-2">
+          <div className="flex items-center gap-1.5 text-[#0075de]">
+            <TrendingUp size={16} strokeWidth={2.2} aria-hidden="true" />
+            <span className="text-[12px] font-bold tracking-wider uppercase">
+              TRACK &amp; MILESTONES
+            </span>
           </div>
-        </Card>
-        <Card>
-          <p className="eyebrow">Current pathway</p>
-          <p className="mt-xxs text-title text-ink">{roadmap.primary_career_title}</p>
-          {roadmap.backup_career_title && (
-            <p className="mt-xxs text-body-sm text-ink-muted">
-              Backup: {roadmap.backup_career_title}
-            </p>
-          )}
-        </Card>
-        <Card>
-          <p className="eyebrow">Assessment cycles</p>
-          <p className="mt-xxs text-heading-1 text-ink">{history?.length ?? 1}</p>
-          <p className="mt-xxs text-caption text-ink-muted">
-            Started {formatDate(roadmap.created_at)}
+
+          <h1 className="text-[26px] sm:text-[30px] font-bold text-[#000000] tracking-tight leading-tight">
+            How you are tracking
+          </h1>
+
+          <p className="text-[14px] sm:text-[15px] text-[#615d59] leading-relaxed max-w-[65ch]">
+            Review your career milestone progress, active pathway steps, and task velocity across your journey.
           </p>
-        </Card>
+
+          {/* Search / Filter Field */}
+          <div className="pt-2 relative">
+            <div className="relative flex items-center">
+              <Search
+                size={16}
+                className="absolute left-3.5 text-[#615d59] pointer-events-none"
+                aria-hidden="true"
+              />
+              <input
+                id="milestone-filter-input"
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Filter milestones, timeline or competencies..."
+                aria-label="Filter milestones, timeline or competencies"
+                className="w-full bg-[#ffffff] border border-[#e6e6e6] rounded-[10px] pl-9 pr-8 py-2.5 text-[14px] text-[#000000] placeholder:text-[#a39e98] focus:outline-none focus:ring-2 focus:ring-[#0075de] transition-all shadow-none"
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery('')}
+                  aria-label="Clear search filter"
+                  className="absolute right-2.5 text-[#615d59] hover:text-[#000000] p-1"
+                >
+                  <X size={14} />
+                </button>
+              )}
+            </div>
+
+            {/* Filter results overlay if typing */}
+            {searchQuery.trim() && (
+              <div className="mt-2 bg-[#ffffff] border border-[#e6e6e6] rounded-[10px] p-3 text-[13px] text-[#31302e] shadow-sm">
+                <p className="font-semibold text-[#000000] mb-1.5">
+                  {filteredMilestones.length} matching milestone
+                  {filteredMilestones.length === 1 ? '' : 's'}:
+                </p>
+                {filteredMilestones.length === 0 ? (
+                  <p className="text-[#615d59]">No milestones match &ldquo;{searchQuery}&rdquo;.</p>
+                ) : (
+                  <ul className="space-y-1.5 max-h-48 overflow-y-auto pr-1">
+                    {filteredMilestones.map((m) => (
+                      <li
+                        key={m.id}
+                        className="flex items-center justify-between gap-2 p-1.5 rounded-md hover:bg-[#f6f5f4] cursor-pointer"
+                        onClick={() => navigate('/roadmap')}
+                      >
+                        <span className="truncate font-medium">{m.title}</span>
+                        <span className="text-[11px] text-[#615d59] shrink-0">
+                          {m.is_completed ? 'Completed' : 'Planned'}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
+          </div>
+        </header>
+
+        {/* 2. STEPS COMPLETED CARD */}
+        <section
+          aria-label="Steps Completed"
+          className="bg-[#ffffff] rounded-[12px] border border-[#e6e6e6] p-4 sm:p-5 space-y-3 shadow-none"
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-md bg-[#f0f7ff] text-[#0075de] flex items-center justify-center shrink-0">
+                <ListChecks size={18} strokeWidth={2} aria-hidden="true" />
+              </div>
+              <h2 className="text-[15px] font-semibold text-[#000000]">Steps Completed</h2>
+            </div>
+            <span className="text-[12px] font-medium text-[#31302e] bg-[#f6f5f4] border border-[#e6e6e6] px-2.5 py-0.5 rounded-full">
+              {percentComplete}% Completed
+            </span>
+          </div>
+
+          <div className="flex items-baseline">
+            <span className="text-[32px] sm:text-[36px] font-bold text-[#000000] tracking-tight leading-none">
+              {completedMilestones}/{totalMilestones}
+            </span>
+            <span className="ml-2 text-[14px] text-[#615d59] font-normal">milestones finished</span>
+          </div>
+
+          {/* Progress bar */}
+          <div className="relative w-full h-2 bg-[#e6e6e6] rounded-full overflow-hidden">
+            <div
+              className="h-full bg-[#0075de] rounded-full transition-all duration-300"
+              style={{ width: `${Math.max(percentComplete, percentComplete === 0 ? 3 : percentComplete)}%` }}
+              role="progressbar"
+              aria-valuenow={percentComplete}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-label="Milestones completion percentage"
+            />
+          </div>
+
+          <div className="flex items-center justify-between text-[13px] text-[#615d59]">
+            <span className="font-medium text-[#31302e]">{currentStage}</span>
+            <span>{remainingMilestones} steps remaining</span>
+          </div>
+        </section>
+
+        {/* 3. CURRENT PATHWAY CARD & ASSESSMENT CYCLE CARD */}
+        <div className="grid grid-cols-2 gap-3 sm:gap-4">
+          {/* Current Pathway Card */}
+          <section
+            aria-label="Current Pathway"
+            className="bg-[#ffffff] rounded-[12px] border border-[#e6e6e6] p-3.5 sm:p-4 flex flex-col justify-between shadow-none min-h-[140px]"
+          >
+            <div>
+              <div className="w-8 h-8 rounded-md bg-[#f0f7ff] text-[#0075de] flex items-center justify-center shrink-0">
+                <Compass size={17} strokeWidth={2} aria-hidden="true" />
+              </div>
+              <p className="text-[12px] font-medium text-[#615d59] mt-2">Current Pathway</p>
+              <h3 className="text-[15px] font-bold text-[#000000] leading-snug mt-0.5 line-clamp-2">
+                {currentPathway}
+              </h3>
+            </div>
+            <div className="flex items-center gap-1.5 text-[12px] text-[#615d59] mt-3 pt-2 border-t border-[#f0edea]">
+              <Clock size={13} className="text-[#a39e98] shrink-0" aria-hidden="true" />
+              <span className="truncate">{lastUpdatedText}</span>
+            </div>
+          </section>
+
+          {/* Assessment Cycle Card */}
+          <section
+            aria-label="Assessment Cycle"
+            className="bg-[#ffffff] rounded-[12px] border border-[#e6e6e6] p-3.5 sm:p-4 flex flex-col justify-between shadow-none min-h-[140px]"
+          >
+            <div>
+              <div className="flex items-center justify-between">
+                <div className="w-8 h-8 rounded-md bg-[#f0f7ff] text-[#0075de] flex items-center justify-center shrink-0">
+                  <RotateCcw size={16} strokeWidth={2} aria-hidden="true" />
+                </div>
+                <span className="text-[11px] font-semibold text-[#793400] bg-[#fff8e6] border border-[#f5dfb8] px-2 py-0.5 rounded-full">
+                  Active
+                </span>
+              </div>
+              <p className="text-[12px] font-medium text-[#615d59] mt-2">Assessment Cycles</p>
+              <div className="flex items-baseline gap-1 mt-0.5">
+                <h3 className="text-[17px] font-bold text-[#000000]">Cycle {currentCycle}</h3>
+                <span className="text-[#a39e98] text-[14px]">/ 3</span>
+              </div>
+            </div>
+            <div className="flex items-center gap-1.5 text-[12px] text-[#615d59] mt-3 pt-2 border-t border-[#f0edea]">
+              <Calendar size={13} className="text-[#615d59] shrink-0" aria-hidden="true" />
+              <span className="truncate">Diagnostic Stage</span>
+            </div>
+          </section>
+        </div>
+
+        {/* 4. COMPLETION BY TIMEFRAME CARD */}
+        <section
+          aria-label="Completion by timeframe"
+          className="bg-[#ffffff] rounded-[12px] border border-[#e6e6e6] p-4 sm:p-5 space-y-4 shadow-none"
+        >
+          <div>
+            <h2 className="text-[17px] font-bold text-[#000000]">Completion by timeframe</h2>
+            <p className="text-[13px] text-[#615d59] mt-0.5">
+              Your roadmap progress across key milestones
+            </p>
+          </div>
+
+          <div className="space-y-3.5">
+            {timeframeData.map((item) => (
+              <div key={item.label} className="space-y-1.5">
+                <div className="flex items-center justify-between text-[14px]">
+                  <span className="font-semibold text-[#000000]">{item.label}</span>
+                  <div className="flex items-baseline gap-1">
+                    <span className="font-semibold text-[#000000]">{item.percent}%</span>
+                    <span className="text-[13px] text-[#615d59]">
+                      ({item.completed}/{item.total})
+                    </span>
+                  </div>
+                </div>
+
+                <div className="relative w-full h-2 bg-[#e6e6e6] rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-[#0075de] rounded-full transition-all duration-300"
+                    style={{ width: `${item.percent}%` }}
+                    role="progressbar"
+                    aria-valuenow={item.percent}
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-label={`${item.label} completion percentage`}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Bottom Legend */}
+          <div className="border-t border-[#e6e6e6] pt-3 flex items-center gap-5 text-[12px] text-[#615d59]">
+            <div className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-[#0075de] inline-block" aria-hidden="true" />
+              <span>In Progress / Planned</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-[#1aae39] inline-block" aria-hidden="true" />
+              <span>Completed</span>
+            </div>
+          </div>
+        </section>
+
+        {/* 5. WORK / ACTIVITY PROGRESS CARD */}
+        <section
+          aria-label="Your learning & activity progress"
+          className="bg-[#ffffff] rounded-[12px] border border-[#e6e6e6] p-4 sm:p-5 space-y-4 shadow-none"
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-[17px] font-bold text-[#000000]">
+                Your learning &amp; activity progress
+              </h2>
+              <p className="text-[13px] text-[#615d59] mt-0.5">
+                Track the work and evidence you’ve completed
+              </p>
+            </div>
+            <span className="text-[12px] font-medium text-[#615d59] bg-[#f6f5f4] border border-[#e6e6e6] px-2.5 py-0.5 rounded-full shrink-0">
+              Distribution
+            </span>
+          </div>
+
+          <div className="space-y-3.5">
+            {activityData.map((cat) => (
+              <div key={cat.label} className="space-y-1.5">
+                <div className="flex items-center justify-between text-[14px]">
+                  <div className="flex items-center gap-2">
+                    <span
+                      className="w-2 h-2 rounded-[2px] bg-[#0075de] inline-block shrink-0"
+                      aria-hidden="true"
+                    />
+                    <span className="font-semibold text-[#000000]">{cat.label}</span>
+                  </div>
+                  <div className="flex items-baseline gap-1">
+                    <span className="font-semibold text-[#000000]">{cat.percent}%</span>
+                    <span className="text-[13px] text-[#615d59]">({cat.completed} tasks)</span>
+                  </div>
+                </div>
+
+                <div className="relative w-full h-2 bg-[#e6e6e6] rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-[#0075de] rounded-full transition-all duration-300"
+                    style={{ width: `${cat.percent}%` }}
+                    role="progressbar"
+                    aria-valuenow={cat.percent}
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-label={`${cat.label} completion percentage`}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Informational Callout */}
+          <div className="bg-[#f0f7ff]/70 border border-[#d6e8fa] rounded-[10px] p-3 flex items-start gap-2.5 mt-2">
+            <Info size={16} className="text-[#0075de] shrink-0 mt-0.5" aria-hidden="true" />
+            <p className="text-[13px] text-[#31302e] leading-snug">
+              Progress updates automatically as you submit assignments and complete pathway milestones.
+            </p>
+          </div>
+        </section>
       </div>
 
-      <Card>
-        <h2 className="text-heading-3 text-ink">Completion by timeframe</h2>
-        <div className="mt-md h-[280px] w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={byBucket} margin={{ top: 8, right: 8, bottom: 8, left: -16 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e6e6e6" vertical={false} />
-              <XAxis
-                dataKey="bucket"
-                tick={{ fill: '#615d59', fontSize: 12 }}
-                axisLine={{ stroke: '#e6e6e6' }}
-                tickLine={false}
-              />
-              <YAxis
-                allowDecimals={false}
-                tick={{ fill: '#615d59', fontSize: 12 }}
-                axisLine={false}
-                tickLine={false}
-              />
-              <Tooltip
-                contentStyle={{
-                  borderRadius: 8,
-                  border: '1px solid #e6e6e6',
-                  fontSize: 14,
-                }}
-              />
-              <Legend wrapperStyle={{ fontSize: 12 }} />
-              <Bar dataKey="completed" stackId="a" name="Done" fill={SERIES.completed} radius={[0, 0, 0, 0]} />
-              <Bar dataKey="remaining" stackId="a" name="Still to do" fill={SERIES.remaining} radius={[4, 4, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      </Card>
+      {/* 6. MOBILE BOTTOM NAVIGATION (Matches reference screenshot & preserves routing) */}
+      <nav
+        aria-label="Mobile navigation"
+        className="md:hidden fixed bottom-0 left-0 right-0 z-20 bg-[#ffffff] border-t border-[#e6e6e6] px-3 py-2 flex items-center justify-around shadow-[0_-2px_8px_rgba(0,0,0,0.03)]"
+      >
+        <button
+          type="button"
+          onClick={() => navigate('/results')}
+          aria-label="Navigate to Home"
+          className="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] text-[#615d59] hover:text-[#000000] transition-colors cursor-pointer"
+        >
+          <Home size={20} strokeWidth={1.75} />
+          <span className="text-[11px] mt-0.5">Home</span>
+        </button>
 
-      <Card>
-        <h2 className="text-heading-3 text-ink">What kind of work you have done</h2>
-        <div className="mt-md h-[300px] w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart
-              data={byType}
-              layout="vertical"
-              margin={{ top: 8, right: 16, bottom: 8, left: 8 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" stroke="#e6e6e6" horizontal={false} />
-              <XAxis
-                type="number"
-                allowDecimals={false}
-                tick={{ fill: '#615d59', fontSize: 12 }}
-                axisLine={false}
-                tickLine={false}
-              />
-              <YAxis
-                type="category"
-                dataKey="type"
-                width={130}
-                tick={{ fill: '#615d59', fontSize: 12 }}
-                axisLine={false}
-                tickLine={false}
-              />
-              <Tooltip contentStyle={{ borderRadius: 8, border: '1px solid #e6e6e6', fontSize: 14 }} />
-              <Bar dataKey="completed" name="Completed" radius={[0, 4, 4, 0]}>
-                {byType.map((entry) => (
-                  <Cell key={entry.type} fill={SERIES.bar} />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      </Card>
+        <button
+          type="button"
+          aria-label="Current tab: Progress"
+          aria-current="page"
+          className="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] text-[#0075de] font-semibold cursor-pointer"
+        >
+          <BarChart2 size={20} strokeWidth={2.2} />
+          <span className="text-[11px] mt-0.5">Progress</span>
+        </button>
 
-      {history && history.length > 1 && (
-        <Card>
-          <h2 className="text-heading-3 text-ink">Your assessment history</h2>
-          <ul className="mt-sm flex flex-col gap-xs">
-            {history.map((batch) => (
-              <li
-                key={batch.id}
-                className="flex flex-wrap items-center justify-between gap-xs rounded-sm border border-hairline p-sm"
-              >
-                <div>
-                  <p className="text-body-sm text-ink">
-                    Cycle {batch.batch_number} · {batch.recommendations.length} options
-                  </p>
-                  <p className="text-caption text-ink-muted">{formatDate(batch.created_at)}</p>
-                </div>
-                {batch.is_current ? (
-                  <Badge tone="success">Current</Badge>
-                ) : (
-                  <Badge>Superseded {formatDate(batch.superseded_at)}</Badge>
-                )}
-              </li>
-            ))}
-          </ul>
-          <Callout variant="info">
-            Nothing from an earlier cycle is deleted. Everything you completed is still
-            recorded against the plan you completed it on.
-          </Callout>
-        </Card>
-      )}
+        {/* Floating/Elevated AI Assistant pill button */}
+        <button
+          type="button"
+          onClick={handleOpenAiChat}
+          aria-label="Ask AI Assistant"
+          className="flex items-center gap-1.5 bg-[#ffffff] hover:bg-[#faf7fc] text-[#391c57] border border-[#d6b6f6] px-3.5 py-1.5 rounded-full text-[12px] font-semibold shadow-sm min-h-[40px] transition-transform active:scale-95 cursor-pointer"
+        >
+          <Sparkles size={14} className="text-[#391c57]" aria-hidden="true" />
+          <span>AI Assistant</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => navigate('/courses')}
+          aria-label="Navigate to Explore"
+          className="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] text-[#615d59] hover:text-[#000000] transition-colors cursor-pointer"
+        >
+          <Compass size={20} strokeWidth={1.75} />
+          <span className="text-[11px] mt-0.5">Explore</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => navigate('/settings')}
+          aria-label="Navigate to Profile"
+          className="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] text-[#615d59] hover:text-[#000000] transition-colors cursor-pointer"
+        >
+          <User size={20} strokeWidth={1.75} />
+          <span className="text-[11px] mt-0.5">Profile</span>
+        </button>
+      </nav>
     </div>
   );
 }

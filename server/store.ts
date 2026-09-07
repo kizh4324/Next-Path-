@@ -11,6 +11,7 @@ export interface User {
   phone_number: string | null;
   is_active: boolean;
   created_at: string;
+  linked_student_id?: string | null;
 }
 
 export interface InterestEntry {
@@ -91,6 +92,13 @@ class InMemoryStore {
     this.seedDefaults();
   }
 
+  getUserById(id: string): User | undefined {
+    for (const user of this.users.values()) {
+      if (user.id === id) return user;
+    }
+    return undefined;
+  }
+
   private seedDefaults() {
     const studentUser: User = {
       id: 'usr-student-demo-1',
@@ -101,6 +109,18 @@ class InMemoryStore {
       phone_number: '+91 98765 43210',
       is_active: true,
       created_at: new Date().toISOString(),
+    };
+
+    const parentUser: User = {
+      id: 'usr-guardian-demo-1',
+      email: 'parent@nextpath.in',
+      password_hash: 'parent123',
+      full_name: 'Rajesh Sharma',
+      role: 'guardian',
+      phone_number: '+91 98765 43210',
+      is_active: true,
+      created_at: new Date().toISOString(),
+      linked_student_id: studentUser.id,
     };
 
     const counselorUser: User = {
@@ -126,6 +146,7 @@ class InMemoryStore {
     };
 
     this.users.set(studentUser.email, studentUser);
+    this.users.set(parentUser.email, parentUser);
     this.users.set(counselorUser.email, counselorUser);
     this.users.set(adminUser.email, adminUser);
 

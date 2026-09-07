@@ -15,6 +15,7 @@ interface AuthContextValue {
   login: (input: LoginInput) => Promise<void>;
   register: (input: RegisterInput) => Promise<void>;
   logout: () => void;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -56,6 +57,10 @@ export function AuthProvider({ children }: { children: ReactNode }): JSX.Element
     queryClient.clear();
   }, [queryClient]);
 
+  const refreshUser = useCallback(async () => {
+    await queryClient.invalidateQueries({ queryKey: ['auth', 'me'] });
+  }, [queryClient]);
+
   const value = useMemo<AuthContextValue>(
     () => ({
       user: user ?? null,
@@ -68,8 +73,9 @@ export function AuthProvider({ children }: { children: ReactNode }): JSX.Element
         await registerMutation.mutateAsync(input);
       },
       logout,
+      refreshUser,
     }),
-    [user, hasToken, isLoading, loginMutation, registerMutation, logout],
+    [user, hasToken, isLoading, loginMutation, registerMutation, logout, refreshUser],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

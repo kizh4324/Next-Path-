@@ -43,6 +43,8 @@ export const authApi = {
   register: (body: RegisterInput) => api.post<TokenResponse>('/auth/register', body),
   login: (body: LoginInput) => api.post<TokenResponse>('/auth/login', body),
   me: () => api.get<UserResponse>('/auth/me'),
+  updateMe: (body: { full_name?: string; phone_number?: string | null }) =>
+    api.patch<UserResponse>('/auth/me', body),
   recordMinorConsent: (body: MinorConsentInput) =>
     api.post<ConsentResponse>('/auth/minor-consent', body),
 };
@@ -50,7 +52,7 @@ export const authApi = {
 export const profileApi = {
   create: (body: OnboardingInput) => api.post<StudentProfileResponse>('/profile', body),
   get: () => api.get<StudentProfileResponse>('/profile'),
-  patch: (body: Partial<OnboardingInput>) => api.patch<StudentProfileResponse>('/profile', body),
+  patch: (body: Record<string, unknown>) => api.patch<StudentProfileResponse>('/profile', body),
   status: () => api.get<ProfileStatusResponse>('/profile/status'),
   upsertGuardian: (body: GuardianContextInput) =>
     api.post<GuardianContextResponse>('/profile/guardian', body),
@@ -152,5 +154,6 @@ export const escalationApi = {
 };
 
 export const accountApi = {
+  export: () => api.get<any>('/account/export'),
   erase: () => api.delete<ErasureReceipt>('/account', { confirm_understanding: true }),
 };

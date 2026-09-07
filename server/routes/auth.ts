@@ -17,7 +17,7 @@ export function getAuthUser(req: Request): User | null {
 
 // POST /auth/register
 router.post('/register', (req: Request, res: Response) => {
-  const { email, password, full_name, role = 'student', phone_number } = req.body;
+  const { email, password, full_name, role = 'student', phone_number, linked_student_id } = req.body;
 
   if (!email || !password || !full_name) {
     return res.status(400).json({
@@ -37,6 +37,22 @@ router.post('/register', (req: Request, res: Response) => {
     });
   }
 
+  // If registering as guardian without linked_student_id, see if there is an existing student profile with matching guardian name or default student
+  let determinedStudentId: string | null = linked_student_id || null;
+  if (role === 'guardian' && !determinedStudentId) {
+    for (const [studentId, profile] of store.profiles.entries()) {
+      if (profile.guardian_contexts?.some((g) => g.guardian_name?.toLowerCase() === full_name.toLowerCase())) {
+        determinedStudentId = studentId;
+        break;
+      }
+    }
+    // If not found by name, default to the first student profile in store if available
+    if (!determinedStudentId) {
+      const firstStudent = Array.from(store.users.values()).find((u) => u.role === 'student');
+      if (firstStudent) determinedStudentId = firstStudent.id;
+    }
+  }
+
   const newUser: User = {
     id: `usr-${Date.now().toString(36)}`,
     email: email.toLowerCase(),
@@ -46,6 +62,7 @@ router.post('/register', (req: Request, res: Response) => {
     phone_number: phone_number || null,
     is_active: true,
     created_at: new Date().toISOString(),
+    linked_student_id: determinedStudentId,
   };
 
   store.users.set(newUser.email, newUser);
@@ -106,6 +123,39 @@ router.get('/me', (req: Request, res: Response) => {
       detail: 'Valid authentication token required.',
     });
   }
+
+  return res.status(200).json({
+    id: user.id,
+    email: user.email,
+    full_name: user.full_name,
+    role: user.role,
+    phone_number: user.phone_number,
+    is_active: user.is_active,
+    created_at: user.created_at,
+  });
+});
+
+// PATCH /auth/me
+router.patch('/me', (req: Request, res: Response) => {
+  const user = getAuthUser(req);
+  if (!user) {
+    return res.status(401).json({
+      type: 'https://nextpath.in/errors/unauthorized',
+      title: 'Unauthorized',
+      status: 401,
+      detail: 'Valid authentication token required.',
+    });
+  }
+
+  const { full_name, phone_number } = req.body;
+  if (full_name && typeof full_name === 'string') {
+    user.full_name = full_name.trim();
+  }
+  if (phone_number !== undefined) {
+    user.phone_number = phone_number ? String(phone_number).trim() : null;
+  }
+
+  store.users.set(user.email, user);
 
   return res.status(200).json({
     id: user.id,

@@ -57,6 +57,9 @@ function HomeRedirect(): JSX.Element {
   if (user?.role === 'counselor' || user?.role === 'admin') {
     return <Navigate to="/counselor" replace />;
   }
+  if (user?.role === 'guardian') {
+    return <Navigate to="/guardian" replace />;
+  }
   return <Navigate to="/results" replace />;
 }
 
