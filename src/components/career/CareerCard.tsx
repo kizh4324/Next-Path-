@@ -3,7 +3,11 @@
 import { Link } from 'react-router-dom';
 
 import { Badge, Button, Callout, Card } from '@/components/ui';
-import { MatchScoreBadge } from '@/components/ui/MatchScoreBadge';
+import {
+  EVIDENCE_MEANING,
+  FEASIBILITY_MEANING,
+  FIT_MEANING,
+} from '@/components/ui/MatchScoreBadge';
 import { formatInrRange } from '@/utils/format';
 import type {
   CareerCompareResponse,
@@ -38,108 +42,167 @@ export function CareerCard({
     ? Array.from(new Set(career.india_entry_routes.flatMap((r) => r.entrance_exams)))
     : [];
 
+  const keyFitReason = recommendation.reasons[0];
+  const feasibilityNote = recommendation.concerns[0];
+
   return (
-    <Card as="article" className="flex flex-col gap-md border-hairline p-lg transition-all hover:border-outline">
-      <div className="flex items-start justify-between gap-sm">
-        <div>
-          <span className="eyebrow text-ink-muted">
+    <Card
+      as="article"
+      className="flex flex-col gap-2.5 rounded-xl border border-hairline bg-surface p-4 sm:p-4.5 transition-colors hover:border-ink-faint/40 shadow-none h-full"
+    >
+      {/* 1. Header: Cluster eyebrow, Career Title & Compact Match Score */}
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0 flex-1">
+          <span className="text-[11px] font-semibold uppercase tracking-wider text-ink-muted block truncate">
             Option #{recommendation.rank_position} · {career?.cluster ?? 'Career Pathway'}
           </span>
-          <h3 className="text-heading-3 font-semibold text-ink mt-0.5">{recommendation.career_title}</h3>
+          <h3 className="text-base sm:text-lg font-bold text-ink leading-snug tracking-tight mt-0.5">
+            {recommendation.career_title}
+          </h3>
         </div>
-        {recommendation.is_primary_selection && <Badge tone="primary">Primary Pathway</Badge>}
-        {recommendation.is_backup_selection && <Badge tone="ai">Backup Choice</Badge>}
+
+        {/* Compact Match Score */}
+        <div
+          className="flex items-baseline gap-1 px-2.5 py-1 rounded-full bg-primary/10 border border-primary/20 shrink-0"
+          title={`Overall Match Score: ${Math.round(recommendation.composite_score)}%`}
+        >
+          <span className="text-base sm:text-lg font-bold text-primary leading-none">
+            {Math.round(recommendation.composite_score)}%
+          </span>
+          <span className="text-[10px] font-bold uppercase tracking-wider text-primary opacity-80">
+            Match
+          </span>
+        </div>
       </div>
 
-      <MatchScoreBadge
-        compositeScore={recommendation.composite_score}
-        fitLabel={recommendation.fit_label}
-        feasibilityLabel={recommendation.feasibility_label}
-        evidenceQualityLabel={recommendation.evidence_quality_label}
-        fitScore={recommendation.fit_score}
-        feasibilityScore={recommendation.feasibility_score}
-        evidenceQualityScore={recommendation.evidence_quality_score}
-      />
+      {/* 2. Fit, Feasibility, Evidence small compact pills */}
+      <div className="flex flex-wrap items-center gap-1.5 text-xs">
+        <span
+          title={FIT_MEANING[recommendation.fit_label]}
+          className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] bg-canvas-soft border border-hairline text-ink-secondary"
+        >
+          <span className="text-ink-muted font-normal">Fit:</span>
+          <span className="font-semibold text-ink">{recommendation.fit_label}</span>
+        </span>
+        <span
+          title={FEASIBILITY_MEANING[recommendation.feasibility_label]}
+          className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] bg-canvas-soft border border-hairline text-ink-secondary"
+        >
+          <span className="text-ink-muted font-normal">Feasibility:</span>
+          <span className="font-semibold text-ink">{recommendation.feasibility_label}</span>
+        </span>
+        <span
+          title={EVIDENCE_MEANING[recommendation.evidence_quality_label]}
+          className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] bg-canvas-soft border border-hairline text-ink-secondary"
+        >
+          <span className="text-ink-muted font-normal">Evidence:</span>
+          <span className="font-semibold text-ink">{recommendation.evidence_quality_label}</span>
+        </span>
+      </div>
 
-      {career && (
-        <p className="text-body-sm text-ink-secondary leading-relaxed line-clamp-3">{career.description}</p>
+      {/* 3. Short 1-2 line description */}
+      {career?.description && (
+        <p className="text-xs sm:text-[13px] text-ink-secondary leading-relaxed line-clamp-2">
+          {career.description}
+        </p>
       )}
 
+      {/* 4. Route metrics: Cheapest Route, Estimated Total Cost, Duration */}
       {route && (
-        <div className="grid grid-cols-2 gap-sm rounded-lg bg-canvas-soft p-sm text-body-sm sm:grid-cols-3 border border-hairline">
-          <div>
-            <dt className="eyebrow text-ink-muted">Cheapest Route</dt>
-            <dd className="text-ink font-medium text-xs mt-0.5">{route.route_name}</dd>
+        <div className="grid grid-cols-3 gap-2 rounded-lg bg-canvas-soft/80 border border-hairline p-2 text-xs">
+          <div className="min-w-0">
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-ink-muted block truncate">
+              Cheapest Route
+            </span>
+            <span
+              className="text-xs font-semibold text-ink block truncate mt-0.5"
+              title={route.route_name}
+            >
+              {route.route_name}
+            </span>
           </div>
-          <div>
-            <dt className="eyebrow text-ink-muted">Est. Total Cost</dt>
-            <dd className="text-ink font-medium text-xs mt-0.5">
+          <div className="min-w-0">
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-ink-muted block truncate">
+              Est. Total Cost
+            </span>
+            <span className="text-xs font-semibold text-ink block truncate mt-0.5">
               {formatInrRange(route.estimated_cost_inr_min, route.estimated_cost_inr_max)}
-            </dd>
+            </span>
           </div>
-          <div className="col-span-2 sm:col-span-1">
-            <dt className="eyebrow text-ink-muted">Duration</dt>
-            <dd className="text-ink font-medium text-xs mt-0.5">{route.duration_years} Years</dd>
+          <div className="min-w-0">
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-ink-muted block truncate">
+              Duration
+            </span>
+            <span className="text-xs font-semibold text-ink block truncate mt-0.5">
+              {route.duration_years} Years
+            </span>
           </div>
         </div>
       )}
 
+      {/* 5. Entrance exams: max 2-3 tags, then + more */}
       {exams.length > 0 && (
-        <div className="flex flex-wrap items-center gap-1.5">
-          <span className="eyebrow mr-1 text-ink-muted">Entrance Exams:</span>
-          {exams.slice(0, 4).map((exam) => (
-            <span key={exam} className="badge bg-surface border border-hairline text-ink font-mono text-[11px]">
+        <div className="flex flex-wrap items-center gap-1.5 text-xs">
+          <span className="text-[11px] font-medium text-ink-muted">Exams:</span>
+          {exams.slice(0, 3).map((exam) => (
+            <span
+              key={exam}
+              className="px-1.5 py-0.2 rounded text-[11px] font-mono font-medium bg-canvas-soft border border-hairline text-ink"
+            >
               {exam}
             </span>
           ))}
+          {exams.length > 3 && (
+            <span className="text-[11px] font-medium text-ink-muted">
+              +{exams.length - 3} more
+            </span>
+          )}
         </div>
       )}
 
-      {recommendation.reasons.length > 0 && (
-        <div className="rounded-md border border-hairline/60 bg-surface/50 p-xs">
-          <p className="eyebrow mb-xxs text-ink">Key Fit Alignment</p>
-          <ul className="list-disc space-y-1 pl-md text-caption text-ink-secondary">
-            {recommendation.reasons.slice(0, 2).map((reason) => (
-              <li key={reason}>{reason}</li>
-            ))}
-          </ul>
+      {/* 6. Key Fit Alignment and Feasibility Note (compact) */}
+      {(keyFitReason || feasibilityNote) && (
+        <div className="rounded-lg bg-canvas-soft/60 border border-hairline px-2.5 py-1.5 space-y-1 text-xs">
+          {keyFitReason && (
+            <div className="flex items-baseline gap-1.5 min-w-0">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-primary shrink-0">
+                Key Fit:
+              </span>
+              <span className="text-ink-secondary truncate text-xs" title={keyFitReason}>
+                {keyFitReason}
+              </span>
+            </div>
+          )}
+          {feasibilityNote && (
+            <div className="flex items-baseline gap-1.5 min-w-0">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-warning-deep shrink-0">
+                Feasibility:
+              </span>
+              <span className="text-ink-secondary truncate text-xs" title={feasibilityNote}>
+                {feasibilityNote}
+              </span>
+            </div>
+          )}
         </div>
       )}
 
-      {recommendation.concerns.length > 0 && (
-        <div className="rounded-md border border-hairline/60 bg-surface/50 p-xs">
-          <p className="eyebrow mb-xxs text-ink">Feasibility Constraints</p>
-          <ul className="list-disc space-y-1 pl-md text-caption text-ink-secondary">
-            {recommendation.concerns.slice(0, 2).map((concern) => (
-              <li key={concern}>{concern}</li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      {recommendation.missing_evidence_flags.length > 0 && (
-        <Callout variant="evidence" title="Unverified Signals">
-          <ul className="list-disc space-y-xxs pl-md text-caption">
-            {recommendation.missing_evidence_flags.slice(0, 2).map((flag) => (
-              <li key={flag}>{flag}</li>
-            ))}
-          </ul>
-        </Callout>
-      )}
-
-      <div className="mt-auto flex flex-wrap items-center justify-between gap-xs pt-xs border-t border-hairline">
-        <Link to={`/careers/${recommendation.career_id}`} className="btn-utility text-xs">
+      {/* 7. Bottom Actions: Detailed Dossier, Compare, Select */}
+      <div className="mt-auto flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-hairline">
+        <Link
+          to={`/careers/${recommendation.career_id}`}
+          className="text-xs font-semibold text-primary hover:text-primary-active transition-colors inline-flex items-center gap-0.5 py-1"
+        >
           Detailed Dossier →
         </Link>
-        <div className="flex gap-xs">
+        <div className="flex items-center gap-1.5">
           {onToggleCompare && (
             <button
               type="button"
               onClick={() => onToggleCompare(recommendation.career_id)}
               aria-pressed={selected}
-              className={`text-xs px-3 py-1.5 rounded-full border transition-all ${
+              className={`text-xs px-2.5 py-1 rounded-full border transition-all cursor-pointer ${
                 selected
-                  ? 'bg-ink text-surface border-ink font-medium'
+                  ? 'bg-ink text-surface border-ink font-semibold'
                   : 'border-hairline bg-surface text-ink-secondary hover:text-ink hover:bg-canvas-soft'
               }`}
             >
@@ -149,7 +212,7 @@ export function CareerCard({
           {onChoose && (
             <Button
               variant={chosenAs ? 'primary' : 'ghost'}
-              className="text-xs px-3.5 py-1.5"
+              className="text-xs px-3 py-1 h-auto"
               onClick={() => onChoose(recommendation.career_id)}
             >
               {chosenAs === 'primary'
