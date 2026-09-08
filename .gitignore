@@ -39,7 +39,9 @@ venv/
 htmlcov/
 .coverage
 
-# Frontend build output
+# Build output
+dist/
+.vite/
 frontend/dist/
 frontend/dev-dist/
 frontend/.vite/
