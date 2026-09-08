@@ -127,8 +127,11 @@ export const chatApi = {
 };
 
 export const guardianApi = {
-  summary: (regenerate = false) =>
-    api.get<ParentSummaryResponse>('/guardian/summary', { regenerate }),
+  summary: (regenerate = false, studentId?: string) =>
+    api.get<ParentSummaryResponse>('/guardian/summary', {
+      regenerate,
+      ...(studentId ? { student_id: studentId } : {}),
+    }),
 };
 
 export const counselorApi = {

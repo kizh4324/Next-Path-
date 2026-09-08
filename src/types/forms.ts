@@ -21,7 +21,7 @@ export const registerSchema = z.object({
   email: z.string().min(1, 'Email is required.').email('Enter a valid email address.'),
   password: passwordSchema,
   full_name: z.string().min(1, 'Please tell us your name.').max(255),
-  role: z.enum(['student', 'guardian', 'counselor', 'admin']).default('student'),
+  role: z.enum(['student']).default('student'),
   phone_number: z.string().max(20).optional().nullable(),
 });
 export type RegisterInput = z.infer<typeof registerSchema>;

@@ -10,9 +10,7 @@ import { useProfileStatus } from '@/hooks/useRecommendations';
 import { AuthView } from '@/views/AuthView';
 import { CareerComparisonView } from '@/views/CareerComparisonView';
 import { CareerDetailView } from '@/views/CareerDetailView';
-import { CounselorQueueView } from '@/views/CounselorQueueView';
 import { CoursesView } from '@/views/CoursesView';
-import { GuardianSummaryView } from '@/views/GuardianSummaryView';
 import { OnboardingWizard } from '@/views/OnboardingWizard';
 import { ResultsDashboard } from '@/views/ResultsDashboard';
 import { RoadmapView } from '@/views/RoadmapView';
@@ -40,29 +38,14 @@ function RequireAuth({ children }: { children: ReactNode }): JSX.Element {
   return <>{children}</>;
 }
 
-function RequireCounselor({ children }: { children: ReactNode }): JSX.Element {
-  const { user, isLoading } = useAuth();
-  if (isLoading) return <FullPageSpinner />;
-  if (!user) return <Navigate to="/login" replace />;
-  if (user.role !== 'counselor' && user.role !== 'admin') {
-    return <Navigate to="/results" replace />;
-  }
-  return <>{children}</>;
-}
-
-/** Send each role to the screen that is actually useful to them. */
+/** Send student to the screen that is actually useful to them. */
 function HomeRedirect(): JSX.Element {
-  const { user, isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
   const { data: status, isLoading: statusLoading } = useProfileStatus(isAuthenticated);
 
   if (isLoading || (isAuthenticated && statusLoading)) return <FullPageSpinner />;
   if (!isAuthenticated) return <Navigate to="/login" replace />;
-  if (user?.role === 'counselor' || user?.role === 'admin') {
-    return <Navigate to="/counselor" replace />;
-  }
-  if (user?.role === 'guardian') {
-    return <Navigate to="/guardian" replace />;
-  }
+
   const hasCompletedLocal =
     typeof window !== 'undefined' && window.localStorage.getItem('onboarding_completed') === 'true';
   if (status?.profile_exists || hasCompletedLocal) {
@@ -91,7 +74,7 @@ export function App(): JSX.Element {
         <Route path="/roadmap" element={<RoadmapView />} />
         <Route path="/courses" element={<CoursesView />} />
         <Route path="/scholarships" element={<ScholarshipsView />} />
-        <Route path="/guardian" element={<GuardianSummaryView />} />
+        <Route path="/guardian" element={<Navigate to="/results" replace />} />
         <Route
           path="/progress"
           element={
@@ -101,14 +84,7 @@ export function App(): JSX.Element {
           }
         />
         <Route path="/settings" element={<SettingsView />} />
-        <Route
-          path="/counselor"
-          element={
-            <RequireCounselor>
-              <CounselorQueueView />
-            </RequireCounselor>
-          }
-        />
+        <Route path="/counselor" element={<Navigate to="/results" replace />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />

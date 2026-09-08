@@ -60,15 +60,13 @@ export function useScholarships(params: {
   });
 }
 
-export function useGuardianSummary(enabled = true) {
+export function useGuardianSummary(enabled = true, studentId?: string | null) {
   return useQuery({
-    queryKey: queryKeys.guardianSummary,
-    queryFn: () => guardianApi.summary(false),
+    queryKey: studentId ? [...queryKeys.guardianSummary, studentId] : queryKeys.guardianSummary,
+    queryFn: () => guardianApi.summary(false, studentId || undefined),
     enabled,
     retry: retryUnlessExpected,
-    // Never refetched in the background: the stored wording must not shift under a
-    // family mid-conversation (FR-17).
-    staleTime: Infinity,
+    staleTime: 5 * 60 * 1000,
   });
 }
 

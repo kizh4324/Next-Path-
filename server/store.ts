@@ -7,7 +7,7 @@ export interface User {
   email: string;
   password_hash: string;
   full_name: string;
-  role: 'student' | 'guardian' | 'counselor' | 'admin';
+  role: 'student';
   phone_number: string | null;
   is_active: boolean;
   created_at: string;
@@ -111,44 +111,7 @@ class InMemoryStore {
       created_at: new Date().toISOString(),
     };
 
-    const parentUser: User = {
-      id: 'usr-guardian-demo-1',
-      email: 'parent@nextpath.in',
-      password_hash: 'parent123',
-      full_name: 'Rajesh Sharma',
-      role: 'guardian',
-      phone_number: '+91 98765 43210',
-      is_active: true,
-      created_at: new Date().toISOString(),
-      linked_student_id: studentUser.id,
-    };
-
-    const counselorUser: User = {
-      id: 'usr-counselor-demo-1',
-      email: 'counselor@nextpath.in',
-      password_hash: 'counselor123',
-      full_name: 'Dr. Priya Ramanathan',
-      role: 'counselor',
-      phone_number: '+91 98765 12345',
-      is_active: true,
-      created_at: new Date().toISOString(),
-    };
-
-    const adminUser: User = {
-      id: 'usr-admin-demo-1',
-      email: 'admin@nextpath.in',
-      password_hash: 'admin123',
-      full_name: 'System Administrator',
-      role: 'admin',
-      phone_number: null,
-      is_active: true,
-      created_at: new Date().toISOString(),
-    };
-
     this.users.set(studentUser.email, studentUser);
-    this.users.set(parentUser.email, parentUser);
-    this.users.set(counselorUser.email, counselorUser);
-    this.users.set(adminUser.email, adminUser);
 
     // Initial student profile
     const studentProfile: StudentProfile = {

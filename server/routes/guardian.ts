@@ -28,6 +28,15 @@ router.get('/summary', async (req: Request, res: Response) => {
 
   let targetStudentId: string | null = null;
   let targetStudentUser: User | null = null;
+  let linkedChildren: Array<{
+    id: string;
+    full_name: string;
+    education_stage?: string | null;
+    grade_or_year?: string | null;
+    stream?: string | null;
+    has_profile: boolean;
+    assessment_status?: 'completed' | 'in_progress' | 'not_started';
+  }> = [];
 
   // Authorization check: student vs guardian vs counselor/admin
   if (authUser.role === 'student') {
@@ -36,64 +45,143 @@ router.get('/summary', async (req: Request, res: Response) => {
   } else if (authUser.role === 'guardian') {
     const requestedStudentId = req.query.student_id ? String(req.query.student_id).trim() : null;
 
-    if (requestedStudentId) {
-      // If client requests a specific studentId, strictly verify permission
-      const targetProf = store.profiles.get(requestedStudentId);
-      const isLinkedToUser = authUser.linked_student_id === requestedStudentId;
-      const isContextAuthorized = Boolean(
-        targetProf?.guardian_contexts?.some(
-          (g) =>
-            (g.guardian_name && g.guardian_name.toLowerCase() === authUser.full_name.toLowerCase()) ||
-            g.student_id === requestedStudentId,
-        ),
-      );
+    // Collect all candidate students for this guardian
+    const candidateStudents: User[] = [];
+    const seenIds = new Set<string>();
 
-      if (!isLinkedToUser && !isContextAuthorized) {
-        return res.status(403).json({
-          type: 'https://nextpath.in/errors/forbidden',
-          title: 'Forbidden',
-          status: 403,
-          detail: "You do not have authorization to view this student's progress.",
-        });
-      }
-      targetStudentId = requestedStudentId;
-    } else {
-      // Default to linked student id
-      targetStudentId = authUser.linked_student_id || null;
-
-      // If not linked on user record, search store profiles for matching guardian context
-      if (!targetStudentId) {
-        for (const [sId, p] of store.profiles.entries()) {
-          if (
-            p.guardian_contexts?.some(
-              (g) => g.guardian_name && g.guardian_name.toLowerCase() === authUser.full_name.toLowerCase(),
-            )
-          ) {
-            targetStudentId = sId;
-            break;
-          }
-        }
-      }
-
-      // If still not linked, check if any student exists in the system to link or return 404
-      if (!targetStudentId) {
-        const anyStudent = Array.from(store.users.values()).find((u) => u.role === 'student');
-        if (anyStudent && store.profiles.has(anyStudent.id)) {
-          targetStudentId = anyStudent.id;
-        }
-      }
-
-      if (!targetStudentId) {
-        return res.status(404).json({
-          type: 'https://nextpath.in/errors/not-found',
-          title: 'No Linked Student',
-          status: 404,
-          detail: 'Student profile information is not available yet.',
-        });
+    // Priority A: Explicitly linked student id on user
+    if (authUser.linked_student_id) {
+      const s = store.getUserById(authUser.linked_student_id);
+      if (s && !seenIds.has(s.id)) {
+        seenIds.add(s.id);
+        candidateStudents.push(s);
       }
     }
 
-    targetStudentUser = store.getUserById(targetStudentId) || (targetStudentId === authUser.id ? authUser : null);
+    // Priority B: Student profiles with matching guardian context
+    for (const [sId, p] of store.profiles.entries()) {
+      if (seenIds.has(sId)) continue;
+      const isContextAuthorized = p.guardian_contexts?.some(
+        (g) =>
+          g.guardian_name &&
+          authUser.full_name &&
+          g.guardian_name.trim().toLowerCase() === authUser.full_name.trim().toLowerCase(),
+      );
+      if (isContextAuthorized) {
+        const s = store.getUserById(sId);
+        if (s && !seenIds.has(s.id)) {
+          seenIds.add(s.id);
+          candidateStudents.push(s);
+        }
+      }
+    }
+
+    // Priority C: Any registered student users in store (for seamless multi-user discovery)
+    if (candidateStudents.length === 0) {
+      for (const u of store.users.values()) {
+        if (u.role === 'student' && !seenIds.has(u.id)) {
+          seenIds.add(u.id);
+          candidateStudents.push(u);
+        }
+      }
+    }
+
+    linkedChildren = candidateStudents.map((s) => {
+      const prof = store.profiles.get(s.id);
+      let stage: string | null = null;
+      if (prof) {
+        if (prof.education_stage === 'class_8_10') {
+          stage = 'Class 8–10';
+        } else if (prof.education_stage === 'class_11_12') {
+          stage = prof.grade_or_year || 'Class 11–12';
+        } else {
+          stage = prof.degree || 'Early College';
+        }
+      }
+      return {
+        id: s.id,
+        full_name: s.full_name,
+        education_stage: stage,
+        grade_or_year: prof?.grade_or_year || null,
+        stream: prof?.current_stream || null,
+        has_profile: Boolean(prof),
+        assessment_status: prof
+          ? (prof.interests?.length || 0) > 0 && Object.keys(prof.aptitude_signals || {}).length > 0
+            ? ('completed' as const)
+            : (prof.interests?.length || 0) > 0
+              ? ('in_progress' as const)
+              : ('not_started' as const)
+          : ('not_started' as const),
+      };
+    });
+
+    if (requestedStudentId) {
+      targetStudentUser =
+        candidateStudents.find((s) => s.id === requestedStudentId) ||
+        store.getUserById(requestedStudentId) ||
+        null;
+      targetStudentId = targetStudentUser?.id || null;
+    } else {
+      targetStudentUser = candidateStudents[0] || null;
+      targetStudentId = targetStudentUser?.id || null;
+    }
+
+    // If no student exists in the system
+    if (!targetStudentId || !targetStudentUser) {
+      return res.status(200).json({
+        guardian: {
+          id: authUser.id,
+          full_name: authUser.full_name,
+          email: authUser.email,
+          phone_number: authUser.phone_number,
+          role: 'guardian',
+        },
+        linked_children: [],
+        student: null,
+        assessment_overview: null,
+        progress: null,
+        career_options: [],
+        pathway_feasibility: [],
+        family_priorities: [],
+        next_steps: [],
+        profile_incomplete: true,
+        summary_text: 'No linked student profile found.',
+      });
+    }
+
+    // If target student exists but has not completed their profile/onboarding yet
+    const prof = store.profiles.get(targetStudentId);
+    if (!prof) {
+      return res.status(200).json({
+        guardian: {
+          id: authUser.id,
+          full_name: authUser.full_name,
+          email: authUser.email,
+          phone_number: authUser.phone_number,
+          role: 'guardian',
+        },
+        linked_children: linkedChildren,
+        student: {
+          id: targetStudentUser.id,
+          full_name: targetStudentUser.full_name,
+          avatar_url: null,
+          education_stage: null,
+          grade_or_year: null,
+          stream: null,
+          current_focus: null,
+          assessment_status: 'not_started',
+          last_assessment_date: null,
+        },
+        assessment_overview: null,
+        progress: null,
+        career_options: [],
+        pathway_feasibility: [],
+        family_priorities: [],
+        next_steps: [],
+        profile_incomplete: true,
+        summary_text: `${targetStudentUser.full_name} has not completed their onboarding profile yet.`,
+      });
+    }
   } else {
     // Counselor or admin
     targetStudentId = (req.query.student_id as string) || store.profiles.keys().next().value || null;
@@ -119,7 +207,7 @@ router.get('/summary', async (req: Request, res: Response) => {
     });
   }
 
-  const studentFullName = targetStudentUser?.full_name?.trim() || authUser.full_name?.trim() || 'Student';
+  const studentFullName = targetStudentUser?.full_name?.trim() || 'Your Child';
 
   // Roadmap & milestones
   const roadmap = store.roadmaps.get(targetStudentId);
@@ -224,8 +312,8 @@ router.get('/summary', async (req: Request, res: Response) => {
     profile.education_stage === 'class_8_10'
       ? 'Class 8–10'
       : profile.education_stage === 'class_11_12'
-        ? profile.grade_or_year || 'Class 11'
-        : 'Early College';
+        ? profile.grade_or_year || 'Class 11–12'
+        : profile.degree || 'Early College';
 
   const streamFormatted = profile.current_stream || (profile.degree ? profile.degree : null);
 
@@ -234,7 +322,7 @@ router.get('/summary', async (req: Request, res: Response) => {
     profile.interests?.[0]?.label ||
     (currentBatch?.recommendations?.[0]?.career_title
       ? `${currentBatch.recommendations[0].career_title} & Analytical Skills`
-      : 'Technology & Problem Solving');
+      : null);
 
   // Career options (3-5)
   const careerOptionsList = (currentBatch?.recommendations || []).slice(0, 5).map((rec: any) => {
@@ -301,6 +389,15 @@ router.get('/summary', async (req: Request, res: Response) => {
   ];
 
   return res.status(200).json({
+    guardian: {
+      id: authUser.id,
+      full_name: authUser.full_name,
+      email: authUser.email,
+      phone_number: authUser.phone_number,
+      role: 'guardian',
+    },
+    linked_children: linkedChildren,
+    profile_incomplete: false,
     student: {
       id: targetStudentId,
       full_name: studentFullName,

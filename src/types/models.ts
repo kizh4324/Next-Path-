@@ -8,7 +8,7 @@
 
 // --- Enums (values match the database CHECK constraints exactly) ---------------------
 export type EducationStage = 'class_8_10' | 'class_11_12' | 'early_college';
-export type UserRole = 'student' | 'guardian' | 'counselor' | 'admin';
+export type UserRole = 'student';
 export type ConsentType = 'guardian_consent_minor' | 'self_consent_adult';
 export type BudgetTier = 'low_cost_only' | 'moderate_up_to_2_lakhs' | 'flexible_above_2_lakhs';
 export type RelocationWillingness =
@@ -457,6 +457,16 @@ export interface ReassessmentInfo {
   note: string;
 }
 
+export interface LinkedChildSummary {
+  id: string;
+  full_name: string;
+  education_stage?: string | null;
+  grade_or_year?: string | null;
+  stream?: string | null;
+  has_profile: boolean;
+  assessment_status?: 'completed' | 'in_progress' | 'not_started';
+}
+
 export interface ParentSummaryResponse {
   id?: string | null;
   student_id?: string;
@@ -468,8 +478,19 @@ export interface ParentSummaryResponse {
   guardian_priorities_reflected?: string[];
   generated_without_ai?: boolean;
 
+  // Guardian profile info
+  guardian?: {
+    id: string;
+    full_name: string;
+    email: string;
+    phone_number?: string | null;
+    role: string;
+  };
+  linked_children?: LinkedChildSummary[];
+  profile_incomplete?: boolean;
+
   // Rich Child Progress Dashboard fields
-  student?: ChildProgressStudent;
+  student?: ChildProgressStudent | null;
   assessment_overview?: AssessmentOverview;
   progress?: ChildProgressRoadmap;
   career_options?: CareerOptionItem[];

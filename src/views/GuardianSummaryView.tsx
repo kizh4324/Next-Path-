@@ -159,32 +159,38 @@ export function GuardianSummaryView(): JSX.Element {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { t } = useLanguage();
-  const { data: summary, isLoading, error, refetch } = useGuardianSummary();
+  const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null);
+  const { data: summary, isLoading, error, refetch } = useGuardianSummary(true, selectedStudentId);
   const [guideModalOpen, setGuideModalOpen] = useState(false);
 
-  // DYNAMIC USER NAME RESOLUTION (Role-consistent)
-  // For a student login: display the currently logged-in student's own name.
-  // For a parent/guardian login: display the currently logged-in parent/guardian's own name or username.
-  // Do not display the child's name when the parent/guardian is logged in.
-  // Do not display a specific hardcoded name such as "Aanya" for every user.
-  const displayedUserName =
-    user?.role === 'guardian'
-      ? (user.full_name?.trim() || user.email?.split('@')[0] || 'Parent')
-      : user?.role === 'student'
-        ? (user.full_name?.trim() || user.email?.split('@')[0] || 'Student')
-        : (user?.full_name?.trim() || user?.email?.split('@')[0] || 'User');
+  // SEPARATED USER AND CHILD RESOLUTION
+  // Parent/Guardian profile data
+  const parentName =
+    summary?.guardian?.full_name?.trim() || user?.full_name?.trim() || user?.email?.split('@')[0] || 'Parent';
 
-  const userInitials =
-    displayedUserName
+  const parentInitials =
+    parentName
       .split(' ')
       .filter(Boolean)
       .map((part) => part[0])
       .slice(0, 2)
       .join('')
-      .toUpperCase() || 'U';
+      .toUpperCase() || 'P';
 
-  const childName = summary?.student?.full_name?.trim() || 'your child';
-  const childFirstName = childName.split(' ')[0];
+  // Child profile data (strictly separated from parent identity)
+  const childFullName = summary?.student?.full_name?.trim() || 'Your Child';
+  const childFirstName = childFullName.split(' ')[0];
+
+  const childInitials =
+    childFullName
+      .split(' ')
+      .filter(Boolean)
+      .map((part) => part[0])
+      .slice(0, 2)
+      .join('')
+      .toUpperCase() || 'C';
+
+  const linkedChildren = summary?.linked_children || [];
 
   // 14. LOADING STATE
   if (isLoading) {
@@ -314,72 +320,202 @@ export function GuardianSummaryView(): JSX.Element {
             <span className="hidden sm:inline">{t('print_save', 'Print / Save')}</span>
           </button>
         </div>
-        <h1 className="text-heading-2 font-bold text-ink tracking-tight">{t('page_title', "Your child's progress")}</h1>
+        <h1 className="text-heading-2 font-bold text-ink tracking-tight">
+          {t('page_title', "Your child's progress")}
+        </h1>
         <p className="text-body-sm text-ink-secondary">
           {t('page_subtitle', 'A simple view of learning, assessment and career exploration.')}
         </p>
       </header>
 
-      {/* 4. USER SNAPSHOT (Priority 1) */}
-      <section aria-labelledby="snapshot-heading" className="rounded-lg border border-hairline bg-surface p-md shadow-xs transition-shadow">
-        <h2 id="snapshot-heading" className="sr-only">User Snapshot</h2>
-        <div className="flex items-start gap-md">
-          {/* User Avatar */}
-          <div
-            aria-hidden="true"
-            className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-primary/10 border border-primary/20 text-title font-bold text-primary shadow-xs"
-          >
-            {userInitials}
-          </div>
-
-          {/* Core Info */}
-          <div className="flex-1 min-w-0">
-            <div className="flex flex-wrap items-center justify-between gap-x-sm gap-y-1">
-              <h3 className="text-title font-bold text-ink truncate">{displayedUserName}</h3>
-              <span className="inline-flex items-center gap-1 rounded-full bg-canvas-container px-2 py-0.5 text-caption font-medium text-ink-muted">
-                {user?.role === 'guardian' ? 'Parent / Guardian' : t('student', 'Student')}
-              </span>
+      {/* PARENT / GUARDIAN ACCOUNT PROFILE */}
+      {Boolean(summary?.guardian) && (
+        <section aria-labelledby="parent-profile-heading" className="rounded-lg border border-hairline bg-surface p-md shadow-xs">
+          <h2 id="parent-profile-heading" className="sr-only">Parent / Guardian Profile</h2>
+          <div className="flex items-start gap-md">
+            {/* Parent Avatar */}
+            <div
+              aria-hidden="true"
+              className="flex h-13 w-13 shrink-0 items-center justify-center rounded-full bg-canvas-container border border-hairline text-body font-bold text-ink shadow-2xs"
+            >
+              {parentInitials}
             </div>
 
-            <p className="mt-0.5 text-body-sm text-ink-secondary font-medium">
-              {student?.education_stage || 'Class 11'}
-              {student?.stream ? ` • ${student.stream}` : ''}
+            {/* Parent Account Details */}
+            <div className="flex-1 min-w-0">
+              <div className="flex flex-wrap items-center justify-between gap-x-sm gap-y-1">
+                <div>
+                  <span className="text-caption font-semibold text-primary uppercase tracking-wider block">
+                    Parent / Guardian Account
+                  </span>
+                  <h3 className="text-title font-bold text-ink truncate mt-0.5">{parentName}</h3>
+                </div>
+                <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 border border-primary/20 px-2.5 py-0.5 text-caption font-semibold text-primary">
+                  Parent / Guardian
+                </span>
+              </div>
+
+              <div className="mt-xs flex flex-wrap items-center gap-x-md gap-y-1 text-caption text-ink-secondary">
+                {user?.email && (
+                  <span className="truncate">
+                    <span className="text-ink-muted">Email:</span> {user.email}
+                  </span>
+                )}
+                {user?.phone_number && (
+                  <span>
+                    <span className="text-ink-muted">Phone:</span> {user.phone_number}
+                  </span>
+                )}
+                <span className="inline-flex items-center gap-1 text-ink-muted">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#1c6b24]" />
+                  Active Account
+                </span>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* YOUR CHILD'S PROGRESS SECTION */}
+      <div className="flex flex-col gap-xs pt-xs">
+        <div className="flex flex-wrap items-center justify-between gap-sm">
+          <div>
+            <h2 className="text-heading-3 font-bold text-ink">Your Child’s Progress</h2>
+            <p className="text-caption text-ink-muted">
+              Academic background, assessment, and career exploration
             </p>
           </div>
         </div>
 
-        {/* Snapshot Details Grid */}
-        <div className="mt-md grid grid-cols-1 gap-sm border-t border-hairline pt-sm sm:grid-cols-2">
-          <div>
-            <span className="text-caption text-ink-muted uppercase tracking-wider block">{t('current_focus', 'Current focus')}</span>
-            <p className="mt-0.5 text-body-sm font-semibold text-ink">
-              {student?.current_focus || 'Technology & Problem Solving'}
-            </p>
+        {/* Multi-child selection bar (if parent has multiple children) */}
+        {linkedChildren.length > 1 && (
+          <div className="mt-xs flex flex-wrap items-center gap-xs rounded-md bg-surface border border-hairline p-xs">
+            <span className="text-caption font-semibold text-ink-muted px-xs uppercase tracking-wider">
+              Select Child:
+            </span>
+            {linkedChildren.map((child) => {
+              const isSelected = selectedStudentId ? child.id === selectedStudentId : child.id === student?.id;
+              return (
+                <button
+                  key={child.id}
+                  type="button"
+                  onClick={() => setSelectedStudentId(child.id)}
+                  className={`inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-caption font-medium transition-colors ${
+                    isSelected
+                      ? 'bg-primary text-white shadow-2xs font-semibold'
+                      : 'bg-canvas-soft text-ink hover:bg-canvas-container'
+                  }`}
+                >
+                  <span>{child.full_name}</span>
+                  {child.education_stage && (
+                    <span className={`text-[11px] ${isSelected ? 'text-white/80' : 'text-ink-muted'}`}>
+                      · {child.education_stage}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
           </div>
+        )}
+      </div>
 
-          <div>
-            <span className="text-caption text-ink-muted uppercase tracking-wider block">{t('assessment', 'Assessment')}</span>
-            <div className="mt-0.5 flex items-center gap-2">
-              {isAssessmentCompleted ? (
-                <span className="inline-flex items-center gap-1 text-body-sm font-semibold text-[#1c6b24]">
-                  <CheckCircle2 className="h-4 w-4" />
-                  {t('completed', 'Completed')}
+      {/* CHILD PROFILE & SNAPSHOT */}
+      {summary.profile_incomplete || !student || !student.education_stage ? (
+        <section aria-labelledby="child-incomplete-heading" className="rounded-lg border border-hairline bg-surface p-md shadow-xs">
+          <div className="flex items-start gap-md">
+            <div
+              aria-hidden="true"
+              className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary/10 border border-primary/20 text-title font-bold text-primary shadow-xs"
+            >
+              {childInitials}
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex flex-wrap items-center justify-between gap-x-sm gap-y-1">
+                <div>
+                  <span className="text-caption font-semibold text-ink-muted uppercase tracking-wider block">
+                    Child Information
+                  </span>
+                  <h3 className="text-title font-bold text-ink truncate mt-0.5">
+                    {childFullName}
+                  </h3>
+                </div>
+                <span className="inline-flex items-center gap-1 rounded-full bg-[#fef7ea] border border-[#fde4b8] px-2.5 py-0.5 text-caption font-medium text-[#915802]">
+                  Profile Incomplete
                 </span>
-              ) : (
-                <span className="inline-flex items-center gap-1 text-body-sm font-medium text-[#915802]">
-                  <Circle className="h-3.5 w-3.5" />
-                  {t('in_progress', 'In progress')}
-                </span>
-              )}
-              {student?.last_assessment_date && (
-                <span className="text-caption text-ink-muted">
-                  · {formatDate(student.last_assessment_date)}
-                </span>
-              )}
+              </div>
+              <p className="mt-xs text-body-sm text-ink-secondary leading-relaxed">
+                Academic background and assessment details are not available yet. Once your child completes their onboarding profile and assessment, their academic details, progress milestones, and career pathways will appear here.
+              </p>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      ) : (
+        <section aria-labelledby="child-snapshot-heading" className="rounded-lg border border-hairline bg-surface p-md shadow-xs transition-shadow">
+          <h3 id="child-snapshot-heading" className="sr-only">Child Information</h3>
+          <div className="flex items-start gap-md">
+            {/* Child Avatar */}
+            <div
+              aria-hidden="true"
+              className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-primary/10 border border-primary/20 text-title font-bold text-primary shadow-xs"
+            >
+              {childInitials}
+            </div>
+
+            {/* Core Info */}
+            <div className="flex-1 min-w-0">
+              <div className="flex flex-wrap items-center justify-between gap-x-sm gap-y-1">
+                <div>
+                  <span className="text-caption font-semibold text-ink-muted uppercase tracking-wider block">
+                    Child Information
+                  </span>
+                  <h3 className="text-title font-bold text-ink truncate mt-0.5">{childFullName}</h3>
+                </div>
+                <span className="inline-flex items-center gap-1 rounded-full bg-canvas-container px-2 py-0.5 text-caption font-medium text-ink-muted">
+                  Student Profile
+                </span>
+              </div>
+
+              {/* Dynamic Academic Details */}
+              <p className="mt-1 text-body-sm text-ink-secondary font-medium">
+                {student.education_stage}
+                {student.stream ? ` • ${student.stream}` : ''}
+              </p>
+            </div>
+          </div>
+
+          {/* Snapshot Details Grid */}
+          <div className="mt-md grid grid-cols-1 gap-sm border-t border-hairline pt-sm sm:grid-cols-2">
+            <div>
+              <span className="text-caption text-ink-muted uppercase tracking-wider block">{t('current_focus', 'Current focus')}</span>
+              <p className="mt-0.5 text-body-sm font-semibold text-ink">
+                {student.current_focus || 'Academic & Career Exploration'}
+              </p>
+            </div>
+
+            <div>
+              <span className="text-caption text-ink-muted uppercase tracking-wider block">{t('assessment', 'Assessment')}</span>
+              <div className="mt-0.5 flex items-center gap-2">
+                {isAssessmentCompleted ? (
+                  <span className="inline-flex items-center gap-1 text-body-sm font-semibold text-[#1c6b24]">
+                    <CheckCircle2 className="h-4 w-4" />
+                    {t('completed', 'Completed')}
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1 text-body-sm font-medium text-[#915802]">
+                    <Circle className="h-3.5 w-3.5" />
+                    {t('in_progress', 'In progress')}
+                  </span>
+                )}
+                {student.last_assessment_date && (
+                  <span className="text-caption text-ink-muted">
+                    · {formatDate(student.last_assessment_date)}
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* 5. ASSESSMENT OVERVIEW (Priority 2) */}
       <section aria-labelledby="assessment-heading" className="rounded-lg border border-hairline bg-surface p-md shadow-xs">
@@ -686,7 +822,7 @@ export function GuardianSummaryView(): JSX.Element {
       <DiscussionGuideModal
         isOpen={guideModalOpen}
         onClose={() => setGuideModalOpen(false)}
-        studentName={childName}
+        studentName={childFullName}
         prompts={familyDiscussion.prompts}
         tips={familyDiscussion.guide_tips}
       />

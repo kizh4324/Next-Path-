@@ -17,7 +17,7 @@ export function getAuthUser(req: Request): User | null {
 
 // POST /auth/register
 router.post('/register', (req: Request, res: Response) => {
-  const { email, password, full_name, role = 'student', phone_number, linked_student_id } = req.body;
+  const { email, password, full_name, phone_number } = req.body;
 
   if (!email || !password || !full_name) {
     return res.status(400).json({
@@ -37,32 +37,15 @@ router.post('/register', (req: Request, res: Response) => {
     });
   }
 
-  // If registering as guardian without linked_student_id, see if there is an existing student profile with matching guardian name or default student
-  let determinedStudentId: string | null = linked_student_id || null;
-  if (role === 'guardian' && !determinedStudentId) {
-    for (const [studentId, profile] of store.profiles.entries()) {
-      if (profile.guardian_contexts?.some((g) => g.guardian_name?.toLowerCase() === full_name.toLowerCase())) {
-        determinedStudentId = studentId;
-        break;
-      }
-    }
-    // If not found by name, default to the first student profile in store if available
-    if (!determinedStudentId) {
-      const firstStudent = Array.from(store.users.values()).find((u) => u.role === 'student');
-      if (firstStudent) determinedStudentId = firstStudent.id;
-    }
-  }
-
   const newUser: User = {
     id: `usr-${Date.now().toString(36)}`,
     email: email.toLowerCase(),
     password_hash: password, // In memory demo representation
     full_name,
-    role: role || 'student',
+    role: 'student',
     phone_number: phone_number || null,
     is_active: true,
     created_at: new Date().toISOString(),
-    linked_student_id: determinedStudentId,
   };
 
   store.users.set(newUser.email, newUser);

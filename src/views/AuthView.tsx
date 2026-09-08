@@ -11,21 +11,17 @@ import {
   Eye,
   EyeOff,
   Globe,
-  GraduationCap,
   HelpCircle,
   Lock,
   Mail,
-  School,
   ShieldCheck,
   User,
-  Users,
 } from 'lucide-react';
 
 import { useAuth } from '@/hooks/useAuth';
 import { ApiError } from '@/services/api_client';
 import { profileApi } from '@/services/endpoints';
 import { loginSchema, registerSchema } from '@/types/forms';
-import type { UserRole } from '@/types/models';
 
 type Mode = 'login' | 'register' | 'forgot';
 
@@ -36,7 +32,6 @@ export function AuthView(): JSX.Element {
   const { login, register } = useAuth();
 
   const [mode, setMode] = useState<Mode>('login');
-  const [role, setRole] = useState<UserRole>('counselor');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
@@ -81,7 +76,7 @@ export function AuthView(): JSX.Element {
     const parsed =
       mode === 'login'
         ? loginSchema.safeParse({ email, password })
-        : registerSchema.safeParse({ email, password, full_name: fullName, role });
+        : registerSchema.safeParse({ email, password, full_name: fullName, role: 'student' });
 
     if (!parsed.success) {
       const fieldErrors: Record<string, string> = {};
@@ -109,31 +104,24 @@ export function AuthView(): JSX.Element {
       if (mode === 'login') {
         await login({ email, password });
       } else {
-        await register({ email, password, full_name: fullName, role });
+        await register({ email, password, full_name: fullName, role: 'student' });
       }
 
-      // Route according to user role
-      if (role === 'counselor') {
-        navigate('/counselor');
-      } else if (role === 'guardian') {
-        navigate('/guardian');
-      } else {
-        try {
-          const status = await profileApi.status();
-          if (status?.profile_exists) {
-            if (typeof window !== 'undefined') {
-              window.localStorage.setItem('onboarding_completed', 'true');
-            }
-            navigate('/results');
-          } else {
-            if (typeof window !== 'undefined') {
-              window.localStorage.removeItem('onboarding_completed');
-            }
-            navigate('/onboarding');
+      try {
+        const status = await profileApi.status();
+        if (status?.profile_exists) {
+          if (typeof window !== 'undefined') {
+            window.localStorage.setItem('onboarding_completed', 'true');
           }
-        } catch {
           navigate('/results');
+        } else {
+          if (typeof window !== 'undefined') {
+            window.localStorage.removeItem('onboarding_completed');
+          }
+          navigate('/onboarding');
         }
+      } catch {
+        navigate('/results');
       }
     } catch (caught) {
       setErrors({
@@ -147,35 +135,13 @@ export function AuthView(): JSX.Element {
     }
   }
 
-  // Role subtitle badge
-  const roleSubtitle =
-    role === 'counselor'
-      ? 'Cohort Advisory Console'
-      : role === 'guardian'
-        ? 'Parent Advisory Hub'
-        : 'Student Discovery Portal';
+  // Subtitle badge
+  const roleSubtitle = 'Student Discovery Portal';
 
-  // Role input labels and placeholders
-  const identifierLabel =
-    role === 'counselor'
-      ? 'Counselor / Educator ID'
-      : role === 'guardian'
-        ? 'Parent or Guardian Email'
-        : 'Student ID or Email';
-
-  const identifierPlaceholder =
-    role === 'counselor'
-      ? 'dr.marcus@highschool.edu'
-      : role === 'guardian'
-        ? 'parent@example.com'
-        : 'student@example.com';
-
-  const submitButtonLabel =
-    role === 'counselor'
-      ? 'Sign In to Advisor Workspace'
-      : role === 'guardian'
-        ? 'Sign In to Parent Hub'
-        : 'Sign In to Student Portal';
+  // Input labels and placeholders
+  const identifierLabel = 'Student Email or ID';
+  const identifierPlaceholder = 'student@example.com';
+  const submitButtonLabel = 'Sign In to Student Portal';
 
   return (
     <div className="min-h-screen bg-canvas text-ink flex flex-col justify-between antialiased selection:bg-[#d5e3ff] selection:text-[#001b3c]">
@@ -279,6 +245,10 @@ export function AuthView(): JSX.Element {
 
         {/* Heading & Subtitle */}
         <div className="text-center mb-6">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#f4f3f0] border border-hairline text-xs font-semibold text-[#0075de] mb-3">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#0075de]" />
+            {roleSubtitle}
+          </div>
           <h1 className="text-2xl sm:text-[28px] font-extrabold text-ink tracking-tight">
             {mode === 'login'
               ? 'Welcome Back'
@@ -321,91 +291,6 @@ export function AuthView(): JSX.Element {
           </div>
         ) : (
           <div className="flex flex-col gap-4">
-            {/* LOGGING IN AS Section Header */}
-            {mode !== 'forgot' && (
-              <div>
-                <div className="flex items-center justify-between px-1 mb-2">
-                  <span className="text-[11px] font-bold tracking-wider text-ink-muted uppercase">
-                    LOGGING IN AS:
-                  </span>
-                  <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#0075de]">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#0075de]" />
-                    {roleSubtitle}
-                  </span>
-                </div>
-
-                {/* Role Selection Tabs */}
-                <div
-                  className="grid grid-cols-3 gap-2.5"
-                  role="radiogroup"
-                  aria-label="User role selection"
-                >
-                  {/* Student */}
-                  <button
-                    type="button"
-                    role="radio"
-                    aria-checked={role === 'student'}
-                    onClick={() => {
-                      setRole('student');
-                      setErrors({});
-                    }}
-                    className={`rounded-xl py-3 px-2 flex flex-col items-center justify-center gap-1.5 transition-all focus:outline-none focus:ring-2 focus:ring-[#0075de]/20 ${
-                      role === 'student'
-                        ? 'bg-surface border-2 border-[#0075de] shadow-sm text-[#0075de]'
-                        : 'bg-[#ece9e4]/60 hover:bg-[#ece9e4] text-ink-secondary hover:text-ink'
-                    }`}
-                  >
-                    <GraduationCap
-                      className={`w-5 h-5 ${role === 'student' ? 'text-[#0075de]' : 'text-ink-secondary'}`}
-                    />
-                    <span className="text-xs font-semibold">Student</span>
-                  </button>
-
-                  {/* Parent */}
-                  <button
-                    type="button"
-                    role="radio"
-                    aria-checked={role === 'guardian'}
-                    onClick={() => {
-                      setRole('guardian');
-                      setErrors({});
-                    }}
-                    className={`rounded-xl py-3 px-2 flex flex-col items-center justify-center gap-1.5 transition-all focus:outline-none focus:ring-2 focus:ring-[#0075de]/20 ${
-                      role === 'guardian'
-                        ? 'bg-surface border-2 border-[#0075de] shadow-sm text-[#0075de]'
-                        : 'bg-[#ece9e4]/60 hover:bg-[#ece9e4] text-ink-secondary hover:text-ink'
-                    }`}
-                  >
-                    <Users
-                      className={`w-5 h-5 ${role === 'guardian' ? 'text-[#0075de]' : 'text-ink-secondary'}`}
-                    />
-                    <span className="text-xs font-semibold">Parent</span>
-                  </button>
-
-                  {/* Counselor */}
-                  <button
-                    type="button"
-                    role="radio"
-                    aria-checked={role === 'counselor'}
-                    onClick={() => {
-                      setRole('counselor');
-                      setErrors({});
-                    }}
-                    className={`rounded-xl py-3 px-2 flex flex-col items-center justify-center gap-1.5 transition-all focus:outline-none focus:ring-2 focus:ring-[#0075de]/20 ${
-                      role === 'counselor'
-                        ? 'bg-surface border-2 border-[#0075de] shadow-sm text-[#0075de]'
-                        : 'bg-[#ece9e4]/60 hover:bg-[#ece9e4] text-ink-secondary hover:text-ink'
-                    }`}
-                  >
-                    <School
-                      className={`w-5 h-5 ${role === 'counselor' ? 'text-[#0075de]' : 'text-ink-secondary'}`}
-                    />
-                    <span className="text-xs font-semibold">Counselor</span>
-                  </button>
-                </div>
-              </div>
-            )}
-
             {/* Form Surface */}
             <form
               onSubmit={(e) => void handleSubmit(e)}

@@ -16,11 +16,6 @@ const STUDENT_NAV = [
   { to: '/settings', label: 'Account' },
 ];
 
-const COUNSELOR_NAV = [
-  { to: '/counselor', label: 'Triage Queue' },
-  { to: '/settings', label: 'Account' },
-];
-
 function OfflineBanner(): JSX.Element | null {
   const [offline, setOffline] = useState(!navigator.onLine);
 
@@ -52,7 +47,7 @@ export function AppHeader(): JSX.Element {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const links = user?.role === 'counselor' || user?.role === 'admin' ? COUNSELOR_NAV : STUDENT_NAV;
+  const links = STUDENT_NAV;
 
   const displayName =
     user?.full_name?.trim() ||
