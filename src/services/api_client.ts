@@ -7,7 +7,7 @@
 
 import type { ProblemDetail } from '@/types/models';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '/api/v1';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/v1';
 const TOKEN_STORAGE_KEY = 'nextpath.access_token';
 
 /** A failed request, carrying the parsed problem details where the server sent them. */
