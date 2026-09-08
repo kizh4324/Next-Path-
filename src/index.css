@@ -9,14 +9,14 @@
 
   html {
     -webkit-text-size-adjust: 100%;
-    background-color: #fdf9f5;
+    background-color: #f6f5f4;
   }
 
   body {
     @apply bg-canvas text-ink font-sans text-body-md antialiased;
     margin: 0;
     min-height: 100vh;
-    background-color: #fdf9f5;
+    background-color: #f6f5f4;
   }
 
   /* High-trust focus ring: 2px primary with warm paper offset */

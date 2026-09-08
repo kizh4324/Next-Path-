@@ -11,9 +11,9 @@ export default {
     extend: {
       colors: {
         // Structural actions & focus (CTAs, active nav)
-        primary: '#005db2',
+        primary: '#0075de',
         'primary-container': '#0075de',
-        'primary-active': '#00468a',
+        'primary-active': '#005bab',
         'on-primary': '#ffffff',
         'primary-fixed': '#d5e3ff',
 
@@ -25,21 +25,21 @@ export default {
         'ai-tertiary': '#6d518a',
 
         // Surfaces & Warm Paper Canvas
-        canvas: '#fdf9f5',
-        'canvas-soft': '#f7f3ef',
-        'canvas-container': '#f1edea',
+        canvas: '#f6f5f4',
+        'canvas-soft': '#f6f5f4',
+        'canvas-container': '#ebe8e5',
         surface: '#ffffff',
-        'surface-low': '#f7f3ef',
-        'surface-container': '#f1edea',
-        'surface-high': '#ebe7e4',
-        hairline: '#e6e2de',
+        'surface-low': '#f6f5f4',
+        'surface-container': '#ebe8e5',
+        'surface-high': '#e3dfdb',
+        hairline: '#e6e6e6',
         'hairline-subtle': '#f0ece7',
 
         // Ink hierarchy
-        ink: '#1c1b1a',
-        'ink-secondary': '#414753',
+        ink: '#000000',
+        'ink-secondary': '#31302e',
         'ink-muted': '#615d59',
-        'ink-faint': '#717784',
+        'ink-faint': '#a39e98',
         outline: '#717784',
         'outline-variant': '#c1c6d5',
 
