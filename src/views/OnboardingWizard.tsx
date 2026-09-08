@@ -5,7 +5,7 @@
  * 1. Education Stage
  * 2. Interests (Technical & Non-Technical / Extracurricular)
  * 3. Values & Preferences (Environment, Team Style, Priorities)
- * 4. Academic Background (Subject comfort 1-5 ratings & optional transcripts)
+ * 4. Academic Background (Academic records verification & transcripts)
  * 5. Practical Feasibility (Annual budget & Geographic relocation)
  * 6. Review & Blueprint (Complete summary & final blueprint generation)
  *
@@ -240,32 +240,6 @@ const CAREER_PRIORITY_OPTIONS: ValuePreferenceOption[] = [
   },
 ];
 
-const SUBJECTS = [
-  'mathematics',
-  'physics',
-  'chemistry',
-  'biology',
-  'computers',
-  'language',
-  'social_science',
-  'commerce',
-  'art_design',
-  'practical_skills',
-];
-
-const SUBJECT_LABELS: Record<string, string> = {
-  mathematics: 'Mathematics',
-  physics: 'Physics',
-  chemistry: 'Chemistry',
-  biology: 'Biology',
-  computers: 'Computer Science',
-  language: 'Languages & Writing',
-  social_science: 'Social Science',
-  commerce: 'Commerce & Accounts',
-  art_design: 'Art & Design',
-  practical_skills: 'Practical / Hands-on Skills',
-};
-
 const BUDGETS: { value: BudgetTier; label: string; badge: string; hint: string }[] = [
   {
     value: 'low_cost_only',
@@ -350,7 +324,7 @@ interface DraftState {
   work_style_preferences: Record<string, string>;
   budget_tier: BudgetTier;
   relocation_willingness: RelocationWillingness;
-  academic_records_available: boolean;
+  academic_records_available: boolean | null;
 }
 
 const EMPTY_DRAFT: DraftState = {
@@ -368,7 +342,7 @@ const EMPTY_DRAFT: DraftState = {
   },
   budget_tier: 'moderate_up_to_2_lakhs',
   relocation_willingness: 'within_state',
-  academic_records_available: false,
+  academic_records_available: null,
 };
 
 function loadDraft(): DraftState {
@@ -379,6 +353,10 @@ function loadDraft(): DraftState {
     const draft: DraftState = {
       ...EMPTY_DRAFT,
       ...parsed,
+      academic_records_available:
+        typeof parsed.academic_records_available === 'boolean'
+          ? parsed.academic_records_available
+          : null,
       work_style_preferences: {
         ...EMPTY_DRAFT.work_style_preferences,
         ...(parsed.work_style_preferences || {}),
@@ -548,7 +526,7 @@ export function OnboardingWizard(): JSX.Element {
     if (draft.degree || draft.current_stream) earned += 10;
     if (draft.interests.length > 0) earned += 25;
     if (Object.keys(draft.work_style_preferences).length > 0) earned += 15;
-    if (Object.keys(draft.aptitude_signals).length > 0) earned += 15;
+    if (draft.academic_records_available !== null) earned += 15;
     if (draft.budget_tier) earned += 5;
     if (draft.relocation_willingness) earned += 5;
     return Math.min(100, earned);
@@ -605,7 +583,7 @@ export function OnboardingWizard(): JSX.Element {
       budget_tier: draft.budget_tier,
       relocation_willingness: draft.relocation_willingness,
       preferred_languages: ['English'],
-      academic_records_available: draft.academic_records_available,
+      academic_records_available: Boolean(draft.academic_records_available),
       consent_given_by: user?.full_name || 'Guardian Consent',
       consent_type: isMinorStage ? 'guardian_consent_minor' : 'self_consent_adult',
     });
@@ -1168,7 +1146,7 @@ export function OnboardingWizard(): JSX.Element {
       )}
 
       {/* ========================================================================= */}
-      {/* PAGE 4: ACADEMIC BACKGROUND (Clear, Compact Layout)                       */}
+      {/* PAGE 4: ACADEMIC BACKGROUND (Clean, Unselected Option Cards)              */}
       {/* ========================================================================= */}
       {step === 3 && (
         <Card className="border border-hairline bg-surface p-6 sm:p-8 rounded-xl shadow-none">
@@ -1177,94 +1155,82 @@ export function OnboardingWizard(): JSX.Element {
               Academic Background
             </span>
             <h1 className="mt-1 text-2xl sm:text-3xl font-bold text-ink tracking-tight">
-              Self-assessed Subject Comfort
+              Academic Background & Records
             </h1>
             <p className="mt-1 text-sm text-ink-muted leading-relaxed">
-              Rate your confidence on a scale of 1 (challenging) to 5 (effortless). Skip subjects
-              you haven't taken — unrated subjects indicate an evidence gap, never a penalty.
+              Indicate whether you have school transcripts or exam scorecards available. Records are
+              completely optional and never required to explore your career recommendations.
             </p>
-
-            {/* Compact Legend Scale */}
-            <div className="mt-3.5 rounded-lg bg-canvas-soft border border-hairline p-3 flex flex-wrap items-center justify-between gap-2 text-xs text-ink-muted">
-              <span className="font-semibold text-ink">Rating Scale:</span>
-              <div className="flex flex-wrap items-center gap-3">
-                <span>1 = Challenging</span>
-                <span>3 = Comfortable</span>
-                <span>5 = Effortless</span>
-              </div>
-              <span className="text-[11px] text-ink-muted italic">Click active rating to clear</span>
-            </div>
           </div>
 
           <div className="space-y-4">
-            {/* Compact 2-column Grid of Subjects */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {SUBJECTS.map((subject) => {
-                const currentRating = draft.aptitude_signals[subject];
-                return (
-                  <div
-                    key={subject}
-                    className="rounded-lg border border-hairline bg-surface p-3 flex items-center justify-between gap-2"
-                  >
-                    <span className="text-sm font-medium text-ink truncate">
-                      {SUBJECT_LABELS[subject]}
-                    </span>
+            <fieldset>
+              <div className="flex items-center gap-2 pb-2 mb-3 border-b border-hairline">
+                <FileText className="h-4 w-4 text-primary" />
+                <legend className="text-sm font-bold text-ink uppercase tracking-wider">
+                  School Transcripts & Academic Records
+                </legend>
+              </div>
+              <p className="text-xs text-ink-muted mb-3">
+                Do you have official school transcripts, mark sheets, or exam scorecards available for review?
+              </p>
 
-                    <div className="flex items-center gap-1 shrink-0">
-                      {[1, 2, 3, 4, 5].map((val) => {
-                        const isSelected = currentRating === val;
-                        return (
-                          <button
-                            key={val}
-                            type="button"
-                            onClick={() =>
-                              setDraft((curr) => {
-                                const nextSignals = { ...curr.aptitude_signals };
-                                if (nextSignals[subject] === val) {
-                                  delete nextSignals[subject];
-                                } else {
-                                  nextSignals[subject] = val;
-                                }
-                                return { ...curr, aptitude_signals: nextSignals };
-                              })
-                            }
-                            aria-label={`${SUBJECT_LABELS[subject]} rating ${val}`}
-                            className={cn(
-                              'h-7 w-7 rounded text-xs font-semibold transition-colors flex items-center justify-center cursor-pointer',
-                              isSelected
-                                ? 'bg-primary text-white shadow-none font-bold'
-                                : 'bg-canvas-soft border border-hairline text-ink-secondary hover:border-primary/40 hover:text-ink',
-                            )}
-                          >
-                            {val}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+              <div className="space-y-2.5">
+                {[
+                  {
+                    value: true,
+                    title: 'Yes, I have academic records available',
+                    description:
+                      'School transcripts, mark sheets, or exam scorecards are available if needed for counselor review or entrance eligibility checks.',
+                  },
+                  {
+                    value: false,
+                    title: 'No, I do not have records available right now',
+                    description:
+                      'Continue exploring career paths without transcripts — unreviewed records indicate an evidence gap, never a penalty.',
+                  },
+                ].map((opt) => {
+                  const isSelected = draft.academic_records_available === opt.value;
+                  return (
+                    <button
+                      key={String(opt.value)}
+                      type="button"
+                      onClick={() => update('academic_records_available', opt.value)}
+                      className={cn(
+                        'w-full text-left p-3.5 rounded-lg border transition-all duration-150 cursor-pointer flex items-start gap-3',
+                        isSelected
+                          ? 'border-primary bg-primary/5 ring-1 ring-primary'
+                          : 'border-hairline bg-surface hover:bg-canvas-soft hover:border-ink-faint/40',
+                      )}
+                    >
+                      <div
+                        className={cn(
+                          'h-4 w-4 mt-0.5 rounded-full border flex items-center justify-center shrink-0 transition-colors',
+                          isSelected
+                            ? 'border-primary bg-primary'
+                            : 'border-hairline bg-surface',
+                        )}
+                      >
+                        {isSelected && <div className="h-1.5 w-1.5 rounded-full bg-white" />}
+                      </div>
+                      <div>
+                        <div className="text-sm font-semibold text-ink">{opt.title}</div>
+                        <div className="text-xs text-ink-muted mt-0.5 leading-relaxed">
+                          {opt.description}
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </fieldset>
 
-            {/* Optional Records Verification */}
-            <div className="mt-6 pt-4 border-t border-hairline">
-              <label className="flex items-start gap-3 text-sm text-ink-secondary cursor-pointer p-3 rounded-lg bg-canvas-soft border border-hairline">
-                <input
-                  type="checkbox"
-                  className="mt-0.5 h-4 w-4 rounded border-hairline text-primary focus:ring-primary shrink-0"
-                  checked={draft.academic_records_available}
-                  onChange={(event) => update('academic_records_available', event.target.checked)}
-                />
-                <div>
-                  <span className="font-semibold text-ink">
-                    I have school transcripts or exam scorecards available for review (Optional)
-                  </span>
-                  <p className="text-xs text-ink-muted mt-0.5">
-                    Transcripts are completely optional per FR-01 and give your counselor additional
-                    evidence when reviewing high-stakes entrance paths.
-                  </p>
-                </div>
-              </label>
+            {/* Informational Guidance Notice */}
+            <div className="rounded-lg bg-canvas-soft border border-hairline p-3.5 flex items-start gap-3 mt-4">
+              <ShieldCheck className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+              <p className="text-xs text-ink-muted leading-relaxed">
+                <strong className="text-ink font-semibold">Evidence Transparency:</strong> Transcripts are treated solely as supportive evidence for competitive paths. Gaps in marks or transcripts never limit your recommended directions.
+              </p>
             </div>
           </div>
         </Card>
@@ -1529,13 +1495,13 @@ export function OnboardingWizard(): JSX.Element {
               </div>
             </div>
 
-            {/* 4. Academic Signals */}
+            {/* 4. Academic Records */}
             <div className="rounded-lg border border-hairline bg-canvas-soft/40 p-4">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
                   <FileText className="h-4 w-4 text-primary" />
                   <h2 className="text-xs font-bold uppercase tracking-wider text-ink">
-                    4. Academic Signals & Transcripts
+                    4. Academic Background & Records
                   </h2>
                 </div>
                 <button
@@ -1548,28 +1514,13 @@ export function OnboardingWizard(): JSX.Element {
               </div>
               <div className="space-y-2 text-xs">
                 <div className="flex items-center justify-between">
-                  <span className="text-ink-muted">Subjects Self-Rated:</span>
+                  <span className="text-ink-muted">School transcripts & scorecards:</span>
                   <span className="font-semibold text-ink">
-                    {Object.keys(draft.aptitude_signals).length} of {SUBJECTS.length} subjects
-                  </span>
-                </div>
-                {Object.keys(draft.aptitude_signals).length > 0 && (
-                  <div className="flex flex-wrap gap-1 pt-1">
-                    {Object.entries(draft.aptitude_signals).map(([sub, rating]) => (
-                      <span
-                        key={sub}
-                        className="inline-flex items-center gap-1 bg-surface border border-hairline px-2 py-0.5 rounded text-[11px] text-ink"
-                      >
-                        <span>{SUBJECT_LABELS[sub] || sub}:</span>
-                        <strong className="text-primary">{rating}/5</strong>
-                      </span>
-                    ))}
-                  </div>
-                )}
-                <div className="flex items-center justify-between pt-1 border-t border-hairline/60">
-                  <span className="text-ink-muted">Transcript records available:</span>
-                  <span className="font-semibold text-ink">
-                    {draft.academic_records_available ? 'Yes (Available for counselor)' : 'No (Optional)'}
+                    {draft.academic_records_available === true
+                      ? 'Yes (Available for counselor review)'
+                      : draft.academic_records_available === false
+                      ? 'No transcripts (Optional)'
+                      : 'Not specified (Optional)'}
                   </span>
                 </div>
               </div>
